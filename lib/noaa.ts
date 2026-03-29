@@ -32,8 +32,8 @@ export type MarineForecast = {
 }
 
 const BUOY_STATIONS: Record<string, { name: string; region: string }> = {
-  '41010': { name: 'Southeast Florida', region: 'East of Miami' },
-  '41047': { name: 'Northeast Bahamas', region: 'Bahamas / SE Florida' },
+  '41056': { name: 'Southeast Florida', region: 'East of Miami' },
+  '41044': { name: 'Northeast Bahamas', region: 'Bahamas / SE Florida' },
   '41114': { name: 'Fort Pierce', region: 'Treasure Coast' },
 }
 
@@ -163,7 +163,7 @@ export async function fetchMarineForecast(): Promise<MarineForecast> {
     })
     if (!prodRes.ok) throw new Error(`Product HTTP ${prodRes.status}`)
     const prodJson = await prodRes.json()
-    const latestId = prodJson['@graph']?.[0]?.id
+    const latestId = prodJson['@graph']?.[0]?.['@id']
     if (!latestId) throw new Error('No forecast product found')
 
     const textRes = await fetch(latestId, {
