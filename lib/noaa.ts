@@ -32,9 +32,12 @@ export type MarineForecast = {
 }
 
 const BUOY_STATIONS: Record<string, { name: string; region: string }> = {
-  '41056': { name: 'Southeast Florida', region: 'East of Miami' },
-  '41044': { name: 'Northeast Bahamas', region: 'Bahamas / SE Florida' },
+  '41009': { name: 'Canaveral', region: 'East of Cape Canaveral, FL' },
+  '41046': { name: 'East Bahamas', region: 'Bahamas' },
   '41114': { name: 'Fort Pierce', region: 'Treasure Coast' },
+  '41122': { name: 'Fort Lauderdale', region: 'Fort Lauderdale Offshore' },
+  'LKWF1': { name: 'Lake Worth', region: 'Lake Worth Inshore' },
+  'SMKF1': { name: 'Sombrero Key', region: 'Florida Keys' },
 }
 
 function metersToFeet(m: string | number): string {
