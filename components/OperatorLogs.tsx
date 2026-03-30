@@ -27,18 +27,20 @@ const MOCK_VERIFIED_REPORT = {
 
 function VerifiedReportCard() {
   return (
-    <div className="bg-slate-800 border border-cyan-700/40 rounded-xl p-4 relative">
-      <div className="absolute top-3 right-3 flex items-center gap-1.5">
-        <span className="text-[10px] bg-yellow-900/50 text-yellow-400 border border-yellow-700/40 px-1.5 py-0.5 rounded-full font-semibold">TEST</span>
-        <span className="text-[10px] bg-cyan-900/50 text-cyan-400 border border-cyan-700/40 px-1.5 py-0.5 rounded-full font-semibold">✓ VERIFIED</span>
-      </div>
-      <div className="mb-2">
-        <a href={MOCK_VERIFIED_REPORT.website} target="_blank" rel="noopener noreferrer"
-           className="text-white font-semibold text-sm hover:text-cyan-400 transition-colors">
-          {MOCK_VERIFIED_REPORT.operator}
-        </a>
-        <p className="text-slate-500 text-xs">{MOCK_VERIFIED_REPORT.location}</p>
-        <p className="text-slate-600 text-xs">{MOCK_VERIFIED_REPORT.date}</p>
+    <div className="bg-slate-800 border border-cyan-700/40 rounded-xl p-4">
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <div>
+          <a href={MOCK_VERIFIED_REPORT.website} target="_blank" rel="noopener noreferrer"
+             className="text-white font-semibold text-sm hover:text-cyan-400 transition-colors">
+            {MOCK_VERIFIED_REPORT.operator}
+          </a>
+          <p className="text-slate-500 text-xs">{MOCK_VERIFIED_REPORT.location}</p>
+          <p className="text-slate-600 text-xs">{MOCK_VERIFIED_REPORT.date}</p>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-[10px] bg-yellow-900/50 text-yellow-400 border border-yellow-700/40 px-1.5 py-0.5 rounded-full font-semibold">TEST</span>
+          <span className="text-[10px] bg-cyan-900/50 text-cyan-400 border border-cyan-700/40 px-1.5 py-0.5 rounded-full font-semibold">✓ VERIFIED</span>
+        </div>
       </div>
       <div className="space-y-1 mt-2">
         <Field label="Visibility"  value={MOCK_VERIFIED_REPORT.visibility}  />
