@@ -1,0 +1,139 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Florida Flow | Issue #14 | March 30, 2026</title>
+<style>
+  body { font-family: Georgia, serif; background: #f5f5f0; color: #1a1a1a; margin: 0; padding: 0; }
+  .wrapper { max-width: 680px; margin: 0 auto; background: #ffffff; padding: 40px 36px 48px 36px; }
+  .top-date { text-align: right; font-size: 13px; color: #888; margin-bottom: 6px; font-family: Arial, sans-serif; }
+  .masthead-title { font-size: 32px; font-weight: bold; color: #1a1a1a; margin: 0 0 4px 0; }
+  .masthead-sub { font-size: 13px; color: #666; margin: 0 0 4px 0; font-family: Arial, sans-serif; }
+  .masthead-issue { font-size: 15px; color: #555; margin: 0 0 28px 0; font-family: Arial, sans-serif; }
+  .issue-date { font-size: 15px; color: #333; margin-bottom: 20px; font-family: Arial, sans-serif; }
+  .advisory-bar { background: #fef9e7; border-left: 4px solid #e67e22; padding: 12px 16px; margin-bottom: 16px; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; color: #7d4a00; }
+  .warning-bar { background: #fdedec; border-left: 4px solid #c0392b; padding: 12px 16px; margin-bottom: 28px; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; color: #7b241c; }
+  .section-title { font-size: 18px; font-weight: bold; color: #1a1a1a; margin: 32px 0 12px 0; border-bottom: 2px solid #e0e0e0; padding-bottom: 6px; }
+  .headline-text { font-size: 15px; line-height: 1.7; color: #222; margin-bottom: 14px; }
+  .vis-note { background: #f9f9f6; border: 1px solid #ddd; padding: 12px 16px; font-size: 13px; color: #444; font-family: Arial, sans-serif; line-height: 1.6; margin-bottom: 18px; }
+  table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 10px; }
+  th { background: #1a1a1a; color: #ffffff; padding: 10px; text-align: left; font-weight: bold; }
+  td { padding: 10px; border-bottom: 1px solid #e8e8e8; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+  .region-name { font-weight: bold; color: #1a1a1a; }
+  .rating-good { color: #27ae60; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rating-marginal { color: #e67e22; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rating-rough { color: #c0392b; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tag-obs { display: inline-block; background: #d5f5e3; color: #1e8449; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 3px; margin-top: 3px; }
+  .tag-pred { display: inline-block; background: #fef9e7; color: #b7770d; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 3px; margin-top: 3px; }
+  .sources-line { font-size: 12px; color: #777; font-style: italic; font-family: Arial, sans-serif; line-height: 1.6; margin-top: 10px; margin-bottom: 28px; }
+  .sighting-box { background: #eafaf1; border-left: 4px solid #27ae60; padding: 14px 16px; font-family: Arial, sans-serif; font-size: 14px; color: #1a4a2a; line-height: 1.65; margin-bottom: 28px; }
+  .sighting-label { font-weight: bold; font-size: 13px; margin-bottom: 6px; }
+  .safety-box { background: #fdedec; border-left: 4px solid #c0392b; padding: 14px 16px; font-family: Arial, sans-serif; font-size: 14px; color: #7b241c; line-height: 1.65; margin-bottom: 28px; }
+  .safety-label { font-weight: bold; font-size: 13px; margin-bottom: 6px; }
+  .week-box { background: #f9f9f6; border: 1px solid #ddd; padding: 16px 18px; font-family: Arial, sans-serif; font-size: 14px; color: #1a1a1a; line-height: 1.9; margin-bottom: 28px; }
+  .referral-box { background: #eaf4fb; border-left: 4px solid #1a6fa0; padding: 16px 18px; font-family: Arial, sans-serif; font-size: 14px; color: #0d3a55; line-height: 1.65; margin-bottom: 28px; }
+  .referral-box strong { display: block; font-size: 15px; margin-bottom: 8px; }
+  .poll-box { background: #f0f4ff; border-left: 4px solid #3a6fa0; padding: 16px 18px; font-family: Arial, sans-serif; font-size: 14px; color: #1a2a4a; line-height: 1.65; margin-bottom: 28px; }
+  .poll-box strong { display: block; font-size: 15px; margin-bottom: 12px; }
+  .poll-option { background: #ffffff; border: 1px solid #c0d0e8; border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; font-size: 14px; color: #1a2a4a; }
+  .disclaimer-box { background: #f5f5f5; border: 1px solid #ddd; padding: 12px 16px; font-size: 12px; color: #666; font-family: Arial, sans-serif; line-height: 1.6; margin-bottom: 28px; }
+  .footer { text-align: center; font-size: 12px; color: #aaa; font-family: Arial, sans-serif; border-top: 1px solid #e0e0e0; padding-top: 20px; margin-top: 10px; }
+  .product-box { background: #f0fdf4; border-left: 4px solid #27ae60; padding: 12px 16px; font-family: Arial, sans-serif; font-size: 13px; color: #1a4a2a; line-height: 1.6; margin-bottom: 18px; }
+  .product-box a { color: #1a6fa0; font-weight: bold; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="top-date">March 30, 2026</div>
+  <div class="masthead-title">The Florida Flow</div>
+  <div class="masthead-sub">Daily ocean conditions for anyone on the water, Space Coast to Key Largo</div>
+  <div class="masthead-issue">Issue #14</div>
+  <div class="issue-date">Monday, March 30, 2026</div>
+
+  <div class="advisory-bar">⚠️ STRONG SHOWER MOVING WEST: Winds gusting to 30 knots possible this afternoon across Jupiter to Deerfield coastal waters. Waterspouts possible. Boaters should seek shelter immediately.</div>
+
+  <div class="section-title">Conditions Headline</div>
+  <p class="headline-text">Space Coast and Jupiter remain rough with 8–9 foot seas driven by 17–18 knot easterly winds, while South Florida's protected waters show the typical 6-foot offshore swell and 75–77°F water temperatures. A strong shower capable of 30-knot gusts is tracking west toward the coast this afternoon from 13 nm east of Hillsboro Beach, affecting Jupiter through Deerfield waters out to 60 nm. This is the main story: conditions are deteriorating rapidly through the afternoon.</p>
+  <p class="headline-text">National Weather Service issued a strong shower warning for AMZ630 (coastal and offshore waters from Jupiter Inlet to Ocean Reef) at approximately 4:09 PM EDT. Mariners should expect gusty winds around 30 knots locally higher, locally higher waves, lightning strikes, and heavy downpours. Waterspouts are possible. Boaters are advised to seek safe harbor immediately until the storm passes. The shower was moving west at 15 knots, so impact could extend into evening hours depending on track.</p>
+  <p class="headline-text">Narcosis Dive in West Palm Beach reported excellent conditions on March 28, with 70–80 foot visibility, 75°F water, no current, and 1-foot waves—a solid recent benchmark for protected inland areas. Rainbow Reef in Key Largo (March 29) reported 2–3 foot visibility at 40 feet with no current and 15-knot winds, indicating variable conditions in the Upper Keys.</p>
+  <p class="headline-text">Blue Heron Bridge presents two windows today: 6:43–7:43 AM (high 2.7 ft, fair rating) and 7:06–8:06 PM (high 2.8 ft, fair rating). Early morning is your safest bet to avoid the incoming shower; evening may coincide with or immediately follow the severe weather window.</p>
+
+  <div class="section-title">Daily Data</div>
+
+  <div class="vis-note">
+    <strong>Data sourcing:</strong> All buoy observations recorded this morning; NWS marine forecast issued at 4:09 PM EDT. A strong shower is actively moving toward the coast, so afternoon conditions will deteriorate rapidly. Check with your operator before heading out, especially for late-day or offshore plans.
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Region</th><th>Conditions Rating</th><th>Vis</th><th>Temp</th><th>Seas</th><th>Wind / Note</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="region-name">Space Coast (Cocoa Beach / Sebastian)</span></td>
+        <td><span class="rating-rough">ROUGH</span></td>
+        <td><span class="tag-pred">Moderate</span></td>
+        <td>—</td>
+        <td>8.9 ft, 9s <span class="tag-obs">OBSERVED</span></td>
+        <td>17.5 kt E <span class="tag-obs">OBSERVED</span> — buoy 41009</td>
+      </tr>
+      <tr>
+        <td><span class="region-name">Jupiter / Tequesta</span></td>
+        <td><span class="rating-rough">ROUGH</span></td>
+        <td><span class="tag-pred">Moderate</span></td>
+        <td>75.7°F <span class="tag-obs">OBSERVED</span></td>
+        <td>8.2 ft, 10s <span class="tag-obs">OBSERVED</span></td>
+        <td>Swell-driven — buoy 41114 — Strong shower incoming</td>
+      </tr>
+      <tr>
+        <td><span class="region-name">Blue Heron Bridge</span></td>
+        <td><span class="rating-marginal">FAIR</span></td>
+        <td><span class="tag-pred">Good</span></td>
+        <td>76.6°F <span class="tag-obs">OBSERVED</span></td>
+        <td>Protected</td>
+        <td>20.0 kt E <span class="tag-obs">OBSERVED</span> — window 6:43–7:43 AM (high 2.7 ft)</td>
+      </tr>
+      <tr>
+        <td><span class="region-name">Palm Beach / Singer Is.</span></td>
+        <td><span class="rating-marginal">FAIR</span></td>
+        <td><span class="tag-pred">Good</span></td>
+        <td>76.6°F <span class="tag-obs">OBSERVED</span></td>
+        <td><span class="tag-pred">5–6 ft offshore</span></td>
+        <td>20.0 kt E <span class="tag-obs">OBSERVED</span> — protected nearshore</td>
+      </tr>
+      <tr>
+        <td><span class="region-name">Deerfield / Pompano</span></td>
+        <td><span class="rating-marginal">FAIR</span></td>
+        <td><span class="tag-pred">Moderate</span></td>
+        <td>77.4°F <span class="tag-obs">OBSERVED</span></td>
+        <td>5.9 ft, 6s <span class="tag-obs">OBSERVED</span></td>
+        <td>Strong shower moving in this afternoon — buoy 41122</td>
+      </tr>
+      <tr>
+        <td><span class="region-name">Fort Lauderdale</span></td>
+        <td><span class="rating-marginal">FAIR</span></td>
+        <td><span class="tag-pred">Moderate</span></td>
+        <td>77.4°F <span class="tag-obs">OBSERVED</span></td>
+        <td>5.9 ft, 6s <span class="tag-obs">OBSERVED</span></td>
+        <td>Protected nearshore — buoy 41122 (23 nm offshore)</td>
+      </tr>
+      <tr>
+        <td><span class="region-name">Miami / Key Biscayne</span></td>
+        <td><span class="rating-good">GOOD</span></td>
+        <td><span class="tag-pred">Good</span></td>
+        <td>77.4°F <span class="tag-obs">OBSERVED</span></td>
+        <td>5.9 ft, 6s <span class="tag-obs">OBSERVED</span></td>
+        <td>Protected nearshore — buoy 41122 (23 nm offshore)</td>
+      </tr>
+      <tr>
+        <td><span class="region-name">Key Largo / Upper Keys</span></td>
+        <td><span class="rating-good">GOOD</span></td>
+        <td><span class="tag-pred">Good</span></td>
+        <td>77.0°F <span class="tag-obs">OBSERVED</span></td>
+        <td>3.0 ft, 4s <span class="tag-obs">OBSERVED</span></td>
+        <td>Protected — buoy 42095 (15 nm offshore)</td>
+      </tr>
