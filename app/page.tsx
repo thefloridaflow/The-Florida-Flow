@@ -6,6 +6,7 @@ import CommunitySection from '@/components/CommunitySection'
 import RegionalConditionsTable from '@/components/RegionalConditionsTable'
 import ActivityVerdicts from '@/components/ActivityVerdicts'
 import BHBBanner from '@/components/BHBBanner'
+import BHBTideWindows from '@/components/BHBTideWindows'
 import EmailCapture from '@/components/EmailCapture'
 import NewsletterArchive from '@/components/NewsletterArchive'
 import SunTimes from '@/components/SunTimes'
@@ -82,11 +83,12 @@ export default async function HomePage() {
           <SunTimes />
         </section>
 
-        {/* Tides · Forecast · Currents */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Tides · Forecast · Currents · BHB Windows */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <TidePanel tides={tides} />
           <ForecastPanel forecast={forecast} />
           <CurrentPanel current={current} />
+          <BHBTideWindows />
         </section>
 
         {/* Newsletter archive */}
