@@ -46,9 +46,32 @@ export default async function HomePage() {
         </div>
       </header>
 
+      {/* Page index */}
+      <nav className="bg-slate-900 border-b border-slate-800">
+        <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
+          <a href="#buoys" className="hover:text-slate-200 transition-colors">Buoys</a>
+          <span className="text-slate-700">·</span>
+          <a href="#regional" className="hover:text-slate-200 transition-colors">Regional</a>
+          <span className="text-slate-700">·</span>
+          <a href="#activity" className="hover:text-slate-200 transition-colors">By Activity</a>
+          <span className="text-slate-700">·</span>
+          <a href="#bhb" className="hover:text-slate-200 transition-colors">BHB Guide</a>
+          <span className="text-slate-700">·</span>
+          <a href="#uv-sun" className="hover:text-slate-200 transition-colors">UV &amp; Sun</a>
+          <span className="text-slate-700">·</span>
+          <a href="#tides" className="hover:text-slate-200 transition-colors">Tides &amp; Forecast</a>
+          <span className="text-slate-700">·</span>
+          <a href="#operators" className="hover:text-slate-200 transition-colors">Operators</a>
+          <span className="text-slate-700">·</span>
+          <a href="#newsletter" className="hover:text-slate-200 transition-colors">Newsletter</a>
+          <span className="text-slate-700">·</span>
+          <a href="#community" className="hover:text-slate-200 transition-colors">Community Reports</a>
+        </div>
+      </nav>
+
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-10">
         {/* Buoy conditions */}
-        <section>
+        <section id="buoys">
           <div className="flex items-center gap-2 mb-5">
             <h2 className="text-2xl font-bold text-white">Buoy Conditions</h2>
             <span className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-full">NOAA NDBC</span>
@@ -67,22 +90,22 @@ export default async function HomePage() {
         </section>
 
         {/* Regional Conditions */}
-        <RegionalConditionsTable buoys={buoys} />
+        <div id="regional"><RegionalConditionsTable buoys={buoys} /></div>
 
         {/* By Activity */}
-        <ActivityVerdicts buoys={buoys} />
+        <div id="activity"><ActivityVerdicts buoys={buoys} /></div>
 
         {/* BHB Site Guide */}
-        <BHBBanner />
+        <div id="bhb"><BHBBanner /></div>
 
         {/* UV · Sun Times */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <section id="uv-sun" className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <UVIndex uv={uv} />
           <SunTimes />
         </section>
 
         {/* Tides · Forecast · Currents (tides include BHB dive windows) */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <section id="tides" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-2">
             <TidesAndDiveWindows tides={tides} />
           </div>
@@ -91,19 +114,21 @@ export default async function HomePage() {
         </section>
 
         {/* Featured (paid) operators */}
-        <FeaturedOperators />
+        <div id="operators">
+          <FeaturedOperators />
 
-        {/* Operator Logs */}
-        <OperatorLogs />
+          {/* Operator Logs */}
+          <OperatorLogs />
+        </div>
 
         {/* Newsletter — signup + previous issues */}
-        <section className="space-y-6">
+        <section id="newsletter" className="space-y-6">
           <EmailCapture />
           <NewsletterArchive />
         </section>
 
         {/* Community Reports */}
-        <CommunitySection />
+        <div id="community"><CommunitySection /></div>
       </main>
 
       <footer className="border-t border-slate-800 mt-16 py-8 text-center text-xs text-slate-600 space-y-2">
