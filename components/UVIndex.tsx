@@ -54,6 +54,12 @@ export default function UVIndex({ uv }: { uv: UVData }) {
             <span className="text-xs bg-red-900 text-red-300 px-2 py-0.5 rounded-full font-medium">UV Alert</span>
           )}
         </div>
+        {uv.uvIndexTomorrow > 0 && (
+          <div className="mb-1 ml-auto text-right">
+            <p className="text-xs text-slate-500">Tomorrow</p>
+            <p className={`font-bold text-lg ${getBand(uv.uvIndexTomorrow).color}`}>{uv.uvIndexTomorrow}</p>
+          </div>
+        )}
       </div>
 
       {/* Scale bar */}

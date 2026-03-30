@@ -37,7 +37,8 @@ export type MarineForecast = {
 export type UVHourly = { hour: string; value: number }
 
 export type UVData = {
-  uvIndex: number
+  uvIndex: number        // today's peak
+  uvIndexTomorrow: number // tomorrow's peak
   uvAlert: boolean
   date: string
   hourly: UVHourly[]
@@ -189,39 +190,45 @@ export async function fetchTides(): Promise<TideData> {
 }
 
 export async function fetchUVIndex(): Promise<UVData> {
-  // EPA Envirofacts UV forecast for West Palm Beach, FL (ZIP 33401)
-  const opts = { next: { revalidate: 3600 }, signal: AbortSignal.timeout(15000) }
+  // Open-Meteo — free, no key, matches forecast apps. Palm Beach, FL.
+  const url =
+    'https://api.open-meteo.com/v1/forecast' +
+    '?latitude=26.713&longitude=-80.057' +
+    '&daily=uv_index_max' +
+    '&hourly=uv_index' +
+    '&timezone=America%2FNew_York' +
+    '&forecast_days=2'
   try {
-    const [dailyRes, hourlyRes] = await Promise.all([
-      fetch('https://data.epa.gov/dmapservice/getEnvirofactsUVDAILY/ZIP/33401/JSON', opts),
-      fetch('https://data.epa.gov/dmapservice/getEnvirofactsUVHOURLY/ZIP/33401/JSON', opts),
-    ])
-    if (!dailyRes.ok) throw new Error(`HTTP ${dailyRes.status}`)
-    const dailyJson = await dailyRes.json()
-    const record = dailyJson[0]
-    if (!record) throw new Error('No UV data')
+    const res = await fetch(url, { next: { revalidate: 3600 }, signal: AbortSignal.timeout(15000) })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const json = await res.json()
 
-    let hourly: UVHourly[] = []
-    if (hourlyRes.ok) {
-      const hourlyJson: Array<{ DATE_TIME: string; UV_VALUE: number }> = await hourlyRes.json()
-      hourly = hourlyJson
-        .filter(h => h.DATE_TIME.startsWith(record.DATE))
-        .map(h => {
-          const parts = h.DATE_TIME.split(' ')          // ["Mar/30/2026", "07", "AM"]
-          const hour = parseInt(parts[1], 10).toString() // "7"
-          return { hour: `${hour}${parts[2][0].toLowerCase()}`, value: h.UV_VALUE }
-        })
-    }
+    const todayPeak    = Math.round(json.daily.uv_index_max[0] ?? 0)
+    const tomorrowPeak = Math.round(json.daily.uv_index_max[1] ?? 0)
+    const todayDate    = json.daily.time[0] as string  // "2026-03-30"
+
+    // Hourly for today only, non-zero hours
+    const hourly: UVHourly[] = (json.hourly.time as string[])
+      .map((t: string, i: number) => ({ t, value: Math.round(json.hourly.uv_index[i]) }))
+      .filter(({ t, value }) => t.startsWith(todayDate) && value > 0)
+      .map(({ t, value }) => {
+        const h = parseInt(t.split('T')[1].split(':')[0], 10)
+        const ampm = h >= 12 ? 'pm' : 'am'
+        const disp = h % 12 || 12
+        return { hour: `${disp}${ampm}`, value }
+      })
 
     return {
-      uvIndex: parseInt(record.UV_INDEX, 10),
-      uvAlert: record.UV_ALERT === '1',
-      date: record.DATE,
+      uvIndex: todayPeak,
+      uvIndexTomorrow: tomorrowPeak,
+      uvAlert: todayPeak >= 8,
+      date: todayDate,
       hourly,
     }
   } catch (err) {
     return {
       uvIndex: 0,
+      uvIndexTomorrow: 0,
       uvAlert: false,
       date: '',
       hourly: [],
