@@ -8,7 +8,7 @@ const REGIONS: { name: string; buoyId: string }[] = [
   { name: 'Deerfield / Pompano',      buoyId: '41122'  },
   { name: 'Fort Lauderdale',          buoyId: '41122'  },
   { name: 'Miami / Key Biscayne',     buoyId: '41122'  },
-  { name: 'Key Largo / Upper Keys',   buoyId: 'MLRF1'  },
+  { name: 'Key Largo / Upper Keys',   buoyId: '42095'  },
 ]
 
 type Rating = 'Good' | 'Marginal' | 'Rough' | 'N/A'
