@@ -70,6 +70,27 @@ export default function UVIndex({ uv }: { uv: UVData }) {
       </div>
 
       <p className="text-slate-400 text-sm">{band.advice}</p>
+
+      {uv.hourly.length > 0 && (
+        <div className="mt-4">
+          <p className="text-xs text-slate-500 mb-2">Hourly</p>
+          <div className="flex items-end gap-0.5 h-14">
+            {uv.hourly.map(({ hour, value }) => {
+              const b = getBand(value)
+              const heightPct = Math.max((value / 11) * 100, 4)
+              return (
+                <div key={hour} className="flex-1 flex flex-col items-center gap-0.5" title={`${hour}: UV ${value}`}>
+                  <div
+                    className={`w-full rounded-sm ${b.bg} opacity-80 transition-all`}
+                    style={{ height: `${heightPct}%` }}
+                  />
+                  <span className="text-slate-600 text-[8px] leading-none">{hour}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

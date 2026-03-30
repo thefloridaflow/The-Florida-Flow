@@ -6,7 +6,6 @@ import CommunitySection from '@/components/CommunitySection'
 import RegionalConditionsTable from '@/components/RegionalConditionsTable'
 import ActivityVerdicts from '@/components/ActivityVerdicts'
 import BHBBanner from '@/components/BHBBanner'
-import VisibilityEstimate from '@/components/VisibilityEstimate'
 import SunTimes from '@/components/SunTimes'
 import UVIndex from '@/components/UVIndex'
 import CurrentPanel from '@/components/CurrentPanel'
@@ -69,9 +68,8 @@ export default async function HomePage() {
         {/* By Activity */}
         <ActivityVerdicts buoys={buoys} />
 
-        {/* Visibility · UV · Sun Times */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <VisibilityEstimate buoys={buoys} />
+        {/* UV · Sun Times */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <UVIndex uv={uv} />
           <SunTimes />
         </section>

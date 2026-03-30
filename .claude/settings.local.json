@@ -1,7 +1,30 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)"
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(wait)",
+      "Bash(pkill -f \"next build\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:www.ndbc.noaa.gov)",
+      "WebFetch(domain:api.weather.gov)",
+      "Bash(grep -E \"\\\\.\\(ts|tsx|json\\)$\")",
+      "WebFetch(domain:api.tidesandcurrents.noaa.gov)",
+      "WebSearch",
+      "WebFetch(domain:www.weather.gov)",
+      "WebFetch(domain:www.epa.gov)",
+      "WebFetch(domain:tidesandcurrents.noaa.gov)",
+      "WebFetch(domain:www.tidesandcurrents.noaa.gov)",
+      "WebFetch(domain:data.epa.gov)",
+      "Bash(grep:*)",
+      "Bash(npx next:*)",
+      "Bash(ls /home/ant/florida-flow-app/.env*)"
     ]
   }
 }

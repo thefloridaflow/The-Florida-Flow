@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
 
 export async function GET() {
-  const db = getSupabase()
+  let db
+  try { db = getSupabase() } catch {
+    return NextResponse.json({ error: 'Community reports are not available: database not configured.' }, { status: 503 })
+  }
   const { data, error } = await db
     .from('community_reports')
     .select('*')
@@ -14,6 +17,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  let db
+  try { db = getSupabase() } catch {
+    return NextResponse.json({ error: 'Community reports are not available: database not configured.' }, { status: 503 })
+  }
   const body = await req.json()
   const { name, dive_site, visibility_ft, current_strength, notes } = body
 
@@ -39,7 +46,6 @@ export async function POST(req: NextRequest) {
     notes: notes ? String(notes).slice(0, 500) : '',
   }
 
-  const db = getSupabase()
   const { data, error } = await db
     .from('community_reports')
     .insert(sanitized)

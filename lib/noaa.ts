@@ -2,6 +2,9 @@ export type BuoyData = {
   stationId: string
   name: string
   region: string
+  lat: number
+  lon: number
+  offshoreNm: number
   waveHeight: string | null    // feet
   wavePeriod: string | null    // seconds
   waterTemp: string | null     // °F
@@ -31,10 +34,13 @@ export type MarineForecast = {
   error?: string
 }
 
+export type UVHourly = { hour: string; value: number }
+
 export type UVData = {
   uvIndex: number
   uvAlert: boolean
   date: string
+  hourly: UVHourly[]
   error?: string
 }
 
@@ -47,14 +53,13 @@ export type CurrentData = {
   error?: string
 }
 
-const BUOY_STATIONS: Record<string, { name: string; region: string }> = {
-  '41009': { name: 'Canaveral', region: 'East of Cape Canaveral, FL' },
-  '41046': { name: 'East Bahamas', region: 'Bahamas' },
-  '41114': { name: 'Fort Pierce', region: 'Treasure Coast' },
-  '41122': { name: 'Fort Lauderdale', region: 'Fort Lauderdale Offshore' },
-  'LKWF1': { name: 'Lake Worth', region: 'Lake Worth Inshore' },
-  'SMKF1': { name: 'Sombrero Key', region: 'Florida Keys' },
-  'SPGF1': { name: 'Settlement Point', region: 'Grand Bahama' },
+const BUOY_STATIONS: Record<string, { name: string; region: string; lat: number; lon: number; offshoreNm: number }> = {
+  '41009': { name: 'Canaveral',      region: 'East of Cape Canaveral, FL',  lat: 28.501, lon: -80.534, offshoreNm: 20 },
+  '41046': { name: 'East Bahamas',   region: 'Bahamas',                     lat: 23.823, lon: -68.373, offshoreNm: 0  },
+  '41114': { name: 'Fort Pierce',    region: 'Treasure Coast',              lat: 27.551, lon: -80.225, offshoreNm: 12 },
+  '41122': { name: 'Fort Lauderdale', region: 'Fort Lauderdale Offshore',   lat: 26.044, lon: -79.097, offshoreNm: 23 },
+  'LKWF1': { name: 'Lake Worth',     region: 'Lake Worth Inshore',          lat: 26.613, lon: -80.034, offshoreNm: 0  },
+  'SMKF1': { name: 'Sombrero Key',   region: 'Florida Keys',                lat: 24.627, lon: -81.113, offshoreNm: 1  },
 }
 
 function metersToFeet(m: string | number): string {
@@ -74,6 +79,15 @@ function degreesToCompass(deg: string | number): string {
   return dirs[Math.round(Number(deg) / 22.5) % 16]
 }
 
+function scoreRow(parts: string[]): number {
+  let s = 0
+  if (parts.length > 6  && parts[6]  !== 'MM') s += 2  // wind speed
+  if (parts.length > 8  && parts[8]  !== 'MM') s += 3  // wave height (most important)
+  if (parts.length > 9  && parts[9]  !== 'MM') s += 2  // wave period
+  if (parts.length > 14 && parts[14] !== 'MM') s += 1  // water temp
+  return s
+}
+
 export async function fetchBuoyData(stationId: string): Promise<BuoyData> {
   const info = BUOY_STATIONS[stationId]
   try {
@@ -83,9 +97,16 @@ export async function fetchBuoyData(stationId: string): Promise<BuoyData> {
     const text = await res.text()
     const lines = text.trim().split('\n')
     // Line 0: header, Line 1: units, Line 2+: data (newest first)
-    const dataLine = lines[2]
-    if (!dataLine) throw new Error('No data')
-    const parts = dataLine.trim().split(/\s+/)
+    if (!lines[2]) throw new Error('No data')
+    // Pick the most-complete row among the last ~5 observations
+    let bestParts = lines[2].trim().split(/\s+/)
+    let bestScore = scoreRow(bestParts)
+    for (let i = 3; i <= Math.min(6, lines.length - 1); i++) {
+      const p = lines[i].trim().split(/\s+/)
+      const s = scoreRow(p)
+      if (s > bestScore) { bestScore = s; bestParts = p }
+    }
+    const parts = bestParts
     // Columns: YY MM DD hh mm WDIR WSPD GST WVHT DPD APD MWD PRES ATMP WTMP DEWP VIS PTDY TIDE
     const wdir = parts[5] !== 'MM' ? degreesToCompass(parts[5]) : null
     const wspd = parts[6] !== 'MM' ? msToKnots(parts[6]) : null
@@ -100,6 +121,9 @@ export async function fetchBuoyData(stationId: string): Promise<BuoyData> {
       stationId,
       name: info.name,
       region: info.region,
+      lat: info.lat,
+      lon: info.lon,
+      offshoreNm: info.offshoreNm,
       waveHeight: wvht,
       wavePeriod: dpd,
       waterTemp: wtmp,
@@ -112,6 +136,9 @@ export async function fetchBuoyData(stationId: string): Promise<BuoyData> {
       stationId,
       name: info?.name ?? stationId,
       region: info?.region ?? '',
+      lat: info?.lat ?? 0,
+      lon: info?.lon ?? 0,
+      offshoreNm: info?.offshoreNm ?? 0,
       waveHeight: null,
       wavePeriod: null,
       waterTemp: null,
@@ -163,23 +190,41 @@ export async function fetchTides(): Promise<TideData> {
 
 export async function fetchUVIndex(): Promise<UVData> {
   // EPA Envirofacts UV forecast for West Palm Beach, FL (ZIP 33401)
+  const opts = { next: { revalidate: 3600 }, signal: AbortSignal.timeout(15000) }
   try {
-    const url = 'https://data.epa.gov/dmapservice/getEnvirofactsUVDAILY/ZIP/33401/JSON'
-    const res = await fetch(url, { next: { revalidate: 3600 }, signal: AbortSignal.timeout(15000) })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const json = await res.json()
-    const record = json[0]
+    const [dailyRes, hourlyRes] = await Promise.all([
+      fetch('https://data.epa.gov/dmapservice/getEnvirofactsUVDAILY/ZIP/33401/JSON', opts),
+      fetch('https://data.epa.gov/dmapservice/getEnvirofactsUVHOURLY/ZIP/33401/JSON', opts),
+    ])
+    if (!dailyRes.ok) throw new Error(`HTTP ${dailyRes.status}`)
+    const dailyJson = await dailyRes.json()
+    const record = dailyJson[0]
     if (!record) throw new Error('No UV data')
+
+    let hourly: UVHourly[] = []
+    if (hourlyRes.ok) {
+      const hourlyJson: Array<{ DATE_TIME: string; UV_VALUE: number }> = await hourlyRes.json()
+      hourly = hourlyJson
+        .filter(h => h.DATE_TIME.startsWith(record.DATE))
+        .map(h => {
+          const parts = h.DATE_TIME.split(' ')          // ["Mar/30/2026", "07", "AM"]
+          const hour = parseInt(parts[1], 10).toString() // "7"
+          return { hour: `${hour}${parts[2][0].toLowerCase()}`, value: h.UV_VALUE }
+        })
+    }
+
     return {
       uvIndex: parseInt(record.UV_INDEX, 10),
       uvAlert: record.UV_ALERT === '1',
       date: record.DATE,
+      hourly,
     }
   } catch (err) {
     return {
       uvIndex: 0,
       uvAlert: false,
       date: '',
+      hourly: [],
       error: err instanceof Error ? err.message : 'Unknown error',
     }
   }
@@ -250,8 +295,17 @@ export async function fetchMarineForecast(): Promise<MarineForecast> {
     if (!textRes.ok) throw new Error(`Text HTTP ${textRes.status}`)
     const textJson = await textRes.json()
     const rawText: string = textJson.productText ?? ''
-    // Trim to a readable section
-    const trimmed = rawText.replace(/\r/g, '').split('\n\n').slice(1, 5).join('\n\n').trim()
+    // Strip NWS product headers; start from the first weather statement (lines beginning with '...')
+    const paras = rawText.replace(/\r/g, '').split('\n\n')
+    const contentIdx = paras.findIndex(p => /^\s*\.{3}/.test(p))
+    const trimmed = contentIdx >= 0
+      ? paras
+          .slice(contentIdx)
+          .filter(p => !/^\s*\$\$/.test(p) && p.trim().length > 0)
+          .slice(0, 6)
+          .join('\n\n')
+          .trim()
+      : paras.filter(p => p.trim().length > 3).slice(2, 6).join('\n\n').trim()
 
     return {
       zone: 'AMZ630',

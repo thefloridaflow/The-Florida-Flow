@@ -65,7 +65,16 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
   const surfDetail = (() => {
     if (waveHt === null) return 'Buoy data unavailable'
     const pd = wavePd !== null ? ` @ ${offshore!.wavePeriod}s` : ''
-    return `${offshore!.waveHeight} ft${pd} · ${offshore!.name}`
+    let quality = ''
+    if (wavePd !== null) {
+      if (wavePd >= 12)      quality = 'long-period groundswell · clean lines'
+      else if (wavePd >= 8)  quality = 'moderate period · decent shape'
+      else                   quality = 'short period · wind chop'
+    }
+    const windNote = windKt !== null
+      ? windKt > 20 ? ' · strong onshore wind' : windKt < 8 ? ' · light wind (offshore likely)' : ''
+      : ''
+    return `${offshore!.waveHeight} ft${pd} · ${quality || offshore!.name}${windNote}`
   })()
 
   // ── Kayak / SUP ───────────────────────────────────────────────
@@ -111,7 +120,7 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     return 'Rough'
   })()
   const beachDetail = beachWave !== null
-    ? `${beachBuoy!.waveHeight} ft offshore · calmer nearshore`
+    ? `${beachWave.toFixed(1)} ft offshore · calmer nearshore`
     : 'Buoy data unavailable'
 
   return [
