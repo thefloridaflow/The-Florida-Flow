@@ -17,7 +17,7 @@ export type OperatorReport = {
 function stripTags(html: string): string {
   return html
     .replace(/<[^>]+>/g, ' ')
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&deg;/g, '°').replace(/&#\d+;/g, '')
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -83,11 +83,12 @@ async function fetchRainbowReef(): Promise<OperatorReport> {
     const dateMatch = h3Text.match(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d+\w*\s+\d{4}(?:,\s*\d+:\d+\s*[APap][Mm])?/)
     const date = dateMatch ? dateMatch[0] : h3Text.substring(0, 60)
 
-    const visibility = extractBeforeH4(html, 'Visibility')
-      .replace(/[^\d\s\-ftfeet]/gi, '').trim()
-      || extractBeforeH4(html, 'Visibility')
-    const current = extractBeforeH4(html, 'Current')
-    const waves   = extractBeforeH4(html, 'Wave Height')
+    const rawViz = extractBeforeH4(html, 'Visibility')
+    const visibility = rawViz.length < 60 ? rawViz : rawViz.replace(/[^\d\s\-–ftFT]/g, '').trim().substring(0, 30)
+    const rawCurrent = extractBeforeH4(html, 'Current')
+    const current = rawCurrent.length < 80 ? rawCurrent : rawCurrent.substring(0, 60)
+    const rawWaves = extractBeforeH4(html, 'Wave Height')
+    const waves = rawWaves.length < 40 ? rawWaves : rawWaves.replace(/[^\d\s\-–ftFT]/g, '').trim().substring(0, 20)
 
     // Captain's note comes after <em>From Captain...</em>
     const emMatch = html.match(/<em>From[^<]*<\/em>\s*([\s\S]*?)(?:<em>|<h[1-6]|<\/li>)/i)
