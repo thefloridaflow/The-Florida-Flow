@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+
+export const maxDuration = 60
 import { fetchAllBuoys, fetchTides, fetchMarineForecast, fetchUVIndex, fetchCurrents } from '@/lib/noaa'
 
 const REGIONS = [
@@ -14,6 +16,7 @@ const REGIONS = [
 ]
 
 export async function GET(req: NextRequest) {
+  try {
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -204,4 +207,7 @@ Check live conditions: **https://the-florida-flow.vercel.app**
   }
 
   return NextResponse.json({ ok: true, draft: path, date: etDate })
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 })
+  }
 }
