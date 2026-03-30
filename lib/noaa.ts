@@ -61,6 +61,7 @@ const BUOY_STATIONS: Record<string, { name: string; region: string; lat: number;
   '41122': { name: 'Fort Lauderdale', region: 'Fort Lauderdale Offshore',   lat: 26.044, lon: -79.097, offshoreNm: 23 },
   'LKWF1': { name: 'Lake Worth',     region: 'Lake Worth Inshore',          lat: 26.613, lon: -80.034, offshoreNm: 0  },
   'SMKF1': { name: 'Sombrero Key',   region: 'Florida Keys',                lat: 24.627, lon: -81.113, offshoreNm: 1  },
+  'MLRF1': { name: 'Molasses Reef',  region: 'Key Largo / Upper Keys',      lat: 25.010, lon: -80.376, offshoreNm: 6  },
 }
 
 function metersToFeet(m: string | number): string {
