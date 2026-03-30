@@ -102,13 +102,20 @@ export default async function HomePage() {
         <CommunitySection />
       </main>
 
-      <footer className="border-t border-slate-800 mt-16 py-6 text-center text-xs text-slate-600">
+      <footer className="border-t border-slate-800 mt-16 py-8 text-center text-xs text-slate-600 space-y-2">
         <p>
-          Data sourced from{' '}
-          <a href="https://www.ndbc.noaa.gov" className="text-slate-500 hover:text-slate-300 transition-colors" target="_blank" rel="noopener noreferrer">NOAA NDBC</a>,{' '}
-          <a href="https://tidesandcurrents.noaa.gov" className="text-slate-500 hover:text-slate-300 transition-colors" target="_blank" rel="noopener noreferrer">NOAA Tides</a>, and{' '}
-          <a href="https://www.weather.gov" className="text-slate-500 hover:text-slate-300 transition-colors" target="_blank" rel="noopener noreferrer">NWS</a>.
-          Community reports are user-submitted and unverified.
+          <span className="text-slate-500 font-medium">Data sources: </span>
+          <a href="https://www.ndbc.noaa.gov" className="text-slate-500 hover:text-slate-300 transition-colors" target="_blank" rel="noopener noreferrer">NOAA NDBC</a> ·{' '}
+          <a href="https://tidesandcurrents.noaa.gov" className="text-slate-500 hover:text-slate-300 transition-colors" target="_blank" rel="noopener noreferrer">NOAA Tides &amp; Currents</a> ·{' '}
+          <a href="https://www.weather.gov" className="text-slate-500 hover:text-slate-300 transition-colors" target="_blank" rel="noopener noreferrer">NWS Marine Forecasts</a> ·{' '}
+          <a href="https://open-meteo.com" className="text-slate-500 hover:text-slate-300 transition-colors" target="_blank" rel="noopener noreferrer">Open-Meteo</a> ·{' '}
+          <a href="https://idiveflorida.com/BlueHeronBridgeTideTableChart.php" className="text-slate-500 hover:text-slate-300 transition-colors" target="_blank" rel="noopener noreferrer">iDiveFlorida</a>
+        </p>
+        <p>
+          For informational purposes only. Not intended for navigation or as a substitute for official marine forecasts.
+          Always check{' '}
+          <a href="https://www.weather.gov/mfl/" className="text-slate-500 hover:text-slate-300 transition-colors" target="_blank" rel="noopener noreferrer">NWS Miami</a>{' '}
+          before heading out. Community reports are user-submitted and unverified.
         </p>
       </footer>
     </div>
