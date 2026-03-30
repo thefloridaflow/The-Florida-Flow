@@ -7,6 +7,7 @@ import ActivityVerdicts from '@/components/ActivityVerdicts'
 import BHBBanner from '@/components/BHBBanner'
 import TidesAndDiveWindows from '@/components/TidesAndDiveWindows'
 import OperatorLogs from '@/components/OperatorLogs'
+import FeaturedOperators from '@/components/FeaturedOperators'
 import EmailCapture from '@/components/EmailCapture'
 import NewsletterArchive from '@/components/NewsletterArchive'
 import SunTimes from '@/components/SunTimes'
@@ -88,6 +89,9 @@ export default async function HomePage() {
           <ForecastPanel forecast={forecast} />
           <CurrentPanel current={current} />
         </section>
+
+        {/* Featured (paid) operators */}
+        <FeaturedOperators />
 
         {/* Operator Logs */}
         <OperatorLogs />
