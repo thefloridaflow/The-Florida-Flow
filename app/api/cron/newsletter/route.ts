@@ -231,14 +231,14 @@ TONE AND ACCURACY RULES (non-negotiable):
       <tr><th>Region</th><th>Conditions Rating</th><th>Vis</th><th>Temp</th><th>Seas</th><th>Wind / Note</th></tr>
     </thead>
     <tbody>
-      [8 rows — one for each region. Use buoy data. Vis is estimated from wave height (tag-pred unless operator confirmed). Temp from buoy (tag-obs) or estimated (tag-pred). Seas from buoy (tag-obs) or NOAA nearshore estimate (tag-pred). Wind/Note: include key buoy reading, forecast note, or operator confirmation if available. BHB row: "Protected" for seas, include tide window time.]
+      [8 rows — one for each region. Do NOT color or highlight table rows beyond the default CSS. Use only the small tag-obs/tag-pred badges on each individual data point — no other cell or row highlighting. Format each data cell as: the value on one line, then the tag on the next line. Example: "8.2 ft<br><span class="tag-obs">OBSERVED</span>". Vis is estimated from wave height (tag-pred) unless operator confirmed (tag-obs). Temp from buoy (tag-obs) or estimated (tag-pred). Seas from buoy (tag-obs) or NOAA nearshore estimate (tag-pred). Wind/Note: buoy reading with distance offshore, forecast note, or operator confirmation. BHB row: "Protected" for seas, include tide window time.]
     </tbody>
   </table>
 
   <p class="sources-line">[List all data sources with station IDs, observation times UTC, and any operator confirmations. Format like: "Sources: NOAA AMZ630 issued [time]. Buoy 41114 observed [time] UTC. LKWF1 observed [time] UTC. [Operator] confirmed [date]."]</p>
 
   <div class="product-box">
-    First time at BHB? <strong>The Florida Flow BHB Site Guide</strong> covers tide strategy, marine life by season, best entry points, and what to expect underwater. Free with 3 referrals or $12. <a href="https://idiveflorida.com/BlueHeronBridgeTideTableChart.php">Check the full tide table here →</a>
+    First time at BHB? <strong>The Florida Flow BHB Site Guide</strong> covers tide strategy, marine life by season, best entry points, and what to expect underwater. Free with 3 referrals or $12. <a href="https://ko-fi.com/s/59604a0ac1">Get the guide →</a>
   </div>
 
   <div class="section-title">Today on the Water — By Activity</div>
