@@ -23,9 +23,15 @@ export default function ForecastPanel({ forecast }: { forecast: MarineForecast }
       {forecast.error ? (
         <p className="text-red-400 text-sm">Forecast unavailable: {forecast.error}</p>
       ) : (
-        <pre className="text-slate-300 text-sm whitespace-pre-wrap font-sans leading-relaxed max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600">
-          {forecast.forecast || 'No forecast text available.'}
-        </pre>
+        <div className="space-y-3">
+          {(forecast.forecast || 'No forecast text available.')
+            .split(/\n{2,}/)
+            .map(chunk => chunk.replace(/\n/g, ' ').trim())
+            .filter(Boolean)
+            .map((para, i) => (
+              <p key={i} className="text-slate-300 text-sm leading-relaxed">{para}</p>
+            ))}
+        </div>
       )}
 
       <p className="text-xs text-slate-500 mt-3">Issued: {updated}</p>

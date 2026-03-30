@@ -94,7 +94,7 @@ export default function TidesAndDiveWindows({ tides }: { tides: TideData }) {
           <h3 className="text-white font-bold text-lg">Tides & Dive Windows</h3>
           <p className="text-slate-400 text-sm">
             BHB Station 8722588 · windows via{' '}
-            <a href="https://www.idiveflorida.com" target="_blank" rel="noopener noreferrer"
+            <a href="https://idiveflorida.com/BlueHeronBridgeTideTableChart.php" target="_blank" rel="noopener noreferrer"
                className="text-cyan-500 hover:text-cyan-400 transition-colors">iDiveFlorida</a>
           </p>
         </div>

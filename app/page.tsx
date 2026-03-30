@@ -46,9 +46,6 @@ export default async function HomePage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-10">
-        {/* Newsletter strip */}
-        <EmailCapture />
-
         {/* Buoy conditions */}
         <section>
           <div className="flex items-center gap-2 mb-5">
@@ -95,8 +92,11 @@ export default async function HomePage() {
         {/* Operator Logs */}
         <OperatorLogs />
 
-        {/* Newsletter archive */}
-        <NewsletterArchive />
+        {/* Newsletter — signup + previous issues */}
+        <section className="space-y-6">
+          <EmailCapture />
+          <NewsletterArchive />
+        </section>
 
         {/* Community Reports */}
         <CommunitySection />
