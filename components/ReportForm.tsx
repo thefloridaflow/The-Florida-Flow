@@ -6,6 +6,7 @@ type FormState = {
   name: string
   dive_site: string
   visibility_ft: string
+  visibility_ft_max: string
   current_strength: string
   notes: string
 }
@@ -14,6 +15,7 @@ const INITIAL: FormState = {
   name: '',
   dive_site: '',
   visibility_ft: '',
+  visibility_ft_max: '',
   current_strength: '',
   notes: '',
 }
@@ -39,6 +41,7 @@ export default function ReportForm({ onSuccess }: { onSuccess: () => void }) {
         body: JSON.stringify({
           ...form,
           visibility_ft: Number(form.visibility_ft),
+          visibility_ft_max: form.visibility_ft_max !== '' ? Number(form.visibility_ft_max) : null,
         }),
       })
       if (!res.ok) {
@@ -90,17 +93,30 @@ export default function ReportForm({ onSuccess }: { onSuccess: () => void }) {
         </div>
         <div>
           <label className="block text-xs text-cyan-400 uppercase tracking-wider font-medium mb-1">Visibility (ft)</label>
-          <input
-            name="visibility_ft"
-            value={form.visibility_ft}
-            onChange={handleChange}
-            required
-            type="number"
-            min="0"
-            max="200"
-            placeholder="30"
-            className={inputClass}
-          />
+          <div className="flex items-center gap-2">
+            <input
+              name="visibility_ft"
+              value={form.visibility_ft}
+              onChange={handleChange}
+              required
+              type="number"
+              min="0"
+              max="200"
+              placeholder="min"
+              className={inputClass}
+            />
+            <span className="text-slate-500 text-sm shrink-0">to</span>
+            <input
+              name="visibility_ft_max"
+              value={form.visibility_ft_max}
+              onChange={handleChange}
+              type="number"
+              min="0"
+              max="200"
+              placeholder="max (opt)"
+              className={inputClass}
+            />
+          </div>
         </div>
         <div>
           <label className="block text-xs text-cyan-400 uppercase tracking-wider font-medium mb-1">Current Strength</label>

@@ -23,6 +23,7 @@ export type CommunityReport = {
   name: string
   dive_site: string
   visibility_ft: number
+  visibility_ft_max: number | null
   current_strength: 'None' | 'Light' | 'Moderate' | 'Strong'
   notes: string
 }

@@ -48,7 +48,7 @@ export default function ReportsList({ reports }: { reports: CommunityReport[] })
 
           <div className="flex flex-wrap gap-2 mb-2">
             <span className="text-sm bg-slate-700 text-white px-2 py-0.5 rounded-full">
-              👁 {r.visibility_ft} ft — {visibilityLabel(r.visibility_ft)}
+              👁 {r.visibility_ft_max ? `${r.visibility_ft}–${r.visibility_ft_max}` : r.visibility_ft} ft — {visibilityLabel(r.visibility_ft_max ?? r.visibility_ft)}
             </span>
             <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${CURRENT_COLORS[r.current_strength] ?? 'bg-slate-700 text-slate-300'}`}>
               ↔ {r.current_strength} current
