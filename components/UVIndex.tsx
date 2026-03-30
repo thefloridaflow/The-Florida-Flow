@@ -42,7 +42,7 @@ export default function UVIndex({ uv }: { uv: UVData }) {
         <span className="text-2xl">🌤️</span>
         <div>
           <h3 className="text-white font-bold text-lg">UV Index</h3>
-          <p className="text-slate-400 text-sm">West Palm Beach · {uv.date}</p>
+          <p className="text-slate-400 text-sm">West Palm Beach · {uv.date ? new Date(uv.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : ''}</p>
         </div>
       </div>
 
