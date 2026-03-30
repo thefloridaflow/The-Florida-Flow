@@ -28,7 +28,8 @@ const MOCK_VERIFIED_REPORT = {
 function VerifiedReportCard() {
   return (
     <div className="bg-slate-800 border border-cyan-700/40 rounded-xl p-4 relative">
-      <div className="absolute top-3 right-3">
+      <div className="absolute top-3 right-3 flex items-center gap-1.5">
+        <span className="text-[10px] bg-yellow-900/50 text-yellow-400 border border-yellow-700/40 px-1.5 py-0.5 rounded-full font-semibold">TEST</span>
         <span className="text-[10px] bg-cyan-900/50 text-cyan-400 border border-cyan-700/40 px-1.5 py-0.5 rounded-full font-semibold">✓ VERIFIED</span>
       </div>
       <div className="mb-2">
