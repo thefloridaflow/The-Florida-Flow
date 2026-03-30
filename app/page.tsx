@@ -1,12 +1,12 @@
 import { fetchAllBuoys, fetchTides, fetchMarineForecast, fetchUVIndex, fetchCurrents } from '@/lib/noaa'
 import BuoyCard from '@/components/BuoyCard'
-import TidePanel from '@/components/TidePanel'
 import ForecastPanel from '@/components/ForecastPanel'
 import CommunitySection from '@/components/CommunitySection'
 import RegionalConditionsTable from '@/components/RegionalConditionsTable'
 import ActivityVerdicts from '@/components/ActivityVerdicts'
 import BHBBanner from '@/components/BHBBanner'
-import BHBTideWindows from '@/components/BHBTideWindows'
+import TidesAndDiveWindows from '@/components/TidesAndDiveWindows'
+import OperatorLogs from '@/components/OperatorLogs'
 import EmailCapture from '@/components/EmailCapture'
 import NewsletterArchive from '@/components/NewsletterArchive'
 import SunTimes from '@/components/SunTimes'
@@ -83,13 +83,17 @@ export default async function HomePage() {
           <SunTimes />
         </section>
 
-        {/* Tides · Forecast · Currents · BHB Windows */}
+        {/* Tides · Forecast · Currents (tides include BHB dive windows) */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <TidePanel tides={tides} />
+          <div className="lg:col-span-2">
+            <TidesAndDiveWindows tides={tides} />
+          </div>
           <ForecastPanel forecast={forecast} />
           <CurrentPanel current={current} />
-          <BHBTideWindows />
         </section>
+
+        {/* Operator Logs */}
+        <OperatorLogs />
 
         {/* Newsletter archive */}
         <NewsletterArchive />

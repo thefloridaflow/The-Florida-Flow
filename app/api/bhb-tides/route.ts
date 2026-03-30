@@ -82,15 +82,8 @@ export async function GET() {
     const days: BHBDay[] = []
     let match: RegExpExecArray | null
 
-    // Collect next 4 days starting today
+    // Collect today and tomorrow only
     const targets = new Set([todayStr, tomorrowStr])
-    for (let i = 2; i <= 3; i++) {
-      const d = new Date(now)
-      d.setDate(d.getDate() + i)
-      const dm = parseInt(d.toLocaleDateString('en-US', { ...etOpts, month: 'numeric' }))
-      const dd = parseInt(d.toLocaleDateString('en-US', { ...etOpts, day: 'numeric' }))
-      targets.add(`${String(dm).padStart(2,'0')}/${String(dd).padStart(2,'0')}`)
-    }
 
     while ((match = rowRe.exec(html)) !== null) {
       const cells = [...match[1].matchAll(/<td([^>]*)>([\s\S]*?)<\/td>/g)]
