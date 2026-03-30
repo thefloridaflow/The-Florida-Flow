@@ -7,6 +7,7 @@ import RegionalConditionsTable from '@/components/RegionalConditionsTable'
 import ActivityVerdicts from '@/components/ActivityVerdicts'
 import BHBBanner from '@/components/BHBBanner'
 import EmailCapture from '@/components/EmailCapture'
+import NewsletterArchive from '@/components/NewsletterArchive'
 import SunTimes from '@/components/SunTimes'
 import UVIndex from '@/components/UVIndex'
 import CurrentPanel from '@/components/CurrentPanel'
@@ -85,7 +86,8 @@ export default async function HomePage() {
         {/* BHB Site Guide */}
         <BHBBanner />
 
-        {/* Newsletter */}
+        {/* Newsletter archive + email capture */}
+        <NewsletterArchive />
         <EmailCapture />
 
         {/* Community Reports */}
