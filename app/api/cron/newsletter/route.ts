@@ -141,7 +141,7 @@ Generate a complete HTML newsletter following EXACTLY the structure and CSS belo
 - Tag estimated/predicted data with <span class="tag-pred">PREDICTED</span>
 - Marine Life Sighting Alert: ONLY include species/sightings explicitly mentioned in operator reports above. If operator reports are empty or have no sightings, say "No operator sightings reported today — check back tomorrow."
 - Week Outlook: derive day-by-day from the NWS forecast text above. Use color spans matching the template.
-- Advisory/warning bars: only include if conditions genuinely warrant (SCA, rough seas, high UV, etc.)
+- Advisory/warning bars: only include if there is an ACTIVE NWS advisory (SCA, Gale Warning, etc.) explicitly in the forecast text above. A passing shower or isolated storm does NOT warrant a warning bar. Never write "STRONG SHOWER" or dramatize routine weather. Use exact NWS advisory language only.
 - Poll question: rotate through these topics — rip currents, best local dive site, how readers check conditions, favorite activity, favorite Keys destination
 - Do not add any markdown, commentary, or text outside the HTML
 
@@ -201,6 +201,10 @@ Generate a complete HTML newsletter following EXACTLY the structure and CSS belo
   <div class="masthead-issue">Issue #${issueNumber}</div>
   <div class="issue-date">${etLong}</div>
 
+  <div style="background:#eaf4fb; border:1px solid #b0d4ec; border-radius:6px; padding:10px 16px; margin-bottom:20px; font-family:Arial,sans-serif; font-size:13px; color:#0d3a55;">
+    Check live conditions anytime at <a href="https://the-florida-flow.vercel.app" style="color:#1a6fa0; font-weight:bold; text-decoration:none;">the-florida-flow.vercel.app</a> — buoys, tides, dive windows, UV, and more. Updated hourly.
+  </div>
+
   [ADVISORY BAR if SCA or notable warning — omit entirely if conditions are calm]
   [WARNING BAR if severe or already rough offshore — omit entirely if not warranted]
 
@@ -228,7 +232,7 @@ Generate a complete HTML newsletter following EXACTLY the structure and CSS belo
   <p class="sources-line">[List all data sources with station IDs, observation times UTC, and any operator confirmations. Format like: "Sources: NOAA AMZ630 issued [time]. Buoy 41114 observed [time] UTC. LKWF1 observed [time] UTC. [Operator] confirmed [date]."]</p>
 
   <div class="product-box">
-    First time at BHB? <strong>The Florida Flow BHB Site Guide</strong> covers tide strategy, marine life by season, best entry points, and what to expect underwater. Free with 3 referrals or $12. <a href="https://the-florida-flow.vercel.app">Get it here</a>
+    First time at BHB? <strong>The Florida Flow BHB Site Guide</strong> covers tide strategy, marine life by season, best entry points, and what to expect underwater. Free with 3 referrals or $12. <a href="https://idiveflorida.com/BlueHeronBridgeTideTableChart.php">Check the full tide table here →</a>
   </div>
 
   <div class="section-title">Today on the Water — By Activity</div>
