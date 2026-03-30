@@ -112,10 +112,8 @@ export default async function HomePage() {
           <a href="https://idiveflorida.com/BlueHeronBridgeTideTableChart.php" className="text-slate-500 hover:text-slate-300 transition-colors" target="_blank" rel="noopener noreferrer">iDiveFlorida</a>
         </p>
         <p>
-          For informational purposes only. Not intended for navigation or as a substitute for official marine forecasts.
-          Always check{' '}
-          <a href="https://www.weather.gov/mfl/" className="text-slate-500 hover:text-slate-300 transition-colors" target="_blank" rel="noopener noreferrer">NWS Miami</a>{' '}
-          before heading out. Community reports are user-submitted and unverified.
+          For informational purposes only. Always confirm conditions with your captain or dive operator before heading out.
+          Use at your own risk. Community reports are user-submitted and unverified.
         </p>
       </footer>
     </div>
