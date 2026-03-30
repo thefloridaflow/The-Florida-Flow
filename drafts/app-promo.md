@@ -12,7 +12,7 @@ preview: Live buoys, tides, BHB windows, operator reports — one page, updated 
 
 You're already getting the daily newsletter. Now there's a place to check conditions any time — not just at 5am when the email lands.
 
-**[The Florida Flow dashboard](https://thefloridaflow.com)** pulls everything together in one page, updated every hour:
+**[The Florida Flow dashboard](https://the-florida-flow.vercel.app)** pulls everything together in one page, updated every hour:
 
 **Live NOAA buoy data** across 6 stations — Cape Canaveral to the Keys. Wave height, period, water temp, wind. The numbers, not a vibe.
 
@@ -30,7 +30,7 @@ It's free. No login. No app to install.
 
 Bookmark it. Put it on your home screen. Check it before every session.
 
-**[→ Open the dashboard](https://thefloridaflow.com)**
+**[→ Open the dashboard](https://the-florida-flow.vercel.app)**
 
 ---
 
