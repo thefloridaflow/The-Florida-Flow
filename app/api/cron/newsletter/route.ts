@@ -136,14 +136,20 @@ ${forecast.forecast || 'Unavailable'}
 
 === INSTRUCTIONS ===
 Generate a complete HTML newsletter following EXACTLY the structure and CSS below.
-- Only use data from the sections above
-- Tag observed buoy data with <span class="tag-obs">OBSERVED</span>
-- Tag estimated/predicted data with <span class="tag-pred">PREDICTED</span>
-- Marine Life Sighting Alert: ONLY include species/sightings explicitly mentioned in operator reports above. If operator reports are empty or have no sightings, say "No operator sightings reported today — check back tomorrow."
-- Week Outlook: derive day-by-day from the NWS forecast text above. Use color spans matching the template.
-- Advisory/warning bars: only include if there is an ACTIVE NWS advisory (SCA, Gale Warning, etc.) explicitly in the forecast text above. A passing shower or isolated storm does NOT warrant a warning bar. Never write "STRONG SHOWER" or dramatize routine weather. Use exact NWS advisory language only.
-- Poll question: rotate through these topics — rip currents, best local dive site, how readers check conditions, favorite activity, favorite Keys destination
-- Do not add any markdown, commentary, or text outside the HTML
+
+TONE AND ACCURACY RULES (non-negotiable):
+- Report data only. Never tell readers whether to go out, seek shelter, or make any judgment call. That is the captain's call. End notes with "verify with your operator" or "check with your captain" — never with a directive.
+- Never open with emergency language. The first sentence of the newsletter must describe conditions factually, not issue warnings.
+- Every sea height cited from a buoy MUST include the buoy's distance offshore: e.g. "buoy 41114 (20 nm offshore) reading 8.9 ft — nearshore conditions will be smaller." Offshore buoy readings are NOT nearshore conditions.
+- Never present far-offshore forecast peaks (e.g. "17 ft occasionally") as if they apply to nearshore or inshore waters. If you cite an offshore peak, note it is for waters 20-60 nm from shore.
+- Advisory/warning bars: only if there is an ACTIVE NWS advisory (SCA, Gale Warning, etc.) explicitly named in the forecast text. Use exact NWS language. No dramatic rewrites.
+- No opinion on whether conditions are "diveable," "fishable," or safe. Report the numbers. Captains decide.
+- Activity verdicts: state observed/forecast conditions per activity — no "Poor/Dangerous" labels. Use "Elevated," "Building," "Calm," "Marginal" based purely on data.
+- Marine Life Sighting Alert: ONLY include species/sightings explicitly in operator reports. If none, say "No confirmed sightings today."
+- Week Outlook: derive day-by-day from NWS forecast text only. Do not extrapolate beyond what the forecast says.
+- Tag observed buoy data with <span class="tag-obs">OBSERVED</span>, estimated/predicted with <span class="tag-pred">PREDICTED</span>.
+- Poll question: rotate — rip currents, best local dive site, how readers check conditions, favorite activity, favorite Keys destination.
+- Do not add any markdown, commentary, or text outside the HTML.
 
 === HTML TEMPLATE (fill in the [BRACKETS], keep all CSS and classes exactly) ===
 <!DOCTYPE html>
