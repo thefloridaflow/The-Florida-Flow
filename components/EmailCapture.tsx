@@ -27,46 +27,41 @@ export default function EmailCapture() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-cyan-900/40 to-slate-800 border border-cyan-800/50 rounded-2xl p-6 shadow-lg">
-      <div className="flex items-start gap-4">
-        <span className="text-3xl">🌊</span>
-        <div className="flex-1">
-          <h3 className="text-white font-bold text-lg leading-tight">The Florida Flow Newsletter</h3>
-          <p className="text-slate-400 text-sm mt-1 mb-4">
-            Weekly conditions, dive reports, and what&apos;s worth getting in the water for — straight to your inbox.
-          </p>
-
-          {state === 'done' && (
-            <p className="text-emerald-400 text-sm font-medium">You&apos;re in! Check your inbox for a confirmation.</p>
-          )}
-          {state === 'already' && (
-            <p className="text-cyan-400 text-sm font-medium">You&apos;re already subscribed — we&apos;ll see you in the next issue.</p>
-          )}
-          {state === 'error' && (
-            <p className="text-red-400 text-sm">{errMsg}</p>
-          )}
-
-          {state !== 'done' && state !== 'already' && (
-            <form onSubmit={handleSubmit} className="flex gap-2">
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                placeholder="your@email.com"
-                className="flex-1 bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 placeholder-slate-500"
-              />
-              <button
-                type="submit"
-                disabled={state === 'loading'}
-                className="shrink-0 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-600 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors"
-              >
-                {state === 'loading' ? '...' : 'Subscribe'}
-              </button>
-            </form>
-          )}
-        </div>
+    <div className="bg-slate-800/60 border border-slate-700 rounded-2xl px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div className="flex-1 min-w-0">
+        <p className="text-white font-semibold text-sm">📬 The Florida Flow Newsletter</p>
+        <p className="text-slate-400 text-xs mt-0.5">Weekly conditions, dive reports &amp; what&apos;s worth getting in the water for.</p>
       </div>
+
+      {state === 'done' && (
+        <p className="text-emerald-400 text-sm font-medium shrink-0">You&apos;re in! 🤙</p>
+      )}
+      {state === 'already' && (
+        <p className="text-cyan-400 text-sm shrink-0">Already subscribed!</p>
+      )}
+      {state === 'error' && (
+        <p className="text-red-400 text-xs shrink-0">{errMsg}</p>
+      )}
+
+      {state !== 'done' && state !== 'already' && (
+        <form onSubmit={handleSubmit} className="flex gap-2 w-full sm:w-auto shrink-0">
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+            placeholder="your@email.com"
+            className="flex-1 sm:w-48 bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 placeholder-slate-500"
+          />
+          <button
+            type="submit"
+            disabled={state === 'loading'}
+            className="shrink-0 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-600 text-white font-semibold px-4 py-1.5 rounded-lg text-sm transition-colors"
+          >
+            {state === 'loading' ? '...' : 'Subscribe'}
+          </button>
+        </form>
+      )}
     </div>
   )
 }

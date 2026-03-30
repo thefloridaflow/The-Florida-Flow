@@ -45,6 +45,9 @@ export default async function HomePage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-10">
+        {/* Newsletter strip */}
+        <EmailCapture />
+
         {/* Buoy conditions */}
         <section>
           <div className="flex items-center gap-2 mb-5">
@@ -70,6 +73,9 @@ export default async function HomePage() {
         {/* By Activity */}
         <ActivityVerdicts buoys={buoys} />
 
+        {/* BHB Site Guide */}
+        <BHBBanner />
+
         {/* UV · Sun Times */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <UVIndex uv={uv} />
@@ -83,12 +89,8 @@ export default async function HomePage() {
           <CurrentPanel current={current} />
         </section>
 
-        {/* BHB Site Guide */}
-        <BHBBanner />
-
-        {/* Newsletter archive + email capture */}
+        {/* Newsletter archive */}
         <NewsletterArchive />
-        <EmailCapture />
 
         {/* Community Reports */}
         <CommunitySection />
