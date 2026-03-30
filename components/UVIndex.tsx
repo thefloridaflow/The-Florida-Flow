@@ -71,26 +71,36 @@ export default function UVIndex({ uv }: { uv: UVData }) {
 
       <p className="text-slate-400 text-sm">{band.advice}</p>
 
-      {uv.hourly.length > 0 && (
-        <div className="mt-4">
-          <p className="text-xs text-slate-500 mb-2">Hourly</p>
-          <div className="flex items-end gap-0.5 h-14">
-            {uv.hourly.map(({ hour, value }) => {
-              const b = getBand(value)
-              const heightPct = Math.max((value / 11) * 100, 4)
-              return (
-                <div key={hour} className="flex-1 flex flex-col items-center gap-0.5" title={`${hour}: UV ${value}`}>
+      {(() => {
+        const daytime = uv.hourly.filter(h => h.value > 0)
+        if (daytime.length === 0) return null
+        return (
+          <div className="mt-4">
+            <p className="text-xs text-slate-500 mb-1">Hourly forecast</p>
+            {/* bars — fixed pixel heights so they render correctly in flex */}
+            <div className="flex items-end gap-0.5 mb-1" style={{ height: '40px' }}>
+              {daytime.map(({ hour, value }) => {
+                const b = getBand(value)
+                const h = Math.max(Math.round((value / 11) * 38), 2)
+                return (
                   <div
-                    className={`w-full rounded-sm ${b.bg} opacity-80 transition-all`}
-                    style={{ height: `${heightPct}%` }}
+                    key={hour}
+                    className={`flex-1 rounded-sm ${b.bg} opacity-80`}
+                    style={{ height: `${h}px` }}
+                    title={`${hour}: UV ${value}`}
                   />
-                  <span className="text-slate-600 text-[8px] leading-none">{hour}</span>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
+            {/* labels */}
+            <div className="flex gap-0.5">
+              {daytime.map(({ hour }) => (
+                <div key={hour} className="flex-1 text-center text-[8px] text-slate-600 leading-none truncate">{hour}</div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
     </div>
   )
 }

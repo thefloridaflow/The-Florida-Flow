@@ -47,10 +47,16 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     return 'Rough'
   })()
   const divingDetail = (() => {
-    const parts: string[] = []
-    if (waveHt !== null) parts.push(`${offshore!.waveHeight} ft offshore`)
-    if (windKt !== null) parts.push(`${inshore?.windSpeed ?? offshore?.windSpeed} kt wind`)
-    return parts.join(' · ') || 'Buoy data unavailable'
+    if (waveHt === null && windKt === null) return 'No buoy data — check local conditions before diving.'
+    const wh = waveHt ?? 0; const ws = windKt ?? 0
+    const seas = waveHt !== null ? `${offshore!.waveHeight} ft seas` : ''
+    const wind = windKt !== null ? `${ws.toFixed(1)} kt wind` : ''
+    const base = [seas, wind].filter(Boolean).join(', ')
+    if (wh < 1.5 && ws < 12)
+      return `${base} — calm and clear. Shore dives like BHB should be easy. Excellent visibility conditions expected.`
+    if (wh < 2.5 && ws < 20)
+      return `${base} — manageable for experienced divers. Shore entry sites may have light surge; boat dives comfortable. Check viz locally.`
+    return `${base} — rough conditions. Strong surge expected at shore entry sites. Boat dives with caution; poor nearshore visibility likely.`
   })()
 
   // ── Surfing ───────────────────────────────────────────────────
@@ -63,18 +69,22 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     return 'Rough'
   })()
   const surfDetail = (() => {
-    if (waveHt === null) return 'Buoy data unavailable'
+    if (waveHt === null) return 'No buoy data — check local surf reports.'
     const pd = wavePd !== null ? ` @ ${offshore!.wavePeriod}s` : ''
     let quality = ''
+    let advice = ''
     if (wavePd !== null) {
-      if (wavePd >= 12)      quality = 'long-period groundswell · clean lines'
-      else if (wavePd >= 8)  quality = 'moderate period · decent shape'
-      else                   quality = 'short period · wind chop'
+      if (wavePd >= 12)      { quality = 'long-period groundswell'; advice = 'Expect clean, punchy lines — best conditions.' }
+      else if (wavePd >= 8)  { quality = 'moderate period'; advice = 'Decent shape, some texture possible.' }
+      else                   { quality = 'short period wind chop'; advice = 'Bumpy, difficult to read — boards with volume preferred.' }
     }
-    const windNote = windKt !== null
-      ? windKt > 20 ? ' · strong onshore wind' : windKt < 8 ? ' · light wind (offshore likely)' : ''
+    const windNote = windKt !== null && windKt > 20
+      ? ' Strong onshore wind adding chop to the face.'
+      : windKt !== null && windKt < 8
+      ? ' Light wind likely glassy or offshore.'
       : ''
-    return `${offshore!.waveHeight} ft${pd} · ${quality || offshore!.name}${windNote}`
+    const sizeNote = waveHt < 1.5 ? 'Too small for most. Longboard or foil only.' : waveHt > 8 ? 'Dangerously large — experts only.' : ''
+    return `${offshore!.waveHeight} ft${pd}${quality ? ` · ${quality}` : ''}. ${advice}${windNote}${sizeNote ? ' ' + sizeNote : ''}`.trim()
   })()
 
   // ── Kayak / SUP ───────────────────────────────────────────────
@@ -87,10 +97,14 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     return 'Rough'
   })()
   const kayakDetail = (() => {
-    const parts: string[] = []
-    if (waveHt !== null) parts.push(`${offshore!.waveHeight} ft seas`)
-    if (windKt !== null) parts.push(`${windKt.toFixed(1)} kt wind`)
-    return parts.join(' · ') || 'Buoy data unavailable'
+    if (waveHt === null && windKt === null) return 'No buoy data — use caution on open water.'
+    const wh = waveHt ?? 0; const ws = windKt ?? 0
+    const base = [waveHt !== null ? `${offshore!.waveHeight} ft seas` : '', windKt !== null ? `${ws.toFixed(1)} kt wind` : ''].filter(Boolean).join(', ')
+    if (wh < 1.5 && ws < 12)
+      return `${base} — ideal paddling conditions. Ocean launches comfortable; all skill levels can head out.`
+    if (wh < 3 && ws < 18)
+      return `${base} — open water manageable for intermediate paddlers. ICW and inlets recommended for beginners. Watch for afternoon wind chop.`
+    return `${base} — open water unsafe for most kayaks and SUPs. Stay in the ICW, inlets, or sheltered bays only.`
   })()
 
   // ── Boating / Fishing ─────────────────────────────────────────
@@ -103,10 +117,14 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     return 'Rough'
   })()
   const boatDetail = (() => {
-    const parts: string[] = []
-    if (waveHt !== null) parts.push(`${offshore!.waveHeight} ft seas`)
-    if (windKt !== null) parts.push(`${windKt.toFixed(1)} kt wind`)
-    return parts.join(' · ') || 'Buoy data unavailable'
+    if (waveHt === null && windKt === null) return 'No buoy data — check NWS marine forecast before heading out.'
+    const wh = waveHt ?? 0; const ws = windKt ?? 0
+    const base = [waveHt !== null ? `${offshore!.waveHeight} ft seas` : '', windKt !== null ? `${ws.toFixed(1)} kt wind` : ''].filter(Boolean).join(', ')
+    if (wh < 2 && ws < 15)
+      return `${base} — comfortable offshore run. Reefs and wrecks accessible. Good day for inshore and offshore fishing.`
+    if (wh < 4 && ws < 20)
+      return `${base} — manageable in vessels 20 ft+. Small craft use caution. Inshore reefs and nearshore wrecks fishable; offshore may be bumpy.`
+    return `${base} — small craft advisory conditions likely. Offshore not recommended. Inshore inlets and nearshore reefs only; secure all gear.`
   })()
 
   // ── Beach / Swimming ──────────────────────────────────────────
@@ -119,9 +137,15 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     if (beachWave < 3.5) return 'Marginal'
     return 'Rough'
   })()
-  const beachDetail = beachWave !== null
-    ? `${beachWave.toFixed(1)} ft offshore · calmer nearshore`
-    : 'Buoy data unavailable'
+  const beachDetail = (() => {
+    if (beachWave === null) return 'No buoy data — check local beach conditions.'
+    const ws = windKt ?? 0
+    if (beachWave < 2)
+      return `${beachWave.toFixed(1)} ft offshore — calm shore break, safe swimming. Low rip current risk. Great for families and snorkeling.`
+    if (beachWave < 3.5)
+      return `${beachWave.toFixed(1)} ft offshore — moderate shore break with possible rip currents. Swim near lifeguard towers; heed flag warnings.`
+    return `${beachWave.toFixed(1)} ft offshore${ws > 18 ? `, ${ws.toFixed(1)} kt wind` : ''} — rough shore break and high rip current risk. Flag conditions likely Red. Avoid swimming; wading only with extreme caution.`
+  })()
 
   return [
     { activity: 'Scuba Diving',      icon: '🤿', rating: divingRating, detail: divingDetail },
