@@ -6,7 +6,8 @@ export default function ForecastPanel({ forecast }: { forecast: MarineForecast }
   const updated = forecast.updated
     ? new Date(forecast.updated).toLocaleString('en-US', {
         month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true,
-      })
+        timeZone: 'America/New_York',
+      }) + ' ET'
     : 'Unknown'
 
   return (

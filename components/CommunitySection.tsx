@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { CommunityReport } from '@/lib/supabase'
 import ReportForm from './ReportForm'
 import ReportsList from './ReportsList'
@@ -9,6 +9,7 @@ export default function CommunitySection() {
   const [reports, setReports] = useState<CommunityReport[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [siteFilter, setSiteFilter] = useState<string>('all')
 
   const fetchReports = useCallback(async () => {
     try {
@@ -27,6 +28,16 @@ export default function CommunitySection() {
     fetchReports()
   }, [fetchReports])
 
+  const sites = useMemo(() => {
+    const s = new Set(reports.map(r => r.dive_site.trim()))
+    return Array.from(s).sort()
+  }, [reports])
+
+  const filtered = useMemo(
+    () => siteFilter === 'all' ? reports : reports.filter(r => r.dive_site.trim() === siteFilter),
+    [reports, siteFilter],
+  )
+
   return (
     <section className="space-y-6">
       <div className="flex items-center gap-3">
@@ -39,13 +50,29 @@ export default function CommunitySection() {
       <ReportForm onSuccess={fetchReports} />
 
       <div>
-        <h3 className="text-slate-300 font-semibold mb-3">Recent Reports</h3>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <h3 className="text-slate-300 font-semibold">Recent Reports</h3>
+          {sites.length > 1 && (
+            <select
+              value={siteFilter}
+              onChange={e => setSiteFilter(e.target.value)}
+              className="bg-slate-700 text-slate-200 text-sm rounded-lg px-3 py-1.5 border border-slate-600 focus:outline-none focus:border-cyan-500"
+            >
+              <option value="all">All sites ({reports.length})</option>
+              {sites.map(s => (
+                <option key={s} value={s}>
+                  {s} ({reports.filter(r => r.dive_site.trim() === s).length})
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
         {loading ? (
           <div className="text-slate-500 text-sm py-6 text-center">Loading reports...</div>
         ) : error ? (
           <div className="text-red-400 text-sm py-6 text-center">Error: {error}</div>
         ) : (
-          <ReportsList reports={reports} />
+          <ReportsList reports={filtered} />
         )}
       </div>
     </section>

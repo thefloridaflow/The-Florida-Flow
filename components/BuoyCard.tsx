@@ -52,7 +52,7 @@ export default function BuoyCard({ buoy }: { buoy: BuoyData }) {
         </div>
       )}
 
-      <p className="text-xs text-slate-500 mt-4">Updated: {buoy.updated}</p>
+      <p className="text-xs text-slate-500 mt-4">Updated: {new Date(buoy.updated).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' })} ET</p>
     </div>
   )
 }

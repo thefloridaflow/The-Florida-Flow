@@ -1,18 +1,27 @@
-import { fetchAllBuoys, fetchTides, fetchMarineForecast } from '@/lib/noaa'
+import { fetchAllBuoys, fetchTides, fetchMarineForecast, fetchUVIndex, fetchCurrents } from '@/lib/noaa'
 import BuoyCard from '@/components/BuoyCard'
 import TidePanel from '@/components/TidePanel'
 import ForecastPanel from '@/components/ForecastPanel'
 import CommunitySection from '@/components/CommunitySection'
+import RegionalConditionsTable from '@/components/RegionalConditionsTable'
+import ActivityVerdicts from '@/components/ActivityVerdicts'
+import BHBBanner from '@/components/BHBBanner'
+import VisibilityEstimate from '@/components/VisibilityEstimate'
+import SunTimes from '@/components/SunTimes'
+import UVIndex from '@/components/UVIndex'
+import CurrentPanel from '@/components/CurrentPanel'
 
 // Render dynamically at request time; each underlying fetch() call uses
 // next: { revalidate: 3600 } so NOAA data is cached for 1 hour by Next.js.
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const [buoys, tides, forecast] = await Promise.all([
+  const [buoys, tides, forecast, uv, current] = await Promise.all([
     fetchAllBuoys(),
     fetchTides(),
     fetchMarineForecast(),
+    fetchUVIndex(),
+    fetchCurrents(),
   ])
 
   return (
@@ -54,11 +63,28 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Tides + Forecast */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Regional Conditions */}
+        <RegionalConditionsTable buoys={buoys} />
+
+        {/* By Activity */}
+        <ActivityVerdicts buoys={buoys} />
+
+        {/* Visibility · UV · Sun Times */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <VisibilityEstimate buoys={buoys} />
+          <UVIndex uv={uv} />
+          <SunTimes />
+        </section>
+
+        {/* Tides · Forecast · Currents */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <TidePanel tides={tides} />
           <ForecastPanel forecast={forecast} />
+          <CurrentPanel current={current} />
         </section>
+
+        {/* BHB Site Guide */}
+        <BHBBanner />
 
         {/* Community Reports */}
         <CommunitySection />

@@ -31,6 +31,22 @@ export type MarineForecast = {
   error?: string
 }
 
+export type UVData = {
+  uvIndex: number
+  uvAlert: boolean
+  date: string
+  error?: string
+}
+
+export type CurrentData = {
+  station: string
+  name: string
+  speed: string   // knots
+  direction: string  // compass
+  updated: string
+  error?: string
+}
+
 const BUOY_STATIONS: Record<string, { name: string; region: string }> = {
   '41009': { name: 'Canaveral', region: 'East of Cape Canaveral, FL' },
   '41046': { name: 'East Bahamas', region: 'Bahamas' },
@@ -38,6 +54,7 @@ const BUOY_STATIONS: Record<string, { name: string; region: string }> = {
   '41122': { name: 'Fort Lauderdale', region: 'Fort Lauderdale Offshore' },
   'LKWF1': { name: 'Lake Worth', region: 'Lake Worth Inshore' },
   'SMKF1': { name: 'Sombrero Key', region: 'Florida Keys' },
+  'SPGF1': { name: 'Settlement Point', region: 'Grand Bahama' },
 }
 
 function metersToFeet(m: string | number): string {
@@ -75,7 +92,10 @@ export async function fetchBuoyData(stationId: string): Promise<BuoyData> {
     const wvht = parts[8] !== 'MM' ? metersToFeet(parts[8]) : null
     const dpd  = parts[9] !== 'MM' ? parts[9] : null
     const wtmp = parts[14] !== 'MM' ? celsiusToFahrenheit(parts[14]) : null
-    const updated = `${parts[2]}/${parts[1]}/${parts[0]} ${parts[3]}:${parts[4]} UTC`
+    const updated = new Date(Date.UTC(
+      2000 + parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]),
+      parseInt(parts[3]), parseInt(parts[4]),
+    )).toISOString()
     return {
       stationId,
       name: info.name,
@@ -136,6 +156,59 @@ export async function fetchTides(): Promise<TideData> {
     return {
       station: stationId,
       predictions: [],
+      error: err instanceof Error ? err.message : 'Unknown error',
+    }
+  }
+}
+
+export async function fetchUVIndex(): Promise<UVData> {
+  // EPA Envirofacts UV forecast for West Palm Beach, FL (ZIP 33401)
+  try {
+    const url = 'https://data.epa.gov/dmapservice/getEnvirofactsUVDAILY/ZIP/33401/JSON'
+    const res = await fetch(url, { next: { revalidate: 3600 }, signal: AbortSignal.timeout(15000) })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const json = await res.json()
+    const record = json[0]
+    if (!record) throw new Error('No UV data')
+    return {
+      uvIndex: parseInt(record.UV_INDEX, 10),
+      uvAlert: record.UV_ALERT === '1',
+      date: record.DATE,
+    }
+  } catch (err) {
+    return {
+      uvIndex: 0,
+      uvAlert: false,
+      date: '',
+      error: err instanceof Error ? err.message : 'Unknown error',
+    }
+  }
+}
+
+export async function fetchCurrents(): Promise<CurrentData> {
+  // NOAA CO-OPS PORTS station pe0101 — Port Everglades, Fort Lauderdale
+  try {
+    const url = 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=pe0101&product=currents&date=latest&units=english&time_zone=lst_ldt&format=json'
+    const res = await fetch(url, { next: { revalidate: 600 }, signal: AbortSignal.timeout(15000) })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const json = await res.json()
+    if (json.error) throw new Error(json.error.message)
+    const d = json.data?.[0]
+    if (!d) throw new Error('No current data')
+    return {
+      station: 'pe0101',
+      name: 'Port Everglades',
+      speed: parseFloat(d.s).toFixed(2),
+      direction: degreesToCompass(d.d),
+      updated: d.t,
+    }
+  } catch (err) {
+    return {
+      station: 'pe0101',
+      name: 'Port Everglades',
+      speed: '',
+      direction: '',
+      updated: '',
       error: err instanceof Error ? err.message : 'Unknown error',
     }
   }

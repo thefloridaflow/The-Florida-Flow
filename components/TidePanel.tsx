@@ -3,13 +3,18 @@
 import { TideData } from '@/lib/noaa'
 
 function formatTime(timeStr: string): string {
-  const date = new Date(timeStr)
-  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+  // NOAA returns times already in Eastern Time as "YYYY-MM-DD HH:MM" — parse manually
+  const [, time] = timeStr.split(' ')
+  const [h, m] = time.split(':').map(Number)
+  const ampm = h >= 12 ? 'PM' : 'AM'
+  return `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${ampm}`
 }
 
 function formatDate(timeStr: string): string {
-  const date = new Date(timeStr)
-  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+  const [year, month, day] = timeStr.split(' ')[0].split('-').map(Number)
+  return new Date(Date.UTC(year, month - 1, day, 12)).toLocaleDateString('en-US', {
+    weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC',
+  })
 }
 
 export default function TidePanel({ tides }: { tides: TideData }) {
@@ -23,7 +28,7 @@ export default function TidePanel({ tides }: { tides: TideData }) {
         <span className="text-2xl">🌊</span>
         <div>
           <h3 className="text-white font-bold text-lg">Tide Predictions</h3>
-          <p className="text-slate-400 text-sm">Lake Worth Inlet (Station 8722588)</p>
+          <p className="text-slate-400 text-sm">Blue Heron Bridge (Station 8722588)</p>
         </div>
       </div>
 
