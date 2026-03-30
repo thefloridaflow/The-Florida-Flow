@@ -37,9 +37,9 @@ function VerifiedReportCard() {
           <p className="text-slate-500 text-xs">{MOCK_VERIFIED_REPORT.location}</p>
           <p className="text-slate-600 text-xs">{MOCK_VERIFIED_REPORT.date}</p>
         </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-[10px] bg-yellow-900/50 text-yellow-400 border border-yellow-700/40 px-1.5 py-0.5 rounded-full font-semibold">TEST</span>
+        <div className="flex flex-col items-end gap-1 shrink-0">
           <span className="text-[10px] bg-cyan-900/50 text-cyan-400 border border-cyan-700/40 px-1.5 py-0.5 rounded-full font-semibold">✓ VERIFIED</span>
+          <span className="text-[10px] bg-yellow-900/50 text-yellow-400 border border-yellow-700/40 px-1.5 py-0.5 rounded-full font-semibold">TEST</span>
         </div>
       </div>
       <div className="space-y-1 mt-2">
@@ -115,7 +115,7 @@ export default function OperatorLogs() {
 
   return (
     <section>
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-6">
         <h2 className="text-xl font-bold text-white">Operator Logs</h2>
         <span className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-full">Dive shops & boats</span>
       </div>
