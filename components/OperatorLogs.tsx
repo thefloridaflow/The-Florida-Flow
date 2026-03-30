@@ -13,6 +13,43 @@ function Field({ label, value }: { label: string; value?: string }) {
   )
 }
 
+const MOCK_VERIFIED_REPORT = {
+  operator: 'Space Coast Dive Center',
+  location: 'Palm Bay, FL · Space Coast',
+  website: 'https://spacecoastdivecenter.com',
+  date: 'Today · 6:30 AM',
+  visibility: '40–60 ft',
+  waterTemp: '74°F',
+  current: 'Light — no issues',
+  waves: '1–2 ft',
+  notes: 'Great morning on the ledges. Saw a large loggerhead near the anchor line. Nitrox fills available, shop opens at 8.',
+}
+
+function VerifiedReportCard() {
+  return (
+    <div className="bg-slate-800 border border-cyan-700/40 rounded-xl p-4 relative">
+      <div className="absolute top-3 right-3">
+        <span className="text-[10px] bg-cyan-900/50 text-cyan-400 border border-cyan-700/40 px-1.5 py-0.5 rounded-full font-semibold">✓ VERIFIED</span>
+      </div>
+      <div className="mb-2">
+        <a href={MOCK_VERIFIED_REPORT.website} target="_blank" rel="noopener noreferrer"
+           className="text-white font-semibold text-sm hover:text-cyan-400 transition-colors">
+          {MOCK_VERIFIED_REPORT.operator}
+        </a>
+        <p className="text-slate-500 text-xs">{MOCK_VERIFIED_REPORT.location}</p>
+        <p className="text-slate-600 text-xs">{MOCK_VERIFIED_REPORT.date}</p>
+      </div>
+      <div className="space-y-1 mt-2">
+        <Field label="Visibility"  value={MOCK_VERIFIED_REPORT.visibility}  />
+        <Field label="Water temp"  value={MOCK_VERIFIED_REPORT.waterTemp}   />
+        <Field label="Current"     value={MOCK_VERIFIED_REPORT.current}     />
+        <Field label="Waves"       value={MOCK_VERIFIED_REPORT.waves}       />
+      </div>
+      <p className="text-slate-400 text-xs mt-2.5 leading-relaxed italic">"{MOCK_VERIFIED_REPORT.notes}"</p>
+    </div>
+  )
+}
+
 function ReportCard({ r }: { r: OperatorReport }) {
   if (r.linkOnly) {
     return (
@@ -88,6 +125,7 @@ export default function OperatorLogs() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <VerifiedReportCard />
           {reports.map(r => <ReportCard key={r.operator} r={r} />)}
         </div>
       )}
