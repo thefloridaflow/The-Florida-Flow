@@ -115,7 +115,7 @@ export default function OperatorLogs() {
 
   return (
     <section>
-      <div className="flex items-center gap-2 mb-6">
+      <div className="flex items-center gap-2 mb-5">
         <h2 className="text-xl font-bold text-white">Operator Logs</h2>
         <span className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-full">Dive shops & boats</span>
       </div>
