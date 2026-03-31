@@ -114,10 +114,8 @@ export default async function HomePage() {
         </section>
 
         {/* Featured (paid) operators */}
-        <div id="operators">
+        <div id="operators" className="space-y-6">
           <FeaturedOperators />
-
-          {/* Operator Logs */}
           <OperatorLogs />
         </div>
 
