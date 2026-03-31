@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://the-florida-flow.vercel.app/sitemap.xml
