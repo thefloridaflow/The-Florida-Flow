@@ -1,0 +1,243 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Florida Flow | Issue #15 | March 31, 2026</title>
+<style>
+  body { font-family: Georgia, serif; background: #f5f5f0; color: #1a1a1a; margin: 0; padding: 0; }
+  .wrapper { max-width: 680px; margin: 0 auto; background: #ffffff; padding: 40px 36px 48px 36px; }
+  .top-date { text-align: right; font-size: 13px; color: #888; margin-bottom: 6px; font-family: Arial, sans-serif; }
+  .masthead-title { font-size: 32px; font-weight: bold; color: #1a1a1a; margin: 0 0 4px 0; }
+  .masthead-sub { font-size: 13px; color: #666; margin: 0 0 4px 0; font-family: Arial, sans-serif; }
+  .masthead-issue { font-size: 15px; color: #555; margin: 0 0 28px 0; font-family: Arial, sans-serif; }
+  .issue-date { font-size: 15px; color: #333; margin-bottom: 20px; font-family: Arial, sans-serif; }
+  .advisory-bar { background: #fef9e7; border-left: 4px solid #e67e22; padding: 12px 16px; margin-bottom: 16px; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; color: #7d4a00; }
+  .warning-bar { background: #fdedec; border-left: 4px solid #c0392b; padding: 12px 16px; margin-bottom: 28px; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; color: #7b241c; }
+  .section-title { font-size: 18px; font-weight: bold; color: #1a1a1a; margin: 32px 0 12px 0; border-bottom: 2px solid #e0e0e0; padding-bottom: 6px; }
+  .headline-text { font-size: 15px; line-height: 1.7; color: #222; margin-bottom: 14px; }
+  .vis-note { background: #f9f9f6; border: 1px solid #ddd; padding: 12px 16px; font-size: 13px; color: #444; font-family: Arial, sans-serif; line-height: 1.6; margin-bottom: 18px; }
+  table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 10px; }
+  th { background: #1a1a1a; color: #ffffff; padding: 10px; text-align: left; font-weight: bold; }
+  td { padding: 10px; border-bottom: 1px solid #e8e8e8; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+  .region-name { font-weight: bold; color: #1a1a1a; }
+  .rating-good { color: #27ae60; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rating-marginal { color: #e67e22; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rating-rough { color: #c0392b; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tag-obs { display: inline-block; background: #d5f5e3; color: #1e8449; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 3px; margin-top: 3px; }
+  .tag-pred { display: inline-block; background: #fef9e7; color: #b7770d; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 3px; margin-top: 3px; }
+  .sources-line { font-size: 12px; color: #777; font-style: italic; font-family: Arial, sans-serif; line-height: 1.6; margin-top: 10px; margin-bottom: 28px; }
+  .sighting-box { background: #eafaf1; border-left: 4px solid #27ae60; padding: 14px 16px; font-family: Arial, sans-serif; font-size: 14px; color: #1a4a2a; line-height: 1.65; margin-bottom: 28px; }
+  .sighting-label { font-weight: bold; font-size: 13px; margin-bottom: 6px; }
+  .safety-box { background: #fdedec; border-left: 4px solid #c0392b; padding: 14px 16px; font-family: Arial, sans-serif; font-size: 14px; color: #7b241c; line-height: 1.65; margin-bottom: 28px; }
+  .safety-label { font-weight: bold; font-size: 13px; margin-bottom: 6px; }
+  .week-box { background: #f9f9f6; border: 1px solid #ddd; padding: 16px 18px; font-family: Arial, sans-serif; font-size: 14px; color: #1a1a1a; line-height: 1.9; margin-bottom: 28px; }
+  .referral-box { background: #eaf4fb; border-left: 4px solid #1a6fa0; padding: 16px 18px; font-family: Arial, sans-serif; font-size: 14px; color: #0d3a55; line-height: 1.65; margin-bottom: 28px; }
+  .referral-box strong { display: block; font-size: 15px; margin-bottom: 8px; }
+  .poll-box { background: #f0f4ff; border-left: 4px solid #3a6fa0; padding: 16px 18px; font-family: Arial, sans-serif; font-size: 14px; color: #1a2a4a; line-height: 1.65; margin-bottom: 28px; }
+  .poll-box strong { display: block; font-size: 15px; margin-bottom: 12px; }
+  .poll-option { background: #ffffff; border: 1px solid #c0d0e8; border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; font-size: 14px; color: #1a2a4a; }
+  .disclaimer-box { background: #f5f5f5; border: 1px solid #ddd; padding: 12px 16px; font-size: 12px; color: #666; font-family: Arial, sans-serif; line-height: 1.6; margin-bottom: 28px; }
+  .footer { text-align: center; font-size: 12px; color: #aaa; font-family: Arial, sans-serif; border-top: 1px solid #e0e0e0; padding-top: 20px; margin-top: 10px; }
+  .product-box { background: #f0fdf4; border-left: 4px solid #27ae60; padding: 12px 16px; font-family: Arial, sans-serif; font-size: 13px; color: #1a4a2a; line-height: 1.6; margin-bottom: 18px; }
+  .product-box a { color: #1a6fa0; font-weight: bold; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="top-date">March 31, 2026</div>
+  <div class="masthead-title">The Florida Flow</div>
+  <div class="masthead-sub">Daily ocean conditions for anyone on the water, Space Coast to Key Largo</div>
+  <div class="masthead-issue">Issue #15</div>
+  <div class="issue-date">Tuesday, March 31, 2026</div>
+
+  <div style="background:#eaf4fb; border:1px solid #b0d4ec; border-radius:6px; padding:10px 16px; margin-bottom:20px; font-family:Arial,sans-serif; font-size:13px; color:#0d3a55;">
+    Check live conditions anytime at <a href="https://the-florida-flow.vercel.app" style="color:#1a6fa0; font-weight:bold; text-decoration:none;">the-florida-flow.vercel.app</a> — buoys, tides, dive windows, UV, and more. Updated hourly.
+  </div>
+
+  <div class="advisory-bar">⚠️ STRONG SHOWER WARNING: A strong shower capable of winds to 30 knots was located 13 nm east of Hillsboro Beach as of 4:09 PM EDT, moving west at 15 knots. Waterspouts possible. Boaters should seek safe harbor immediately.</div>
+
+  <div class="section-title">Conditions Headline</div>
+  <p class="headline-text">A strong shower is moving westward toward the Florida coast this afternoon with locally gusty winds to 30 knots and the potential for waterspout development. Space Coast buoy 41009 (20 nm offshore) is reading 6.6 ft seas with 10-second period under 15.6 kt ESE winds — the largest seas of the day. Northward, Jupiter (buoy 41114, 12 nm offshore) shows 5.2 ft with 9-second period and water at 75.7°F. Southern regions show moderate building: Deerfield to Miami (buoy 41122, 23 nm offshore) reading 4.9 ft with 6-second period, water 77.2°F, while Upper Keys (buoy 42095, 15 nm offshore) remain tamest at 3.9 ft.</p>
+  <p class="headline-text">NWS issued a strong shower warning at 4:09 PM EDT affecting coastal waters from Jupiter Inlet to Ocean Reef FL out 20 nm, and waters 20–60 nm from Deerfield Beach to Ocean Reef. Mariners can expect gusty winds around 30 knots (locally higher), locally higher waves, lightning, and heavy downpours. Waterspouts are possible. The system is moving west at 15 knots. After passage, conditions are expected to moderate overnight and into Wednesday morning.</p>
+  <p class="headline-text">Narcosis Dive Center (West Palm Beach) confirmed conditions on March 28: 70–80 ft visibility, 75°F water, no current, 1 ft waves. Rainbow Reef in Key Largo did not post a report by this morning's update window.</p>
+  <p class="headline-text">Blue Heron Bridge tide windows today: 07:57 AM high (2.7 ft) with fair window 7:27–8:27 AM, and 08:22 PM high (2.9 ft) with fair window 7:52–8:52 PM. Both windows favor early morning or after the shower passes.</p>
+
+  <div class="section-title">Daily Data</div>
+
+  <div class="vis-note">
+    <strong>Data sourcing:</strong> All sea heights and temperatures are NOAA NDBC buoy observations recorded this morning. Visibility estimates are from confirmed operator reports (Narcosis, March 28) or derived from wave/swell data. Wind observations from NOAA buoys and LKWF1 station (Blue Heron Bridge area) are current as of this morning. Note: A strong shower is actively moving toward the coast; conditions may change rapidly through late afternoon. Always verify with your operator.
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Region</th><th>Conditions Rating</th><th>Vis</th><th>Temp</th><th>Seas</th><th>Wind / Note</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="region-name">Space Coast<br>(Cocoa Beach / Sebastian)</td>
+        <td><span class="rating-marginal">Building</span></td>
+        <td>20–30 ft<br><span class="tag-pred">PREDICTED</span></td>
+        <td>Not reported<br><span class="tag-pred">PREDICTED</span></td>
+        <td>6.6 ft, 10s<br><span class="tag-obs">OBSERVED</span></td>
+        <td>15.6 kt ESE (buoy 41009, 20 nm offshore)<br><span class="tag-obs">OBSERVED</span></td>
+      </tr>
+      <tr>
+        <td class="region-name">Jupiter / Tequesta</td>
+        <td><span class="rating-marginal">Marginal</span></td>
+        <td>30–40 ft<br><span class="tag-pred">PREDICTED</span></td>
+        <td>75.7°F<br><span class="tag-obs">OBSERVED</span></td>
+        <td>5.2 ft, 9s<br><span class="tag-obs">OBSERVED</span></td>
+        <td>Moderate ESE (buoy 41114, 12 nm offshore)<br><span class="tag-obs">OBSERVED</span></td>
+      </tr>
+      <tr>
+        <td class="region-name">Blue Heron Bridge</td>
+        <td><span class="rating-good">Protected</span></td>
+        <td>3–6 ft (estuary)<br><span class="tag-pred">PREDICTED</span></td>
+        <td>76.6°F<br><span class="tag-obs">OBSERVED</span></td>
+        <td>Protected<br><span class="tag-obs">OBSERVED</span></td>
+        <td>18.1 kt E (LKWF1); windows 7:27–8:27 AM, 7:52–8:52 PM<br><span class="tag-obs">OBSERVED</span></td>
+      </tr>
+      <tr>
+        <td class="region-name">Palm Beach / Singer Is.</td>
+        <td><span class="rating-marginal">Marginal</span></td>
+        <td>25–35 ft<br><span class="tag-pred">PREDICTED</span></td>
+        <td>76.6°F<br><span class="tag-obs">OBSERVED</span></td>
+        <td>4.9 ft, 6s (est. nearshore)<br><span class="tag-pred">PREDICTED</span></td>
+        <td>18.1 kt E (LKWF1)<br><span class="tag-obs">OBSERVED</span></td>
+      </tr>
+      <tr>
+        <td class="region-name">Deerfield / Pompano</td>
+        <td><span class="rating-marginal">Marginal</span></td>
+        <td>25–35 ft<br><span class="tag-pred">PREDICTED</span></td>
+        <td>77.2°F<br><span class="tag-obs">OBSERVED</span></td>
+        <td>4.9 ft, 6s<br><span class="tag-obs">OBSERVED</span></td>
+        <td>Moderate E (buoy 41122, 23 nm offshore)<br><span class="tag-obs">OBSERVED</span></td>
+      </tr>
+      <tr>
+        <td class="region-name">Fort Lauderdale</td>
+        <td><span class="rating-marginal">Marginal</span></td>
+        <td>25–35 ft<br><span class="tag-pred">PREDICTED</span></td>
+        <td>77.2°F<br><span class="tag-obs">OBSERVED</span></td>
+        <td>4.9 ft, 6s<br><span class="tag-obs">OBSERVED</span></td>
+        <td>Port Everglades 0.67 kt NNW (NOAA)<br><span class="tag-obs">OBSERVED</span></td>
+      </tr>
+      <tr>
+        <td class="region-name">Miami / Key Biscayne</td>
+        <td><span class="rating-good">Calm</span></td>
+        <td>30–40 ft<br><span class="tag-pred">PREDICTED</span></td>
+        <td>77.2°F<br><span class="tag-obs">OBSERVED</span></td>
+        <td>4.9 ft, 6s<br><span class="tag-obs">OBSERVED</span></td>
+        <td>Light to moderate (buoy 41122, 23 nm offshore)<br><span class="tag-obs">OBSERVED</span></td>
+      </tr>
+      <tr>
+        <td class="region-name">Key Largo / Upper Keys</td>
+        <td><span class="rating-good">Calm</span></td>
+        <td>40–50 ft<br><span class="tag-pred">PREDICTED</span></td>
+        <td>76.8°F<br><span class="tag-obs">OBSERVED</span></td>
+        <td>3.9 ft, 5s<br><span class="tag-obs">OBSERVED</span></td>
+        <td>Light (buoy 42095, 15 nm offshore)<br><span class="tag-obs">OBSERVED</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="sources-line">Sources: NOAA AMZ630 issued 4:09 PM EDT March 31, 2026. NDBC Buoy 41009 observed 6.6 ft seas ESE 15.6 kt. Buoy 41114 observed 5.2 ft, 75.7°F. Buoy 41122 observed 4.9 ft, 77.2°F. Buoy 42095 observed 3.9 ft, 76.8°F. LKWF1 (Blue Heron Bridge) observed 18.1 kt E, 76.6°F. NOAA station 8722588 (Lake Worth) tide predictions. Narcosis Dive Center confirmed March 28 conditions. All times UTC unless noted.</p>
+
+  <div class="product-box">
+    First time at BHB? <strong>The Florida Flow BHB Site Guide</strong> covers tide strategy, marine life by season, best entry points, and what to expect underwater. Free with 3 referrals or $12. <a href="https://ko-fi.com/s/59604a0ac1">Get the guide →</a>
+  </div>
+
+  <div class="section-title">Today on the Water — By Activity</div>
+
+  <table>
+    <thead>
+      <tr><th>Activity</th><th>Verdict</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>🤿 Scuba Diving</td>
+        <td><span class="rating-marginal">Marginal</span></td>
+        <td>BHB windows (7:27–8:27 AM and 7:52–8:52 PM) are fair today, but a strong shower warning is in effect with winds gusting to 30 knots and waterspout risk. If diving before 7 AM, confirm with your operator that the system has not yet arrived or has passed. Narcosis confirmed 70–80 ft visibility and 75°F on March 28. After the shower clears tonight, conditions should improve. Verify window timing and storm track with your captain before entering the water.</td>
+      </tr>
+      <tr>
+        <td>🏄 Surfing</td>
+        <td><span class="rating-marginal">Marginal</span></td>
+        <td>Space Coast swell is building to 6.6 ft offshore (buoy 41009, 20 nm), but nearshore peaks will be smaller. The approaching shower will create gusty winds and localized turbulence before passage. Rip currents are likely to strengthen as seas build. Check with your local beach patrol before paddling out, and stay away from the strongest flows, especially near jetties and deep channels.</td>
+      </tr>
+      <tr>
+        <td>🚣 Kayak / SUP</td>
+        <td><span class="rating-rough">Avoid</span></td>
+        <td>Strong shower warning with 30-knot gusts and waterspout potential is in effect. Estuary and inshore paddlers should stay off the water during the warning window (4:09 PM through evening). Conditions may improve after storm passage around 8–9 PM. Verify all-clear with local authorities before launching.</td>
+      </tr>
+      <tr>
+        <td>⛵ Boating / Fishing</td>
+        <td><span class="rating-rough">Avoid</span></td>
+        <td>NOAA Strong Shower Warning in effect: winds gusting to 30 knots, heavy downpours, lightning, and waterspouts possible. Mariners are advised to seek safe harbor immediately. All coastal waters from Jupiter Inlet to Ocean Reef FL (out 20 nm and 20–60 nm) are affected. Do not venture offshore until all-clear. Check with your captain and monitor NOAA Weather Radio continuously.</td>
+      </tr>
+      <tr>
+        <td>🏖️ Beach / Swimming</td>
+        <td><span class="rating-marginal">Building Rip Risk</span></td>
+        <td>Seas are building from north to south. Rip currents are expected to strengthen as swell increases, especially at Space Coast beaches. UV index is high (7) today. The approaching shower will bring gusty wind and heavy rain in the late afternoon. Swim near lifeguard stations, avoid swimming alone, and stay aware of nearshore current patterns. Check with local beach patrol before entering the water.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="background:#f0f7ff; border-left: 4px solid #1a6fa0; padding: 14px 16px; font-family: Arial, sans-serif; font-size: 14px; color: #0d3a55; line-height: 1.65; margin-bottom: 28px;">
+    <strong>Why surfers read The Florida Flow:</strong> Surfline tells you the wave height. We tell you the rip current risk, when the swell expires, and what else is happening on the water. Diving, fishing, boating, beach conditions all in one 2-minute read. Free every morning.
+  </div>
+
+  <div class="referral-box">
+    <strong>Know someone on the water from the Space Coast to the Keys?</strong>
+    Share The Florida Flow with 3 friends and get the Florida Flow Site Guide — Issue 01: Blue Heron Bridge. Tide windows, marine life, local tips. Everything you need before you splash.<br><br>
+    <em>Your personal referral link: https://florida-flow-c2ae83.beehiiv.com/subscribe?ref=ySxwobpxV8</em>
+  </div>
+
+  <div class="week-box">
+    <strong>Week Outlook</strong><br><br>
+    <span style="color:#c0392b; font-weight:bold;">Tuesday (Today) 🔴:</span> Strong shower warning in effect through evening, 30-knot gusts, waterspout potential. Seek safe harbor. Conditions improve after passage.<br><br>
+    <span style="color:#e67e22; font-weight:bold;">Wednesday 🟡:</span> Shower clears overnight. Expect moderate seas and lighter winds as the system departs. Conditions favorable for diving, boating, and beach activities by morning. BHB windows improve.<br><br>
+    <span style="color:#27ae60; font-weight:bold;">Thursday 🟢:</span> Consolidating high pressure brings calmer winds and gradually decreasing seas. Light winds, good visibility. Excellent opportunity for diving, fishing, and coastal activities.<br><br>
+    <span style="color:#27ae60; font-weight:bold;">Friday–Saturday 🟢:</span> High pressure dominant. Light winds, calm seas, excellent dive conditions throughout region. Water temperatures holding in mid-to-upper 70s. Ideal weekend for all activities.<br><br>
+    All offshore sea heights from NOAA buoys 20–60 nm from shore. Nearshore conditions will be smaller and vary by location, bottom topography, and local factors. Always check with your operator before heading out.
+  </div>
+
+  <div class="section-title">Marine Life Sighting Alert</div>
+  <div class="sighting-box">
+    <div class="sighting-label">⚪ No Confirmed Sightings Today</div>
+    Narcosis Dive Center confirmed conditions on March 28 (70–80 ft visibility, 75°F water, 1 ft waves) but did not log specific marine life encounters. Rainbow Reef (Key Largo) did not post a report by this morning's update window. Check back tomorrow—operator logs update daily with current sightings.
+  </div>
+
+  <div class="section-title">Daily Safety Tip</div>
+  <div class="safety-box">
+    <div class="safety-label">Waterspout Awareness</div>
+    A strong shower warning is in effect with waterspout potential. Waterspouts can form rapidly over warm water and pose serious risk to boaters and beach users. Keep one eye on the sky if you're on or near the water this afternoon. If you spot a rotating cloud or funnel, move away immediately and seek shelter. Monitor NOAA Weather Radio for updates. The shower is moving west at 15 knots and should clear by evening.
+  </div>
+
+  <div class="section-title">Quick Poll</div>
+  <div class="poll-box">
+    <strong>When you're planning your day on the water, which single source do you check first?</strong>
+    <div class="poll-option">Surfline / wave height report</div>
+    <div class="poll-option">NOAA marine forecast and buoys</div>
+    <div class="poll-option">Local dive shop or captain report</div>
+    <div class="poll-option">The Florida Flow</div>
+    <br>
+    <em style="font-size:12px; color:#666;">Reply to this email with your answer, we read every response.</em>
+  </div>
+
+  <div class="disclaimer-box">
+    <strong>Disclaimer:</strong> The Florida Flow aggregates publicly available NOAA forecasts, buoy data, and operator logs. All offshore sea heights are from NOAA buoys 20–60 nm from shore. Nearshore conditions will be smaller and vary by location, bottom topography, and local factors. Conditions ratings are informational only—always confirm with your captain or dive operator before heading out. Use at your own risk.
+  </div>
+
+  <div class="footer">
+    The Florida Flow &nbsp;|&nbsp; Daily ocean conditions for anyone on the water<br>
+    Space Coast to Key Largo &nbsp;|&nbsp; Free. Every morning. In 2 minutes.<br><br>
+    &copy; 2026 The Florida Flow
+  </div>
+
+</div>
+</body>
+</html>
+```
