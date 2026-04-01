@@ -144,7 +144,7 @@ TONE AND ACCURACY RULES (non-negotiable):
 - Never present far-offshore forecast peaks (e.g. "17 ft occasionally") as if they apply to nearshore or inshore waters. If you cite an offshore peak, note it is for waters 20-60 nm from shore.
 - Advisory/warning bars: only if there is an ACTIVE NWS advisory (SCA, Gale Warning, etc.) explicitly named in the forecast text. Use exact NWS language. No dramatic rewrites.
 - No opinion on whether conditions are "diveable," "fishable," or safe. Report the numbers. Captains decide.
-- Activity verdicts: state observed/forecast conditions per activity — no "Poor/Dangerous" labels. Use "Elevated," "Building," "Calm," "Marginal" based purely on data.
+- Activity verdicts: state observed/forecast conditions per activity — no "Poor/Dangerous" labels. Use "Elevated," "Building," "Calm," "Marginal" based purely on data. CRITICAL: offshore buoy readings (20–60 nm out) are NOT nearshore conditions. A buoy reading 4–5 ft at 20 nm offshore typically means 1–3 ft nearshore. Never restrict diving to "BHB only" or declare offshore diving "not recommended" based solely on offshore buoy data — that is a captain's call, not ours. Only flag an activity as restricted if there is an active named NWS advisory (SCA, Gale Warning, etc.).
 - Marine Life Sighting Alert: ONLY include species/sightings explicitly in operator reports. If none, say "No confirmed sightings today."
 - Week Outlook: derive day-by-day from NWS forecast text only. Do not extrapolate beyond what the forecast says.
 - Tag observed buoy data with <span class="tag-obs">OBSERVED</span>, estimated/predicted with <span class="tag-pred">PREDICTED</span>.
@@ -231,7 +231,7 @@ TONE AND ACCURACY RULES (non-negotiable):
       <tr><th>Region</th><th>Conditions Rating</th><th>Vis</th><th>Temp</th><th>Seas</th><th>Wind / Note</th></tr>
     </thead>
     <tbody>
-      [8 rows — one for each region. Do NOT color or highlight table rows beyond the default CSS. Use only the small tag-obs/tag-pred badges on each individual data point — no other cell or row highlighting. Format each data cell as: the value on one line, then the tag on the next line. Example: "8.2 ft<br><span class="tag-obs">OBSERVED</span>". Vis is estimated from wave height (tag-pred) unless operator confirmed (tag-obs). Temp from buoy (tag-obs) or estimated (tag-pred). Seas from buoy (tag-obs) or NOAA nearshore estimate (tag-pred). Wind/Note: buoy reading with distance offshore, forecast note, or operator confirmation. BHB row: "Protected" for seas, include tide window time.]
+      [8 rows — one for each region. Do NOT color or highlight table rows beyond the default CSS. Use only the small tag-obs/tag-pred badges on each individual data point — no other cell or row highlighting. Format each data cell as: the value on one line, then the tag on the next line. Example: "8.2 ft<br><span class="tag-obs">OBSERVED</span>". Vis: ONLY use a real number if an operator report explicitly states visibility for that region today — write it with tag-obs. For all other regions write "No data" with tag-pred. Never estimate or invent visibility ranges from wave height. Temp from buoy (tag-obs) or write "No data" (tag-pred). Seas from buoy (tag-obs) or NOAA nearshore estimate (tag-pred). Wind/Note: buoy reading with distance offshore, forecast note, or operator confirmation. BHB row: "Protected" for seas, include tide window time.]
     </tbody>
   </table>
 
@@ -329,6 +329,7 @@ Tweet 3 (≤240 chars): Operator intel if available (viz, sightings, conditions 
 Rules: no hashtags, no emojis except the 🧵 on tweet 1, specific numbers only, cite buoy distance offshore.
 
 POST 2 — Facebook. 100-180 words. Format:
+- Today's date is ${etLong}. Never use an operator report date as the post date. Always refer to today's conditions as of ${etShort}.
 - Open with a hook about today's conditions — something specific and useful to a Florida diver, surfer, or boater
 - 2-3 short paragraphs covering: conditions summary, what to expect today, one practical tip
 - Never tell people whether to go out — report the data, let captains decide
