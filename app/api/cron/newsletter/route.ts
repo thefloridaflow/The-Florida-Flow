@@ -355,17 +355,17 @@ POST 1 — X (Twitter) thread. Write 3 tweets separated by [TWEET].
 Tweet 1 (hook, ≤260 chars): Lead with the most interesting number from today's data — something a diver or surfer would actually care about. Sound like a local texting a friend, not a forecast service. End with "🧵"
 Tweet 2 (≤270 chars): Quick region breakdown — Space Coast / Treasure Coast / Gold Coast / Keys. Seas + water temp. Keep it tight and readable. Buoy distance in parens where relevant.
 Tweet 3 (≤240 chars): What operators are seeing on the water today (if available), or the one forecast note that actually matters. End with: the-florida-flow.vercel.app
-Rules: no hashtags, only use emojis if they genuinely add something, specific numbers only, never sound like a press release.
+Rules: no hashtags, only use emojis if they genuinely add something, specific numbers only, never sound like a press release, no em dashes. If operator data is from 2+ days ago do not present it as current.
 
 POST 2 — Facebook. 100-160 words.
 - Today is ${etShort}. Never use an operator report date as the post date.
 - Write like a local talking to other locals — casual, direct, a little personality
 - Lead with the most useful/interesting condition fact for someone planning to get in the water today
 - Cover the key conditions briefly — don't list every region, just the relevant ones
-- If an operator confirmed something on the water, mention it naturally ("Narcosis was out this morning and reported...")
-- Never tell people what to do — give them the data, they decide
+- Operator reports have dates. Only reference an operator report as recent if it is from today or yesterday. If the most recent report is from 2+ days ago, do not present it as current conditions. You can mention it with the date ("Narcosis reported 70ft viz on March 28") but don't imply it reflects today.
+- Never tell people what to do. Give them the data, they decide.
 - End with: "Full breakdown + tides + dive windows at the-florida-flow.vercel.app — free newsletter every morning."
-- No hashtags, no corporate language, no "we are pleased to report"`
+- No hashtags. No em dashes (use a comma, period, or line break instead). No corporate language. No "we are pleased to report". Short sentences.`
 
     // Run newsletter generation and social post generation in parallel
     const [message, socialMessage] = await Promise.all([
