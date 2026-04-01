@@ -52,7 +52,13 @@ export default function BuoyCard({ buoy }: { buoy: BuoyData }) {
         </div>
       )}
 
-      <p className="text-xs text-slate-500 mt-4">Updated: {new Date(buoy.updated).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' })} ET</p>
+      <div className="mt-4 flex items-center justify-between">
+        <p className="text-xs text-slate-500">Updated: {new Date(buoy.updated).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' })} ET</p>
+        <p className="text-xs text-slate-600 font-mono">
+          {buoy.lat.toFixed(3)}, {buoy.lon.toFixed(3)}
+          {buoy.offshoreNm > 0 && <span className="ml-2 text-slate-500">{buoy.offshoreNm} nm offshore</span>}
+        </p>
+      </div>
     </div>
   )
 }

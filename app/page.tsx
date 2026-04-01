@@ -18,6 +18,29 @@ import CurrentPanel from '@/components/CurrentPanel'
 // next: { revalidate: 3600 } so NOAA data is cached for 1 hour by Next.js.
 export const dynamic = 'force-dynamic'
 
+const BASE_URL = 'https://the-florida-flow.vercel.app'
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'The Florida Flow',
+  url: BASE_URL,
+  description: 'Live ocean conditions, tides, and community dive reports for South Florida. Real-time NOAA buoy data, marine forecasts, and operator logs.',
+  about: {
+    '@type': 'Place',
+    name: 'South Florida',
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 26.1,
+      longitude: -80.1,
+    },
+  },
+  potentialAction: {
+    '@type': 'ReadAction',
+    target: BASE_URL,
+  },
+}
+
 export default async function HomePage() {
   const [buoys, tides, forecast, uv, current] = await Promise.all([
     fetchAllBuoys(),
@@ -29,6 +52,10 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       {/* Header */}
       <header className="bg-slate-950 border-b border-slate-800 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
