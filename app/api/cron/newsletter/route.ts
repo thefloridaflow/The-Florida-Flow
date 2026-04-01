@@ -334,8 +334,9 @@ TONE AND ACCURACY RULES (non-negotiable):
 
     const anthropic = new Anthropic({ apiKey: anthropicKey })
 
-    const socialPrompt = `You are writing social media posts for The Florida Flow — a daily South Florida ocean conditions newsletter and app (the-florida-flow.vercel.app).
+    const socialPrompt = `You are writing casual, human social media posts for The Florida Flow — a South Florida ocean conditions newsletter and app run by a guy who actually dives and surfs here. Voice: knowledgeable local, not a weather service. Short sentences. Real talk.
 
+TODAY IS ${etLong}.
 LIVE DATA — use only what is below. Do not invent conditions.
 
 === BUOY DATA ===
@@ -351,19 +352,20 @@ ${operatorSummary}
 Write two posts. Separate them with exactly "---" on its own line.
 
 POST 1 — X (Twitter) thread. Write 3 tweets separated by [TWEET].
-Tweet 1 (hook, ≤260 chars): Most striking condition right now — one specific number that makes someone stop scrolling. End with "🧵"
-Tweet 2 (≤270 chars): Region-by-region breakdown — Space Coast / Treasure Coast / Gold Coast / Keys. Seas, water temp, wind. Buoy IDs in parentheses. Plain text, no fluff.
-Tweet 3 (≤240 chars): Operator intel if available (viz, sightings, conditions confirmed on the water). If none, use the NWS forecast highlight for today. End with: the-florida-flow.vercel.app
-Rules: no hashtags, no emojis except the 🧵 on tweet 1, specific numbers only, cite buoy distance offshore.
+Tweet 1 (hook, ≤260 chars): Lead with the most interesting number from today's data — something a diver or surfer would actually care about. Sound like a local texting a friend, not a forecast service. End with "🧵"
+Tweet 2 (≤270 chars): Quick region breakdown — Space Coast / Treasure Coast / Gold Coast / Keys. Seas + water temp. Keep it tight and readable. Buoy distance in parens where relevant.
+Tweet 3 (≤240 chars): What operators are seeing on the water today (if available), or the one forecast note that actually matters. End with: the-florida-flow.vercel.app
+Rules: no hashtags, only use emojis if they genuinely add something, specific numbers only, never sound like a press release.
 
-POST 2 — Facebook. 100-180 words. Format:
-- Today's date is ${etLong}. Never use an operator report date as the post date. Always refer to today's conditions as of ${etShort}.
-- Open with a hook about today's conditions — something specific and useful to a Florida diver, surfer, or boater
-- 2-3 short paragraphs covering: conditions summary, what to expect today, one practical tip
-- Never tell people whether to go out — report the data, let captains decide
-- End with: "Full conditions + tides + dive windows → the-florida-flow.vercel.app — free newsletter every morning at 5 AM."
-- Conversational tone, not corporate
-- No hashtags in the body (add them as a comment separately — do not include in this output)`
+POST 2 — Facebook. 100-160 words.
+- Today is ${etShort}. Never use an operator report date as the post date.
+- Write like a local talking to other locals — casual, direct, a little personality
+- Lead with the most useful/interesting condition fact for someone planning to get in the water today
+- Cover the key conditions briefly — don't list every region, just the relevant ones
+- If an operator confirmed something on the water, mention it naturally ("Narcosis was out this morning and reported...")
+- Never tell people what to do — give them the data, they decide
+- End with: "Full breakdown + tides + dive windows at the-florida-flow.vercel.app — free newsletter every morning."
+- No hashtags, no corporate language, no "we are pleased to report"`
 
     // Run newsletter generation and social post generation in parallel
     const [message, socialMessage] = await Promise.all([

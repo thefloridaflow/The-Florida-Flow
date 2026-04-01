@@ -107,21 +107,33 @@ async function fetchForceE(): Promise<OperatorReport> {
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const html = await res.text()
 
-    // Date label e.g. "TUESDAY 3/31"
+    // Isolate the BHB section (between the BHB comment and PALM BEACH COUNTY)
+    const bhbMatch = html.match(/Blue Heron Bridge Conditions[\s\S]*?(?=PALM BEACH COUNTY|$)/i)
+    const bhbSection = bhbMatch ? bhbMatch[0] : html
+
+    // Date label e.g. "TUESDAY 3/31" — appears in any section
     const dateMatch = html.match(/(?:MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY)\s+\d+\/\d+/i)
     const date = dateMatch ? dateMatch[0] : ''
 
-    // BHB visibility e.g. 20' or 20 ft
-    const vizMatch = html.match(/(?:visibility|vis)[^<]{0,60}?(\d[\d–\-]*\s*(?:ft|feet|'))/i)
-    const visibility = vizMatch ? vizMatch[1] : ''
+    // BHB visibility: <h1 ...>20'</h1>
+    const vizMatch = bhbSection.match(/<h1[^>]*>\s*(\d[\d–\-]*)\s*'\s*<\/h1>/i)
+    const visibility = vizMatch ? `${vizMatch[1]} ft` : ''
 
-    // Water temp e.g. 78°
-    const tempMatch = html.match(/(\d{2,3})\s*°?\s*(?:F|degrees)/i)
+    // BHB water temp: <h1 ...>78°</h1>
+    const tempMatch = bhbSection.match(/<h1[^>]*>\s*(\d{2,3})\s*°\s*<\/h1>/i)
     const waterTemp = tempMatch ? `${tempMatch[1]}°F` : ''
 
-    // Rough seas flag
-    const rough = /rough\s*seas/i.test(html)
-    const notes = rough ? 'Rough seas flagged' : ''
+    // BHB open/closed status
+    const openMatch = bhbSection.match(/>(OPEN|CLOSED)</i)
+    const status = openMatch ? openMatch[1] : ''
+
+    // Rough seas in Palm Beach or Broward
+    const pbRough = /PALM BEACH[\s\S]{0,300}ROUGH SEAS/i.test(html)
+    const bwRough = /BROWARD[\s\S]{0,300}ROUGH SEAS/i.test(html)
+    const roughParts = []
+    if (pbRough) roughParts.push('Palm Beach: rough seas')
+    if (bwRough) roughParts.push('Broward: rough seas')
+    const notes = [status ? `BHB: ${status}` : '', ...roughParts].filter(Boolean).join(' · ')
 
     return { operator: 'Force-E Scuba', location: 'Blue Heron Bridge / Palm Beach / Broward', date, visibility, waterTemp, notes, url }
   } catch {
