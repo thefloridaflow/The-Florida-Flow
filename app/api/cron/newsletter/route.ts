@@ -334,50 +334,51 @@ TONE AND ACCURACY RULES (non-negotiable):
 
     const anthropic = new Anthropic({ apiKey: anthropicKey })
 
-    const socialPrompt = `You are writing casual, human social media posts for The Florida Flow — a South Florida ocean conditions newsletter and app run by a guy who actually dives and surfs here. Voice: knowledgeable local, not a weather service. Short sentences. Real talk.
+    const socialPrompt = `You are writing social media posts to promote The Florida Flow — a free South Florida ocean conditions app and daily newsletter. The posts tease what's in today's data to drive people to the app. Voice: knowledgeable local, short sentences, real talk.
 
 TODAY IS ${etLong}.
-LIVE DATA — use only what is below. Do not invent conditions.
 
-=== BUOY DATA ===
+=== LIVE BUOY DATA (from this morning) ===
 ${buoySummary}
 
 === NWS MARINE FORECAST ===
 ${forecast.forecast?.slice(0, 800) || 'Unavailable'}
 
-=== OPERATOR REPORTS ===
+=== OPERATOR REPORTS (may be stale — check dates carefully) ===
 ${operatorSummary}
 
-=== INSTRUCTIONS ===
-Write two posts. Separate them with exactly "---" on its own line.
+=== WHAT IS LIVE VS STALE ===
+- Buoy data (seas, water temp, wind) = live from this morning. Use these numbers freely.
+- NWS forecast = current. Use it.
+- Operator reports = only use if dated TODAY (${etShort}). If dated any earlier, DO NOT reference them as current conditions. You may say "last report from [date] showed X" but never imply it reflects today.
+- You have NO live visibility data. Do not state or imply what viz is today.
 
-POST 1 — X (Twitter) thread. Write 3 tweets separated by [TWEET].
-Tweet 1 (hook, ≤260 chars): Lead with the most interesting number from today's data — something a diver or surfer would actually care about. Sound like a local texting a friend, not a forecast service. End with "🧵"
-Tweet 2 (≤270 chars): Quick region breakdown — Space Coast / Treasure Coast / Gold Coast / Keys. Seas + water temp. Keep it tight and readable. Buoy distance in parens where relevant.
-Tweet 3 (≤240 chars): What operators are seeing on the water today (if available), or the one forecast note that actually matters. End with: the-florida-flow.vercel.app
-Rules: no hashtags, only use emojis if they genuinely add something, specific numbers only, never sound like a press release, no em dashes. If operator data is from 2+ days ago do not present it as current.
-CRITICAL — do not invent descriptive words that contradict the data. "Glassy" means winds under 5 kt — do not use it if winds are higher. "Calm" means seas under 1 ft. "Choppy" means 2-3 ft. Only use these words if the numbers actually support them.
+=== INSTRUCTIONS ===
+Write 3 posts separated by exactly "---" on its own line.
+
+POST 1 — X (Twitter) thread. 3 tweets separated by [TWEET].
+- Purpose: hook people into checking the app with the most interesting number from today's live buoy data.
+- Tweet 1 (≤260 chars): One punchy sentence about the most notable buoy reading today. A local texting a friend. End with 🧵
+- Tweet 2 (≤270 chars): Regional breakdown — Space Coast / Treasure Coast / Gold Coast / Keys. Seas ft + water temp °F. Buoy distance in parens. Numbers only, no fluff.
+- Tweet 3 (≤240 chars): The one forecast note that actually matters today (rain, wind shift, rough offshore, etc). End with: the-florida-flow.vercel.app
+- No hashtags. No em dashes. No descriptive words ("glassy", "firing", "pumping") unless buoy data directly supports them. "Glassy" = winds under 5 kt.
 
 POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
-- Today is ${etShort}. Never use an operator report date as the post date.
-- Audience: scuba divers and freedivers planning dives in South Florida. They care about viz, current, water temp, BHB tide windows, and what operators are seeing.
-- Lead with the most dive-relevant condition today. Mention BHB window if it is a good one. Include operator reports with their actual date.
-- Operator reports have dates. Only say "this morning" if the report is from today. If 2+ days old, state the date.
-- Never tell people what to do. Give them the numbers, they decide.
+- Purpose: give divers a reason to check the app and subscribe to the newsletter.
+- Lead with the most dive-relevant live buoy reading (water temp, sea state, wind).
+- Mention BHB wind/temp from LKWF1 buoy if data is available.
+- Only include operator report if dated TODAY. If stale, skip it entirely or say "last report from [date]" — never imply it's current.
+- No viz claims unless an operator reported today.
 - End with: "Full conditions + tides + dive windows at the-florida-flow.vercel.app — free newsletter every morning."
-- No hashtags. No em dashes. Short sentences. Sound like a diver, not a weather service.
-- CRITICAL: never use descriptive condition words ("glassy", "calm", "choppy", "rough") unless the numbers support them. "Glassy" = winds under 5 kt. "Calm" = seas under 1 ft. If winds are 10+ kt, do not say glassy.
-
----
+- No hashtags. No em dashes. No descriptive condition words unless buoy numbers support them.
 
 POST 3 — Facebook (General Florida groups). 80-120 words.
-- Today is ${etShort}.
-- Audience: everyday Florida beach people — families, tourists, casual swimmers, people deciding whether to go to the beach today. Not surfers, not divers.
-- Lead with whether it's a good beach day or not, water temp, and any weather to watch out for. That's all they care about.
-- Simple language. No wave periods, no buoy IDs, no "swell", no technical jargon whatsoever.
-- Never tell people what to do.
+- Purpose: get everyday beach people to check the app.
+- Audience: families, tourists, casual swimmers deciding if it's a good beach day. Not divers, not surfers.
+- Talk about water temp, whether conditions are rough or calm (based on actual buoy seas/wind), and any weather to watch for.
+- No wave periods, no buoy IDs, no technical jargon.
 - End with: "Daily ocean conditions at the-florida-flow.vercel.app — free."
-- No hashtags. No em dashes. Two short paragraphs max. Conversational.`
+- No hashtags. No em dashes. Two short paragraphs max.`
 
     // Run newsletter generation and social post generation in parallel
     const [message, socialMessage] = await Promise.all([
