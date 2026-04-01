@@ -100,8 +100,37 @@ async function fetchRainbowReef(): Promise<OperatorReport> {
   }
 }
 
+async function fetchForceE(): Promise<OperatorReport> {
+  const url = 'https://www.force-e.com/marine-forecast/'
+  try {
+    const res = await fetch(url, { next: { revalidate: 3600 * 3 }, signal: AbortSignal.timeout(8000) })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const html = await res.text()
+
+    // Date label e.g. "TUESDAY 3/31"
+    const dateMatch = html.match(/(?:MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY)\s+\d+\/\d+/i)
+    const date = dateMatch ? dateMatch[0] : ''
+
+    // BHB visibility e.g. 20' or 20 ft
+    const vizMatch = html.match(/(?:visibility|vis)[^<]{0,60}?(\d[\d–\-]*\s*(?:ft|feet|'))/i)
+    const visibility = vizMatch ? vizMatch[1] : ''
+
+    // Water temp e.g. 78°
+    const tempMatch = html.match(/(\d{2,3})\s*°?\s*(?:F|degrees)/i)
+    const waterTemp = tempMatch ? `${tempMatch[1]}°F` : ''
+
+    // Rough seas flag
+    const rough = /rough\s*seas/i.test(html)
+    const notes = rough ? 'Rough seas flagged' : ''
+
+    return { operator: 'Force-E Scuba', location: 'Blue Heron Bridge / Palm Beach / Broward', date, visibility, waterTemp, notes, url }
+  } catch {
+    return { operator: 'Force-E Scuba', location: 'Blue Heron Bridge / Palm Beach / Broward', date: '', url, error: true }
+  }
+}
+
 export async function GET() {
-  const [narcosis, rainbow] = await Promise.all([fetchNarcosis(), fetchRainbowReef()])
+  const [narcosis, rainbow, forceE] = await Promise.all([fetchNarcosis(), fetchRainbowReef(), fetchForceE()])
 
   // JS-rendered sites — linked only, no server-side scraping possible
   const captainHooks: OperatorReport = {
@@ -119,5 +148,5 @@ export async function GET() {
     linkOnly: true,
   }
 
-  return NextResponse.json([narcosis, rainbow, captainHooks, islandVenture])
+  return NextResponse.json([narcosis, rainbow, forceE, captainHooks, islandVenture])
 }
