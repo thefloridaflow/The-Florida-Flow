@@ -357,15 +357,25 @@ Tweet 2 (≤270 chars): Quick region breakdown — Space Coast / Treasure Coast 
 Tweet 3 (≤240 chars): What operators are seeing on the water today (if available), or the one forecast note that actually matters. End with: the-florida-flow.vercel.app
 Rules: no hashtags, only use emojis if they genuinely add something, specific numbers only, never sound like a press release, no em dashes. If operator data is from 2+ days ago do not present it as current.
 
-POST 2 — Facebook. 100-160 words.
+POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
 - Today is ${etShort}. Never use an operator report date as the post date.
-- Write like a local talking to other locals — casual, direct, a little personality
-- Lead with the most useful/interesting condition fact for someone planning to get in the water today
-- Cover the key conditions briefly — don't list every region, just the relevant ones
-- Operator reports have dates. Only reference an operator report as recent if it is from today or yesterday. If the most recent report is from 2+ days ago, do not present it as current conditions. You can mention it with the date ("Narcosis reported 70ft viz on March 28") but don't imply it reflects today.
-- Never tell people what to do. Give them the data, they decide.
-- End with: "Full breakdown + tides + dive windows at the-florida-flow.vercel.app — free newsletter every morning."
-- No hashtags. No em dashes (use a comma, period, or line break instead). No corporate language. No "we are pleased to report". Short sentences.`
+- Audience: scuba divers and freedivers planning dives in South Florida. They care about viz, current, water temp, BHB tide windows, and what operators are seeing.
+- Lead with the most dive-relevant condition today. Mention BHB window if it is a good one. Include operator reports with their actual date.
+- Operator reports have dates. Only say "this morning" if the report is from today. If 2+ days old, state the date.
+- Never tell people what to do. Give them the numbers, they decide.
+- End with: "Full conditions + tides + dive windows at the-florida-flow.vercel.app — free newsletter every morning."
+- No hashtags. No em dashes. Short sentences. Sound like a diver, not a weather service.
+
+---
+
+POST 3 — Facebook (General Florida groups). 80-120 words.
+- Today is ${etShort}.
+- Audience: general Florida locals — beachgoers, boaters, fishers, surfers. Not necessarily divers.
+- Lead with whatever is most interesting today for anyone near the water. Big swell, warm water, rough offshore, great beach day. Keep it relatable.
+- Simple language. One or two regions max. No buoy IDs, no technical jargon.
+- Never tell people what to do.
+- End with: "Daily ocean conditions at the-florida-flow.vercel.app — free."
+- No hashtags. No em dashes. Two short paragraphs max. Conversational.`
 
     // Run newsletter generation and social post generation in parallel
     const [message, socialMessage] = await Promise.all([
@@ -417,7 +427,7 @@ POST 2 — Facebook. 100-160 words.
     }
 
     // Parse social posts
-    const [xPost = '', fbPost = ''] = socialContent.split(/^---$/m).map(s => s.trim())
+    const [xPost = '', fbScuba = '', fbGeneral = ''] = socialContent.split(/^---$/m).map(s => s.trim())
 
     const socialMarkdown = `# Social Posts — ${etDate}
 
@@ -427,9 +437,15 @@ ${xPost}
 
 ---
 
-## Facebook
+## Facebook — Scuba / Diving groups
 
-${fbPost}
+${fbScuba}
+
+---
+
+## Facebook — General Florida groups
+
+${fbGeneral}
 
 ---
 
