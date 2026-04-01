@@ -350,18 +350,27 @@ ${forecast.forecast?.slice(0, 800) || 'Unavailable'}
 - Operator reports = IGNORE COMPLETELY unless dated ${etShort} or ${new Date(Date.now() - 86400000).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric' })}. If older, pretend they don't exist. Do not mention them.
 - You have NO live visibility data. Never mention viz.
 
+=== HOOK RULES (apply to every post) ===
+A good hook makes someone stop scrolling. Use one of these techniques:
+- Contrast: "Most of South Florida is flat today. Then there's the Space Coast."
+- Specific surprising number: "77 degrees in the Keys right now."
+- Tension or stakes: "Shower moving in this afternoon with 30 kt gusts. Here's what you need to know."
+- Local insider feel: something only someone who actually watches these waters would say.
+Never start with "Water temps are..." or "Conditions are..." — that's a weather report opener, not a hook.
+
 === INSTRUCTIONS ===
-Write 3 posts separated by exactly "---" on its own line.
+Write 4 posts separated by exactly "---" on its own line.
 
 POST 1 — X (Twitter) thread. 3 tweets separated by [TWEET].
 - Purpose: hook people into checking the app with the most interesting number from today's live buoy data.
-- Tweet 1 (≤260 chars): One punchy sentence about the most notable buoy reading today. A local texting a friend. End with 🧵
+- Tweet 1 (≤260 chars): Strong hook using contrast, a surprising number, or tension. Not a summary — make them want to read the next tweet. End with 🧵
 - Tweet 2 (≤270 chars): Regional breakdown — Space Coast / Treasure Coast / Gold Coast / Keys. Seas ft + water temp °F. Buoy distance in parens. Numbers only, no fluff.
 - Tweet 3 (≤240 chars): The one forecast note that actually matters today (rain, wind shift, rough offshore, etc). End with: the-florida-flow.vercel.app
 - No hashtags. No em dashes. No descriptive words ("glassy", "firing", "pumping") unless buoy data directly supports them. "Glassy" = winds under 5 kt.
 
 POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
 - Purpose: give divers a reason to check the app and subscribe to the newsletter.
+- Open with a strong hook — a specific number or contrast that a diver would care about.
 - Talk about water temps, sea state by region, and wind at BHB from live buoy data only.
 - No operator reports. No viz claims. No mentions of what any dive shop saw.
 - Naturally mention that the app has tides, dive windows, and current — without being pushy.
@@ -371,9 +380,19 @@ POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
 POST 3 — Facebook (General Florida groups). 80-120 words.
 - Purpose: get everyday beach people to check the app.
 - Audience: families, tourists, casual swimmers deciding if it's a good beach day. Not divers, not surfers.
+- Open with a hook — water temp, a contrast between regions, or a heads-up about weather.
 - Talk about water temp, whether conditions are rough or calm (based on actual buoy seas/wind), and any weather to watch for.
 - No wave periods, no buoy IDs, no technical jargon.
 - End with: "Daily ocean conditions at the-florida-flow.vercel.app — free."
+- No hashtags. No em dashes. Two short paragraphs max.
+
+POST 4 — Facebook (Fishing groups). 80-120 words.
+- Purpose: get offshore and inshore fishers to check the app.
+- Audience: people who fish — offshore, inshore, bridge, pier. They care about sea state for getting out, water temp (affects what's biting), wind, and any weather to avoid.
+- Open with a hook about sea state or water temp that a fisher would actually care about.
+- Talk about which regions are fishable today based on seas/wind, water temp trends, and any forecast hazards.
+- No dive jargon, no viz, no BHB windows.
+- End with: "Tides, currents, and full conditions at the-florida-flow.vercel.app — free daily newsletter."
 - No hashtags. No em dashes. Two short paragraphs max.`
 
     // Run newsletter generation and social post generation in parallel
@@ -385,7 +404,7 @@ POST 3 — Facebook (General Florida groups). 80-120 words.
       }),
       anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
+        max_tokens: 1600,
         messages: [{ role: 'user', content: socialPrompt }],
       }),
     ])
@@ -426,7 +445,7 @@ POST 3 — Facebook (General Florida groups). 80-120 words.
     }
 
     // Parse social posts
-    const [xPost = '', fbScuba = '', fbGeneral = ''] = socialContent.split(/^---$/m).map(s => s.trim())
+    const [xPost = '', fbScuba = '', fbGeneral = '', fbFishing = ''] = socialContent.split(/^---$/m).map(s => s.trim())
 
     const socialMarkdown = `# Social Posts — ${etDate}
 
@@ -445,6 +464,12 @@ ${fbScuba}
 ## Facebook — General Florida groups
 
 ${fbGeneral}
+
+---
+
+## Facebook — Fishing groups
+
+${fbFishing}
 
 ---
 
