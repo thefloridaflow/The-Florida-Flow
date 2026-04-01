@@ -57,7 +57,7 @@ export type CurrentData = {
 const BUOY_STATIONS: Record<string, { name: string; region: string; lat: number; lon: number; offshoreNm: number }> = {
   '41009': { name: 'Canaveral',      region: 'East of Cape Canaveral, FL',  lat: 28.501, lon: -80.534, offshoreNm: 20 },
   '41046': { name: 'East Bahamas',   region: 'Bahamas',                     lat: 23.823, lon: -68.373, offshoreNm: 0  },
-  '41114': { name: 'Fort Pierce',    region: 'Treasure Coast',              lat: 27.551, lon: -80.225, offshoreNm: 12 },
+  '41114': { name: 'Fort Pierce',    region: 'Treasure Coast',              lat: 27.551, lon: -80.225, offshoreNm: 6.5 },
   '41122': { name: 'Fort Lauderdale', region: 'Fort Lauderdale Offshore',   lat: 26.044, lon: -79.097, offshoreNm: 23 },
   'LKWF1': { name: 'Lake Worth',     region: 'Lake Worth Inshore',          lat: 26.613, lon: -80.034, offshoreNm: 0  },
   'SMKF1': { name: 'Sombrero Key',   region: 'Florida Keys',                lat: 24.627, lon: -81.113, offshoreNm: 1  },

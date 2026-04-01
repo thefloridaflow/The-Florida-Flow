@@ -9,7 +9,7 @@ const LAUNCH_DATE = new Date('2026-03-17T00:00:00-04:00')
 
 const REGIONS = [
   { name: 'Space Coast (Cocoa Beach / Sebastian)', buoyId: '41009' },
-  { name: 'Jupiter / Tequesta',                    buoyId: '41114' },
+  { name: 'Treasure Coast (Vero / Ft Pierce)',      buoyId: '41114' },
   { name: 'Blue Heron Bridge',                     buoyId: 'LKWF1' },
   { name: 'Palm Beach / Singer Is.',               buoyId: 'LKWF1' },
   { name: 'Deerfield / Pompano',                   buoyId: '41122' },

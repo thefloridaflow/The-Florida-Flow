@@ -2,7 +2,7 @@ import { BuoyData } from '@/lib/noaa'
 
 const REGIONS: { name: string; buoyId: string }[] = [
   { name: 'Space Coast',              buoyId: '41009'  },
-  { name: 'Jupiter / Tequesta',       buoyId: '41114'  },
+  { name: 'Treasure Coast (Vero Beach / Ft Pierce)', buoyId: '41114' },
   { name: 'Blue Heron Bridge',        buoyId: 'LKWF1'  },
   { name: 'Palm Beach / Singer Island', buoyId: 'LKWF1' },
   { name: 'Deerfield / Pompano',      buoyId: '41122'  },
