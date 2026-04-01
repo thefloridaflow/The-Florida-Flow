@@ -390,7 +390,7 @@ POST 4 — Facebook (Fishing groups). 80-120 words.
 - Purpose: get offshore and inshore fishers to check the app.
 - Audience: people who fish — offshore, inshore, bridge, pier. They care about sea state for getting out, water temp (affects what's biting), wind, and any weather to avoid.
 - Open with a hook about sea state or water temp that a fisher would actually care about.
-- Talk about which regions are fishable today based on seas/wind, water temp trends, and any forecast hazards.
+- Report seas and water temp by region. That is all. Do not say which spot is "best" or make any judgment about where to fish. Fishermen know their boats and tolerance — give them the numbers and let them decide.
 - No dive jargon, no viz, no BHB windows.
 - End with: "Tides, currents, and full conditions at the-florida-flow.vercel.app — free daily newsletter."
 - No hashtags. No em dashes. Two short paragraphs max.`
