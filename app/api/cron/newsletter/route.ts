@@ -356,6 +356,7 @@ Tweet 1 (hook, ≤260 chars): Lead with the most interesting number from today's
 Tweet 2 (≤270 chars): Quick region breakdown — Space Coast / Treasure Coast / Gold Coast / Keys. Seas + water temp. Keep it tight and readable. Buoy distance in parens where relevant.
 Tweet 3 (≤240 chars): What operators are seeing on the water today (if available), or the one forecast note that actually matters. End with: the-florida-flow.vercel.app
 Rules: no hashtags, only use emojis if they genuinely add something, specific numbers only, never sound like a press release, no em dashes. If operator data is from 2+ days ago do not present it as current.
+CRITICAL — do not invent descriptive words that contradict the data. "Glassy" means winds under 5 kt — do not use it if winds are higher. "Calm" means seas under 1 ft. "Choppy" means 2-3 ft. Only use these words if the numbers actually support them.
 
 POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
 - Today is ${etShort}. Never use an operator report date as the post date.
@@ -365,6 +366,7 @@ POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
 - Never tell people what to do. Give them the numbers, they decide.
 - End with: "Full conditions + tides + dive windows at the-florida-flow.vercel.app — free newsletter every morning."
 - No hashtags. No em dashes. Short sentences. Sound like a diver, not a weather service.
+- CRITICAL: never use descriptive condition words ("glassy", "calm", "choppy", "rough") unless the numbers support them. "Glassy" = winds under 5 kt. "Calm" = seas under 1 ft. If winds are 10+ kt, do not say glassy.
 
 ---
 
