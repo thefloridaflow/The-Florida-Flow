@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { fetchAllBuoys, fetchTides, fetchMarineForecast, fetchUVIndex, fetchCurrents } from '@/lib/noaa'
+import { getSunTimes } from '@/lib/sun'
 
 export const maxDuration = 60
 
@@ -109,6 +110,13 @@ export async function GET(req: NextRequest) {
     // Currents
     const currentSummary = current.error ? 'Port Everglades current: unavailable' : `Port Everglades current: ${current.speed} kt ${current.direction}`
 
+    // Sun times (Palm Beach area, lat 26.713 lon -80.057)
+    const { sunrise, sunset } = getSunTimes(now, 26.713, -80.057)
+    const fmtET = (d: Date) => d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' })
+    const goldenMorningEnd   = new Date(sunrise.getTime() + 45 * 60000)
+    const goldenEveningStart = new Date(sunset.getTime()  - 45 * 60000)
+    const sunSummary = `Sunrise: ${fmtET(sunrise)} | Morning golden hour: ${fmtET(sunrise)}–${fmtET(goldenMorningEnd)} | Evening golden hour: ${fmtET(goldenEveningStart)}–${fmtET(sunset)} | Sunset: ${fmtET(sunset)}`
+
     const prompt = `You are writing Issue #${issueNumber} of The Florida Flow newsletter for ${etLong}.
 
 LIVE DATA — use ONLY what is below. Do not invent conditions, sightings, or forecast details.
@@ -131,6 +139,9 @@ ${uvSummary}
 === CURRENTS ===
 ${currentSummary}
 
+=== SUN TIMES (Palm Beach area, Eastern Time) ===
+${sunSummary}
+
 === NWS MARINE FORECAST (AMZ630, issued this morning) ===
 ${forecast.forecast || 'Unavailable'}
 
@@ -140,6 +151,7 @@ Generate a complete HTML newsletter following EXACTLY the structure and CSS belo
 TONE AND ACCURACY RULES (non-negotiable):
 - Report data only. Never tell readers whether to go out, seek shelter, or make any judgment call. That is the captain's call. End notes with "verify with your operator" or "check with your captain" — never with a directive.
 - Never open with emergency language. The first sentence of the newsletter must describe conditions factually, not issue warnings.
+- Translate NWS meteorological jargon into plain English for a general audience. "Shower" = brief rain shower (short burst of rain, not a storm). "ISOLD" or "isolated" = occasional, affecting less than 10% of the area. "SCTD" or "scattered" = patchy, affecting 30–50% of the area. "OCNL" = occasional. "Seas subsiding" = waves calming down. Always use the plain-English version, never the NWS shorthand.
 - Every sea height cited from a buoy MUST include the buoy's distance offshore: e.g. "buoy 41114 (20 nm offshore) reading 8.9 ft — nearshore conditions will be smaller." Offshore buoy readings are NOT nearshore conditions.
 - Never present far-offshore forecast peaks (e.g. "17 ft occasionally") as if they apply to nearshore or inshore waters. If you cite an offshore peak, note it is for waters 20-60 nm from shore.
 - Advisory/warning bars: only if there is an ACTIVE NWS advisory (SCA, Gale Warning, etc.) explicitly named in the forecast text. Use exact NWS language. No dramatic rewrites.
@@ -272,6 +284,22 @@ TONE AND ACCURACY RULES (non-negotiable):
     <div class="sighting-label">[🟢 CONFIRMED — or ⚪ NO REPORTS TODAY depending on operator data]</div>
     [Only include species and sightings that appear in the operator reports above. If Narcosis or Rainbow Reef mentioned specific animals, sites, viz, or conditions — include them here with operator name and date. If no operator sightings available, say: "No confirmed sightings today. Check back tomorrow — operator logs update daily."]
   </div>
+
+  <div class="section-title">Sun & UV</div>
+  <table>
+    <thead>
+      <tr><th>Sunrise</th><th>Morning Golden Hour</th><th>Evening Golden Hour</th><th>Sunset</th><th>UV Index</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>[sunrise time from SUN TIMES data]</td>
+        <td>[morning golden hour range]</td>
+        <td>[evening golden hour range]</td>
+        <td>[sunset time]</td>
+        <td>[UV index value and label — e.g. "9 · Very High" with a note to wear reef-safe SPF 50+ if UV ≥ 6]</td>
+      </tr>
+    </tbody>
+  </table>
 
   <div class="section-title">Daily Safety Tip</div>
   <div class="safety-box">
