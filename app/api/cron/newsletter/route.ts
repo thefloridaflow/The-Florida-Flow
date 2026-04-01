@@ -305,49 +305,110 @@ TONE AND ACCURACY RULES (non-negotiable):
 </html>`
 
     const anthropic = new Anthropic({ apiKey: anthropicKey })
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 8096,
-      messages: [{ role: 'user', content: prompt }],
-    })
+
+    const socialPrompt = `You are writing social media posts for The Florida Flow — a daily South Florida ocean conditions newsletter and app (the-florida-flow.vercel.app).
+
+LIVE DATA — use only what is below. Do not invent conditions.
+
+=== BUOY DATA ===
+${buoySummary}
+
+=== NWS MARINE FORECAST ===
+${forecast.forecast?.slice(0, 800) || 'Unavailable'}
+
+=== OPERATOR REPORTS ===
+${operatorSummary}
+
+=== INSTRUCTIONS ===
+Write two posts. Separate them with exactly "---" on its own line.
+
+POST 1 — X (Twitter). Max 260 characters including spaces. Format:
+- Start with the most interesting condition fact right now (specific number from buoy data)
+- 2-3 lines max, plain text
+- End with: the-florida-flow.vercel.app
+- No hashtags. No emojis. Just clean data and the link.
+- Must be ≤260 characters total.
+
+POST 2 — Facebook. 100-180 words. Format:
+- Open with a hook about today's conditions — something specific and useful to a Florida diver, surfer, or boater
+- 2-3 short paragraphs covering: conditions summary, what to expect today, one practical tip
+- Never tell people whether to go out — report the data, let captains decide
+- End with: "Full conditions + tides + dive windows → the-florida-flow.vercel.app — free newsletter every morning at 5 AM."
+- Conversational tone, not corporate
+- No hashtags in the body (add them as a comment separately — do not include in this output)`
+
+    // Run newsletter generation and social post generation in parallel
+    const [message, socialMessage] = await Promise.all([
+      anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 8096,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+      anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: socialPrompt }],
+      }),
+    ])
 
     const draftContent = message.content[0].type === 'text' ? message.content[0].text : ''
     if (!draftContent) return NextResponse.json({ error: 'Claude returned empty response' }, { status: 500 })
 
-    // Commit to GitHub as .html
-    const path = `drafts/${etDate}.html`
-    const apiUrl = `https://api.github.com/repos/thefloridaflow/The-Florida-Flow/contents/${path}`
+    const socialContent = socialMessage.content[0].type === 'text' ? socialMessage.content[0].text : ''
 
-    let sha: string | undefined
-    try {
-      const check = await fetch(apiUrl, {
-        headers: { Authorization: `token ${githubToken}`, Accept: 'application/vnd.github+json' },
+    // Helper: commit a file to GitHub
+    async function commitToGitHub(filePath: string, content: string, commitMessage: string) {
+      const apiUrl = `https://api.github.com/repos/thefloridaflow/The-Florida-Flow/contents/${filePath}`
+      let sha: string | undefined
+      try {
+        const check = await fetch(apiUrl, {
+          headers: { Authorization: `token ${githubToken}`, Accept: 'application/vnd.github+json' },
+        })
+        if (check.ok) sha = (await check.json()).sha
+      } catch { /* new file */ }
+
+      const body: Record<string, string> = { message: commitMessage, content: Buffer.from(content).toString('base64') }
+      if (sha) body.sha = sha
+
+      const put = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          Authorization: `token ${githubToken}`,
+          Accept: 'application/vnd.github+json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       })
-      if (check.ok) sha = (await check.json()).sha
-    } catch { /* new file */ }
-
-    const putBody: Record<string, string> = {
-      message: `newsletter draft ${etDate} (issue #${issueNumber})`,
-      content: Buffer.from(draftContent).toString('base64'),
-    }
-    if (sha) putBody.sha = sha
-
-    const put = await fetch(apiUrl, {
-      method: 'PUT',
-      headers: {
-        Authorization: `token ${githubToken}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(putBody),
-    })
-
-    if (!put.ok) {
-      const err = await put.text()
-      return NextResponse.json({ error: `GitHub commit failed: ${err}` }, { status: 502 })
+      if (!put.ok) throw new Error(await put.text())
     }
 
-    return NextResponse.json({ ok: true, draft: path, date: etDate, issue: issueNumber })
+    // Parse social posts
+    const [xPost = '', fbPost = ''] = socialContent.split(/^---$/m).map(s => s.trim())
+
+    const socialMarkdown = `# Social Posts — ${etDate}
+
+## X (Twitter)
+
+${xPost}
+
+---
+
+## Facebook
+
+${fbPost}
+
+---
+
+_Generated by Florida Flow cron — Issue #${issueNumber}_
+`
+
+    // Commit newsletter and social posts in parallel
+    await Promise.all([
+      commitToGitHub(`drafts/${etDate}.html`, draftContent, `newsletter draft ${etDate} (issue #${issueNumber})`),
+      socialContent ? commitToGitHub(`drafts/${etDate}-social.md`, socialMarkdown, `social posts ${etDate}`) : Promise.resolve(),
+    ])
+
+    return NextResponse.json({ ok: true, draft: `drafts/${etDate}.html`, social: `drafts/${etDate}-social.md`, date: etDate, issue: issueNumber })
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 })
   }
