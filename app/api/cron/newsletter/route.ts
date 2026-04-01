@@ -344,14 +344,11 @@ ${buoySummary}
 === NWS MARINE FORECAST ===
 ${forecast.forecast?.slice(0, 800) || 'Unavailable'}
 
-=== OPERATOR REPORTS (may be stale — check dates carefully) ===
-${operatorSummary}
-
 === WHAT IS LIVE VS STALE ===
-- Buoy data (seas, water temp, wind) = live from this morning. Use these numbers freely.
+- Buoy data (seas, water temp, wind) = live from this morning. Use these freely.
 - NWS forecast = current. Use it.
-- Operator reports = only use if dated TODAY (${etShort}). If dated any earlier, DO NOT reference them as current conditions. You may say "last report from [date] showed X" but never imply it reflects today.
-- You have NO live visibility data. Do not state or imply what viz is today.
+- Operator reports = IGNORE COMPLETELY unless dated ${etShort} or ${new Date(Date.now() - 86400000).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric' })}. If older, pretend they don't exist. Do not mention them.
+- You have NO live visibility data. Never mention viz.
 
 === INSTRUCTIONS ===
 Write 3 posts separated by exactly "---" on its own line.
@@ -365,10 +362,9 @@ POST 1 — X (Twitter) thread. 3 tweets separated by [TWEET].
 
 POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
 - Purpose: give divers a reason to check the app and subscribe to the newsletter.
-- Lead with the most dive-relevant live buoy reading (water temp, sea state, wind).
-- Mention BHB wind/temp from LKWF1 buoy if data is available.
-- Only include operator report if dated TODAY. If stale, skip it entirely or say "last report from [date]" — never imply it's current.
-- No viz claims unless an operator reported today.
+- Talk about water temps, sea state by region, and wind at BHB from live buoy data only.
+- No operator reports. No viz claims. No mentions of what any dive shop saw.
+- Naturally mention that the app has tides, dive windows, and current — without being pushy.
 - End with: "Full conditions + tides + dive windows at the-florida-flow.vercel.app — free newsletter every morning."
 - No hashtags. No em dashes. No descriptive condition words unless buoy numbers support them.
 
