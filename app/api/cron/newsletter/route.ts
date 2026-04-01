@@ -372,9 +372,9 @@ POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
 
 POST 3 — Facebook (General Florida groups). 80-120 words.
 - Today is ${etShort}.
-- Audience: general Florida locals — beachgoers, boaters, fishers, surfers. Not necessarily divers.
-- Lead with whatever is most interesting today for anyone near the water. Big swell, warm water, rough offshore, great beach day. Keep it relatable.
-- Simple language. One or two regions max. No buoy IDs, no technical jargon.
+- Audience: everyday Florida beach people — families, tourists, casual swimmers, people deciding whether to go to the beach today. Not surfers, not divers.
+- Lead with whether it's a good beach day or not, water temp, and any weather to watch out for. That's all they care about.
+- Simple language. No wave periods, no buoy IDs, no "swell", no technical jargon whatsoever.
 - Never tell people what to do.
 - End with: "Daily ocean conditions at the-florida-flow.vercel.app — free."
 - No hashtags. No em dashes. Two short paragraphs max. Conversational.`
