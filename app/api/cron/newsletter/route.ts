@@ -322,12 +322,11 @@ ${operatorSummary}
 === INSTRUCTIONS ===
 Write two posts. Separate them with exactly "---" on its own line.
 
-POST 1 — X (Twitter). Max 260 characters including spaces. Format:
-- Start with the most interesting condition fact right now (specific number from buoy data)
-- 2-3 lines max, plain text
-- End with: the-florida-flow.vercel.app
-- No hashtags. No emojis. Just clean data and the link.
-- Must be ≤260 characters total.
+POST 1 — X (Twitter) thread. Write 3 tweets separated by [TWEET].
+Tweet 1 (hook, ≤260 chars): Most striking condition right now — one specific number that makes someone stop scrolling. End with "🧵"
+Tweet 2 (≤270 chars): Region-by-region breakdown — Space Coast / Treasure Coast / Gold Coast / Keys. Seas, water temp, wind. Buoy IDs in parentheses. Plain text, no fluff.
+Tweet 3 (≤240 chars): Operator intel if available (viz, sightings, conditions confirmed on the water). If none, use the NWS forecast highlight for today. End with: the-florida-flow.vercel.app
+Rules: no hashtags, no emojis except the 🧵 on tweet 1, specific numbers only, cite buoy distance offshore.
 
 POST 2 — Facebook. 100-180 words. Format:
 - Open with a hook about today's conditions — something specific and useful to a Florida diver, surfer, or boater
@@ -356,29 +355,33 @@ POST 2 — Facebook. 100-180 words. Format:
 
     const socialContent = socialMessage.content[0].type === 'text' ? socialMessage.content[0].text : ''
 
-    // Helper: commit a file to GitHub
+    // Helper: commit a file to GitHub (retries once on 409 conflict)
     async function commitToGitHub(filePath: string, content: string, commitMessage: string) {
       const apiUrl = `https://api.github.com/repos/thefloridaflow/The-Florida-Flow/contents/${filePath}`
-      let sha: string | undefined
-      try {
-        const check = await fetch(apiUrl, {
-          headers: { Authorization: `token ${githubToken}`, Accept: 'application/vnd.github+json' },
-        })
-        if (check.ok) sha = (await check.json()).sha
-      } catch { /* new file */ }
+      const headers = { Authorization: `token ${githubToken}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' }
+      const encoded = Buffer.from(content).toString('base64')
 
-      const body: Record<string, string> = { message: commitMessage, content: Buffer.from(content).toString('base64') }
-      if (sha) body.sha = sha
+      async function fetchSha(): Promise<string | undefined> {
+        const res = await fetch(apiUrl, { headers })
+        if (res.ok) return (await res.json()).sha
+        return undefined
+      }
 
-      const put = await fetch(apiUrl, {
-        method: 'PUT',
-        headers: {
-          Authorization: `token ${githubToken}`,
-          Accept: 'application/vnd.github+json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      })
+      async function tryPut(sha: string | undefined): Promise<Response> {
+        const body: Record<string, string> = { message: commitMessage, content: encoded }
+        if (sha) body.sha = sha
+        return fetch(apiUrl, { method: 'PUT', headers, body: JSON.stringify(body) })
+      }
+
+      let sha = await fetchSha()
+      let put = await tryPut(sha)
+
+      // On conflict, re-fetch SHA and retry once
+      if (put.status === 409) {
+        sha = await fetchSha()
+        put = await tryPut(sha)
+      }
+
       if (!put.ok) throw new Error(await put.text())
     }
 
