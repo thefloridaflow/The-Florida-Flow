@@ -334,7 +334,7 @@ TONE AND ACCURACY RULES (non-negotiable):
 
     const anthropic = new Anthropic({ apiKey: anthropicKey })
 
-    const socialPrompt = `You are writing social media posts to promote The Florida Flow — a free South Florida ocean conditions app and daily newsletter. The posts tease what's in today's data to drive people to the app. Voice: knowledgeable local, short sentences, real talk.
+    const socialPrompt = `You are writing social media posts to promote The Florida Flow, a free South Florida ocean conditions app and daily newsletter. The posts tease what's in today's data to drive people to the app. Voice: knowledgeable local, short sentences, real talk. NEVER use em dashes (--) anywhere in any post. Use a comma or period instead.
 
 TODAY IS ${etLong}.
 
@@ -366,7 +366,7 @@ POST 1 — X (Twitter) thread. 3 tweets separated by [TWEET].
 - Tweet 1 (≤260 chars): Strong hook using contrast, a surprising number, or tension. Not a summary — make them want to read the next tweet. End with 🧵
 - Tweet 2 (≤270 chars): Regional breakdown — Space Coast / Treasure Coast / Gold Coast / Keys. Seas ft + water temp °F. Buoy distance in parens. Numbers only, no fluff.
 - Tweet 3 (≤240 chars): The one forecast note that actually matters today (rain, wind shift, rough offshore, etc). End with: the-florida-flow.vercel.app
-- No hashtags. No em dashes. No descriptive words ("glassy", "firing", "pumping") unless buoy data directly supports them. "Glassy" = winds under 5 kt.
+- No hashtags. Zero em dashes anywhere. No descriptive words ("glassy", "firing", "pumping", "pumping") unless buoy data directly supports them. "Glassy" = winds under 5 kt.
 
 POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
 - Purpose: give divers a reason to check the app and subscribe to the newsletter.
@@ -404,7 +404,7 @@ POST 4 — Facebook (Fishing groups). 80-120 words.
       }),
       anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1600,
+        max_tokens: 2200,
         messages: [{ role: 'user', content: socialPrompt }],
       }),
     ])
