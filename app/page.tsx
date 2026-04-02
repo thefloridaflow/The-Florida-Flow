@@ -97,6 +97,23 @@ export default async function HomePage() {
         </div>
       </nav>
 
+      {/* Hero — newsletter above the fold, dashboard flows below */}
+      <section className="border-b border-slate-800 bg-slate-950/50">
+        <div className="max-w-6xl mx-auto px-4 py-12 text-center space-y-3">
+          <h2 className="text-3xl font-bold text-white tracking-tight">South Florida, live.</h2>
+          <p className="text-slate-400 max-w-sm mx-auto text-sm leading-relaxed">
+            Weekly ocean conditions, dive reports, and what&apos;s worth getting in the water for — delivered every Thursday.
+          </p>
+          <div className="pt-1">
+            <EmailCapture variant="hero" />
+          </div>
+          <p className="text-slate-600 text-xs">~100 divers and ocean lovers. No spam, ever.</p>
+          <a href="#buoys" className="inline-block mt-4 text-slate-500 hover:text-slate-300 transition-colors text-xs">
+            Live dashboard below ↓
+          </a>
+        </div>
+      </section>
+
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-10">
         {/* Buoy conditions */}
         <section id="buoys">

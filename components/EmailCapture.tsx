@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-export default function EmailCapture() {
+export default function EmailCapture({ variant = 'inline' }: { variant?: 'inline' | 'hero' }) {
   const [email, setEmail] = useState('')
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
 
@@ -21,6 +21,39 @@ export default function EmailCapture() {
     } catch {
       setState('error')
     }
+  }
+
+  if (variant === 'hero') {
+    return (
+      <div className="flex flex-col items-center gap-3">
+        {state === 'done' ? (
+          <p className="text-emerald-400 font-medium">Check your email to confirm! 🤙</p>
+        ) : (
+          <>
+            <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-sm">
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                placeholder="your@email.com"
+                className="flex-1 bg-slate-800 border border-slate-600 text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 placeholder-slate-500"
+              />
+              <button
+                type="submit"
+                disabled={state === 'loading'}
+                className="shrink-0 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-600 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-colors"
+              >
+                {state === 'loading' ? '...' : 'Subscribe'}
+              </button>
+            </form>
+            {state === 'error' && (
+              <p className="text-red-400 text-xs">Something went wrong — try again.</p>
+            )}
+          </>
+        )}
+      </div>
+    )
   }
 
   return (
