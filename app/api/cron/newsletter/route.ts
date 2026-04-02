@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     const issueNumber = Math.max(1, Math.floor((now.getTime() - LAUNCH_DATE.getTime()) / msPerDay) + 1)
 
     // Fetch all data in parallel
-    const appBase = process.env.NEXT_PUBLIC_APP_URL ?? 'https://the-florida-flow.vercel.app'
+    const appBase = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thefloridaflow.com'
     const [buoys, tides, forecast, uv, current, operatorRes, bhbRes] = await Promise.all([
       fetchAllBuoys(),
       fetchTides(),
@@ -221,7 +221,7 @@ TONE AND ACCURACY RULES (non-negotiable):
   <div class="issue-date">${etLong}</div>
 
   <div style="background:#eaf4fb; border:1px solid #b0d4ec; border-radius:6px; padding:10px 16px; margin-bottom:20px; font-family:Arial,sans-serif; font-size:13px; color:#0d3a55;">
-    Check live conditions anytime at <a href="https://the-florida-flow.vercel.app" style="color:#1a6fa0; font-weight:bold; text-decoration:none;">the-florida-flow.vercel.app</a> — buoys, tides, dive windows, UV, and more. Updated hourly.
+    Check live conditions anytime at <a href="https://thefloridaflow.com" style="color:#1a6fa0; font-weight:bold; text-decoration:none;">thefloridaflow.com</a> — buoys, tides, dive windows, UV, and more. Updated hourly.
   </div>
 
   [ADVISORY BAR if SCA or notable warning — omit entirely if conditions are calm]
@@ -366,7 +366,7 @@ POST 1 — X (Twitter) thread. 3 tweets separated by [TWEET].
 - Purpose: hook people into checking the app with the most interesting number from today's live buoy data.
 - Tweet 1 (≤260 chars): Strong hook using contrast, a surprising number, or tension. Not a summary — make them want to read the next tweet. End with 🧵
 - Tweet 2 (≤270 chars): Regional breakdown — Space Coast / Treasure Coast / Gold Coast / Keys. Seas ft + water temp °F. Buoy distance in parens. Numbers only, no fluff.
-- Tweet 3 (≤240 chars): The one forecast note that actually matters today (rain, wind shift, rough offshore, etc). End with: the-florida-flow.vercel.app
+- Tweet 3 (≤240 chars): The one forecast note that actually matters today (rain, wind shift, rough offshore, etc). End with: thefloridaflow.com
 - No hashtags. Zero em dashes anywhere. No descriptive words ("glassy", "firing", "pumping", "pumping") unless buoy data directly supports them. "Glassy" = winds under 5 kt.
 
 POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
@@ -375,7 +375,7 @@ POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
 - Talk about water temps, sea state by region, and wind at BHB from live buoy data only.
 - No operator reports. No viz claims. No mentions of what any dive shop saw.
 - Naturally mention that the app has tides, dive windows, and current — without being pushy.
-- End with: "Full conditions + tides + dive windows at the-florida-flow.vercel.app — free newsletter every morning."
+- End with: "Full conditions + tides + dive windows at thefloridaflow.com — free newsletter every morning."
 - No hashtags. No em dashes. No descriptive condition words unless buoy numbers support them.
 
 POST 3 — Facebook (General Florida groups). 80-120 words.
@@ -384,7 +384,7 @@ POST 3 — Facebook (General Florida groups). 80-120 words.
 - Open with a hook — water temp, a contrast between regions, or a heads-up about weather.
 - Talk about water temp, whether conditions are rough or calm (based on actual buoy seas/wind), and any weather to watch for.
 - No wave periods, no buoy IDs, no technical jargon.
-- End with: "Daily ocean conditions at the-florida-flow.vercel.app — free."
+- End with: "Daily ocean conditions at thefloridaflow.com — free."
 - No hashtags. No em dashes. Two short paragraphs max.
 
 POST 4 — Facebook (Fishing groups). 80-120 words.
@@ -393,7 +393,7 @@ POST 4 — Facebook (Fishing groups). 80-120 words.
 - Open with a hook about sea state or water temp that a fisher would actually care about.
 - Report seas and water temp by region. That is all. Do not say which spot is "best" or make any judgment about where to fish. Fishermen know their boats and tolerance — give them the numbers and let them decide.
 - No dive jargon, no viz, no BHB windows.
-- End with: "Tides, currents, and full conditions at the-florida-flow.vercel.app — free daily newsletter."
+- End with: "Tides, currents, and full conditions at thefloridaflow.com — free daily newsletter."
 - No hashtags. No em dashes. Two short paragraphs max.
 
 POST 5 — Reddit (r/scubadiving, r/Florida, or r/spearfishing). 80-120 words.
@@ -403,7 +403,7 @@ POST 5 — Reddit (r/scubadiving, r/Florida, or r/spearfishing). 80-120 words.
 - One natural mention of the app near the end, no hard sell.
 - Suggest the most relevant subreddit in brackets at the top, e.g. [r/scubadiving].
 - Casual tone, no jargon, no em dashes, no hashtags. Write like a local who dives or fishes, not a marketer.
-- End with: "full data at the-florida-flow.vercel.app if useful"`
+- End with: "full data at thefloridaflow.com if useful"`
 
     // Run newsletter generation and social post generation in parallel
     const [message, socialMessage] = await Promise.all([
@@ -505,30 +505,32 @@ _Generated by Florida Flow cron — Issue #${issueNumber}_
 `
 
     // Ghost Admin API: generate JWT and publish draft
-    async function publishToGhost(html: string, title: string) {
+    async function publishToGhost(html: string, title: string): Promise<string | null> {
       const ghostKey = process.env.GHOST_ADMIN_API_KEY
-      if (!ghostKey) return
+      if (!ghostKey) return 'GHOST_ADMIN_API_KEY not set'
       const [id, secret] = ghostKey.split(':')
       const header  = Buffer.from(JSON.stringify({ alg: 'HS256', kid: id, typ: 'JWT' })).toString('base64url')
       const payload = Buffer.from(JSON.stringify({ iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 300, aud: '/admin/' })).toString('base64url')
       const sig     = createHmac('sha256', Buffer.from(secret, 'hex')).update(`${header}.${payload}`).digest('base64url')
       const token   = `${header}.${payload}.${sig}`
-      await fetch('https://newsletter.thefloridaflow.com/ghost/api/admin/posts/', {
+      const res = await fetch('https://newsletter.thefloridaflow.com/ghost/api/admin/posts/', {
         method: 'POST',
         headers: { Authorization: `Ghost ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ posts: [{ title, html, status: 'draft', email_segment: 'all' }] }),
         signal: AbortSignal.timeout(15000),
       })
+      if (!res.ok) return `Ghost API ${res.status}: ${await res.text()}`
+      return null
     }
 
     // Commit newsletter and social posts in parallel, and push draft to Ghost
-    await Promise.all([
+    const [,,ghostError] = await Promise.all([
       commitToGitHub(`drafts/${etDate}.html`, draftContent, `newsletter draft ${etDate} (issue #${issueNumber})`),
       socialContent ? commitToGitHub(`drafts/${etDate}-social.md`, socialMarkdown, `social posts ${etDate}`) : Promise.resolve(),
       publishToGhost(draftContent, `The Florida Flow — Issue #${issueNumber} · ${etShort}`),
     ])
 
-    return NextResponse.json({ ok: true, draft: `drafts/${etDate}.html`, social: `drafts/${etDate}-social.md`, date: etDate, issue: issueNumber })
+    return NextResponse.json({ ok: true, draft: `drafts/${etDate}.html`, social: `drafts/${etDate}-social.md`, date: etDate, issue: issueNumber, ghostError: ghostError ?? 'ok' })
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 })
   }
