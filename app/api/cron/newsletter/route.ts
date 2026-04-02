@@ -393,7 +393,16 @@ POST 4 — Facebook (Fishing groups). 80-120 words.
 - Report seas and water temp by region. That is all. Do not say which spot is "best" or make any judgment about where to fish. Fishermen know their boats and tolerance — give them the numbers and let them decide.
 - No dive jargon, no viz, no BHB windows.
 - End with: "Tides, currents, and full conditions at the-florida-flow.vercel.app — free daily newsletter."
-- No hashtags. No em dashes. Two short paragraphs max.`
+- No hashtags. No em dashes. Two short paragraphs max.
+
+POST 5 — Reddit (r/scubadiving, r/Florida, or r/spearfishing). 80-120 words.
+- Purpose: genuine community contribution that happens to mention the app. Must not read like an ad.
+- Framing: "I track this data daily and here's what I'm seeing" — not "check out my app."
+- Open with the most interesting or surprising data point from today. Make it useful on its own, even without clicking anything.
+- One natural mention of the app near the end, no hard sell.
+- Suggest the most relevant subreddit in brackets at the top, e.g. [r/scubadiving].
+- Casual tone, no jargon, no em dashes, no hashtags. Write like a local who dives or fishes, not a marketer.
+- End with: "full data at the-florida-flow.vercel.app if useful"`
 
     // Run newsletter generation and social post generation in parallel
     const [message, socialMessage] = await Promise.all([
@@ -404,7 +413,7 @@ POST 4 — Facebook (Fishing groups). 80-120 words.
       }),
       anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2200,
+        max_tokens: 2800,
         messages: [{ role: 'user', content: socialPrompt }],
       }),
     ])
@@ -445,13 +454,19 @@ POST 4 — Facebook (Fishing groups). 80-120 words.
     }
 
     // Parse social posts
-    const [xPost = '', fbScuba = '', fbGeneral = '', fbFishing = ''] = socialContent.split(/^---$/m).map(s => s.trim())
+    const [xPost = '', fbScuba = '', fbGeneral = '', fbFishing = '', redditPost = ''] = socialContent.split(/^---$/m).map(s => s.trim())
 
     const socialMarkdown = `# Social Posts — ${etDate}
 
 ## X (Twitter)
 
 ${xPost}
+
+### Twitter exposure checklist
+- Post Thu/Fri mornings for weekend planning traffic
+- Search "diving florida", "snorkeling conditions", "offshore fishing florida" and reply to recent tweets with today's data
+- Tag local shops/charters when mentioning their area (e.g. @ForcE_Dive, @CaptainHooksMiami)
+- Hashtags to add: #SouthFlorida #scuba #diveflorida #floridafishing #spearfishing
 
 ---
 
@@ -470,6 +485,18 @@ ${fbGeneral}
 ## Facebook — Fishing groups
 
 ${fbFishing}
+
+---
+
+## Reddit
+
+${redditPost}
+
+### Reddit posting guide
+- Paste into the suggested subreddit above
+- Also works in: r/Florida, r/scubadiving, r/spearfishing, r/FishingFlorida
+- If flagged for self-promo: reply "happy to remove if not useful, just tracking this data daily"
+- Best time to post: 7-9am ET weekdays
 
 ---
 
