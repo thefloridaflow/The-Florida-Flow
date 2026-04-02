@@ -30,6 +30,26 @@ function rateConditions(buoy: BuoyData | undefined): { rating: Rating; windOnly:
 }
 
 
+// Offshore viz proxy — only meaningful for buoys 6+ nm out.
+// Based on wave height + period; longer period = groundswell = clearer water.
+function vizEstimate(buoy: BuoyData | undefined): { range: string; color: string } | null {
+  if (!buoy || buoy.error || buoy.offshoreNm < 6 || !buoy.waveHeight) return null
+  const wh = parseFloat(buoy.waveHeight)
+  const wp = buoy.wavePeriod ? parseFloat(buoy.wavePeriod) : 0
+  let lo: number, hi: number
+  if      (wh < 1)   { lo = 50; hi = 100 }
+  else if (wh < 2)   { lo = 30; hi = 60  }
+  else if (wh < 3)   { lo = 20; hi = 40  }
+  else if (wh < 4)   { lo = 10; hi = 30  }
+  else if (wh < 6)   { lo = 5;  hi = 20  }
+  else               { lo = 0;  hi = 10  }
+  // Long-period swell = better viz; short choppy = worse
+  if (wp >= 10)           { lo = Math.min(lo + 10, 100); hi = Math.min(hi + 15, 120) }
+  else if (wp > 0 && wp < 5) { lo = Math.max(lo - 5, 0); hi = Math.max(hi - 10, 5) }
+  const color = hi >= 40 ? 'text-emerald-400' : hi >= 20 ? 'text-cyan-400' : hi >= 10 ? 'text-yellow-400' : 'text-red-400'
+  return { range: `${lo}–${hi} ft`, color }
+}
+
 const ratingColor: Record<Rating, string> = {
   Good:     'text-emerald-400',
   Marginal: 'text-yellow-400',
@@ -56,6 +76,7 @@ export default function RegionalConditionsTable({ buoys }: { buoys: BuoyData[] }
               <th className="text-left px-5 py-3 text-slate-400 font-medium whitespace-nowrap">Period</th>
               <th className="text-left px-5 py-3 text-slate-400 font-medium whitespace-nowrap">Wind</th>
               <th className="text-left px-5 py-3 text-slate-400 font-medium whitespace-nowrap">Water Temp</th>
+              <th className="text-left px-5 py-3 text-slate-400 font-medium whitespace-nowrap">Viz Est.</th>
               <th className="text-left px-5 py-3 text-slate-400 font-medium whitespace-nowrap">Offshore</th>
             </tr>
           </thead>
@@ -63,6 +84,7 @@ export default function RegionalConditionsTable({ buoys }: { buoys: BuoyData[] }
             {REGIONS.map(({ name, buoyId }, i) => {
               const buoy = byId[buoyId]
               const { rating, windOnly } = rateConditions(buoy)
+              const viz = vizEstimate(buoy)
               const offshoreLabel = buoy
                 ? buoy.offshoreNm === 0 ? 'Inshore' : `~${buoy.offshoreNm} nm`
                 : '—'
@@ -93,6 +115,9 @@ export default function RegionalConditionsTable({ buoys }: { buoys: BuoyData[] }
                   <td className="px-5 py-3 text-slate-300 whitespace-nowrap">
                     {buoy?.waterTemp ? `${buoy.waterTemp}°F` : '—'}
                   </td>
+                  <td className={`px-5 py-3 whitespace-nowrap font-medium ${viz ? viz.color : 'text-slate-600'}`}>
+                    {viz ? viz.range : '—'}
+                  </td>
                   <td className="px-5 py-3 text-slate-500 whitespace-nowrap text-xs">
                     {offshoreLabel}
                   </td>
@@ -102,6 +127,7 @@ export default function RegionalConditionsTable({ buoys }: { buoys: BuoyData[] }
           </tbody>
         </table>
       </div>
+      <p className="text-xs text-slate-600 mt-2">Viz Est. is an offshore proxy from buoy wave data — not a measurement. Inshore and shore-dive viz varies independently.</p>
     </section>
   )
 }
