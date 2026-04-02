@@ -18,7 +18,7 @@ import CurrentPanel from '@/components/CurrentPanel'
 // next: { revalidate: 3600 } so NOAA data is cached for 1 hour by Next.js.
 export const dynamic = 'force-dynamic'
 
-const BASE_URL = 'https://the-florida-flow.vercel.app'
+const BASE_URL = 'https://thefloridaflow.com'
 
 const jsonLd = {
   '@context': 'https://schema.org',
