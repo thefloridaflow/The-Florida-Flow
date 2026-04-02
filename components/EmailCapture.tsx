@@ -76,7 +76,7 @@ export default function EmailCapture({ variant = 'inline' }: { variant?: 'inline
 
   if (variant === 'hero') {
     return (
-      <div className="flex flex-col items-center gap-3 w-full max-w-sm">
+      <div className="flex flex-col items-center gap-3 w-full max-w-sm mx-auto">
         {step === 'done' && (
           <p className="text-emerald-400 font-medium text-center">You&apos;re in. Check your email to confirm.</p>
         )}

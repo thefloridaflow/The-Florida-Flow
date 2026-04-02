@@ -28,7 +28,7 @@ export default function FeaturedOperators() {
   return (
     <section>
       <div className="flex items-center gap-2 mb-5">
-        <h2 className="text-xl font-bold text-white">Featured Operators</h2>
+        <h2 className="text-xl font-bold text-white">Recommended Operators</h2>
         <span className="text-xs bg-cyan-900/60 text-cyan-400 border border-cyan-700/50 px-2 py-1 rounded-full">Verified Partners</span>
       </div>
 

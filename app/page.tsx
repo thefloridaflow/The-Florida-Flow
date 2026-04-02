@@ -151,6 +151,9 @@ export default async function HomePage() {
         {/* By Activity */}
         <div id="activity"><ActivityVerdicts buoys={buoys} /></div>
 
+        {/* Recommended Operators */}
+        <FeaturedOperators />
+
         {/* BHB Site Guide */}
         <div id="bhb"><BHBBanner /></div>
 
@@ -169,9 +172,8 @@ export default async function HomePage() {
           <CurrentPanel current={current} />
         </section>
 
-        {/* Featured (paid) operators */}
-        <div id="operators" className="space-y-10">
-          <FeaturedOperators />
+        {/* Operator logs */}
+        <div id="operators">
           <OperatorLogs />
         </div>
 
