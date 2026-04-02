@@ -443,32 +443,43 @@ ${forecast.forecast?.slice(0, 800) || 'Unavailable'}
 Same rules as main newsletter: data only, no judgment calls, offshore buoy readings are NOT nearshore, cite buoy distance, no NWS jargon.
 
 === OUTPUT FORMAT ===
-Generate clean HTML using ONLY inline styles. No CSS classes. No style blocks.
+Generate clean HTML using ONLY inline styles. No CSS classes. No style blocks. Every element MUST have explicit color set — never rely on inherited color. ALL body text must use color:#1a1a1a or color:#222. Generate ALL 11 sections completely — do not truncate or abbreviate.
 
-Structure:
-1. Advisory bar (only if active NWS advisory): <div style="background:#fef9e7;border-left:4px solid #e67e22;padding:12px 16px;margin-bottom:20px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;color:#7d4a00;">⚠️ [advisory text]</div>
+BADGE STYLES — use these exactly on every data cell that has a value:
+- Observed data: <span style="display:inline-block;background:#d5f5e3;color:#1e8449;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;margin-left:4px;">OBSERVED</span>
+- Predicted/estimated: <span style="display:inline-block;background:#fef9e7;color:#b7770d;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;margin-left:4px;">PREDICTED</span>
 
-2. Conditions summary: 2-3 paragraphs, <p style="font-size:15px;line-height:1.7;color:#222;margin-bottom:14px;font-family:Georgia,serif;">[text]</p>
+TABLE CELL RULE — every td must be: <td style="padding:9px;border-bottom:1px solid #e8e8e8;vertical-align:top;color:#1a1a1a;font-family:Arial,sans-serif;">
 
-3. App link: <p style="font-family:Arial,sans-serif;font-size:13px;margin-bottom:20px;"><a href="https://thefloridaflow.com" style="color:#1a6fa0;font-weight:bold;">Check live conditions at thefloridaflow.com</a> — buoys, tides, dive windows, UV. Updated hourly.</p>
+SECTION HEADING: <h2 style="font-size:17px;font-weight:bold;font-family:Arial,sans-serif;color:#1a1a1a;border-bottom:2px solid #e0e0e0;padding-bottom:6px;margin:28px 0 12px 0;">
 
-4. Regional table: <h2 style="font-size:17px;font-weight:bold;font-family:Arial,sans-serif;border-bottom:2px solid #e0e0e0;padding-bottom:6px;margin:28px 0 12px;">Regional Conditions</h2> then a table with style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;" — th style="background:#1a1a1a;color:#fff;padding:9px;text-align:left;white-space:nowrap;" — td style="padding:9px;border-bottom:1px solid #e8e8e8;vertical-align:top;"
+TABLE: <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;margin-bottom:16px;">
+TH: <th style="background:#1a1a1a;color:#ffffff;padding:9px;text-align:left;white-space:nowrap;font-family:Arial,sans-serif;">
 
-5. Activity table: same heading/table pattern, 5 activities
+Structure — generate ALL of these in order:
+1. Advisory bar (only if active NWS advisory): <div style="background:#fef9e7;border-left:4px solid #e67e22;padding:12px 16px;margin-bottom:20px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;color:#7d4a00;">⚠️ [text]</div>
 
-6. Sightings box: <div style="background:#eafaf1;border-left:4px solid #27ae60;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#1a4a2a;line-height:1.65;margin:20px 0;">[content]</div>
+2. Conditions: 3 paragraphs using <p style="font-size:15px;line-height:1.7;color:#222;margin-bottom:14px;font-family:Georgia,serif;">
 
-7. Week outlook: <div style="background:#f9f9f6;border:1px solid #ddd;padding:16px;font-family:Arial,sans-serif;font-size:14px;line-height:1.9;margin:20px 0;">[day by day]</div>
+3. App link: <p style="font-family:Arial,sans-serif;font-size:13px;color:#444;margin-bottom:24px;"><a href="https://thefloridaflow.com" style="color:#1a6fa0;font-weight:bold;">Check live conditions at thefloridaflow.com</a> — buoys, tides, dive windows, UV. Updated hourly.</p>
 
-8. Sun & UV: single line, <p style="font-family:Arial,sans-serif;font-size:13px;color:#444;margin:20px 0;">☀️ Sunrise [time] · Sunset [time] · UV [index] ([label]) · Golden hour [morning range]</p>
+4. Regional table (8 regions, columns: Region / Seas / Period / Wind / Water Temp / Buoy). Seas and Water Temp from buoy data get OBSERVED badge. Estimated data gets PREDICTED badge.
 
-9. Safety tip: <div style="background:#fdedec;border-left:4px solid #c0392b;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#7b241c;line-height:1.65;margin:20px 0;"><strong>[title]</strong><br>[2-3 sentences]</div>
+5. Activity table (5 rows: 🤿 Scuba, 🏄 Surfing, 🚣 Kayak/SUP, ⛵ Boating/Fishing, 🏖️ Beach). Verdict column 1-2 words max (Good/Marginal/Elevated/Rough/Calm). Notes column full detail. Verdict cell: <td style="padding:9px;border-bottom:1px solid #e8e8e8;vertical-align:top;color:#1a1a1a;font-family:Arial,sans-serif;font-weight:bold;white-space:nowrap;">
 
-10. Poll: <div style="background:#f0f4ff;border-left:4px solid #3a6fa0;padding:16px;font-family:Arial,sans-serif;font-size:14px;color:#1a2a4a;margin:20px 0;"><strong style="display:block;margin-bottom:12px;">[question]</strong> then 4 links: <a href="mailto:hello@thefloridaflow.com?subject=Poll: [option]" style="display:block;background:#fff;border:1px solid #c0d0e8;border-radius:6px;padding:10px 14px;margin-bottom:8px;color:#1a2a4a;text-decoration:none;">👉 [option]</a></div>
+6. Sightings: <div style="background:#eafaf1;border-left:4px solid #27ae60;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#1a4a2a;line-height:1.65;margin:20px 0;">
 
-11. Disclaimer: <p style="font-size:11px;color:#999;font-family:Arial,sans-serif;line-height:1.6;margin-top:24px;border-top:1px solid #e0e0e0;padding-top:16px;">The Florida Flow aggregates NOAA forecasts and buoy data. All offshore sea heights are from buoys 20–60 nm offshore. Nearshore conditions vary. Always confirm with your captain or operator. Use at your own risk.</p>
+7. Week outlook: <div style="background:#f9f9f6;border:1px solid #ddd;padding:16px;font-family:Arial,sans-serif;font-size:14px;color:#1a1a1a;line-height:1.9;margin:20px 0;">
 
-Output only the HTML. No markdown, no commentary.`
+8. Sun & UV: <p style="font-family:Arial,sans-serif;font-size:13px;color:#444;margin:20px 0;">☀️ Sunrise [time] · Sunset [time] · UV [index] ([label]) · Golden hour [morning range]</p>
+
+9. Safety tip: <div style="background:#fdedec;border-left:4px solid #c0392b;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#7b241c;line-height:1.65;margin:20px 0;"><strong style="color:#7b241c;">[title]</strong><br><span style="color:#7b241c;">[2-3 sentences]</span></div>
+
+10. Poll: <div style="background:#f0f4ff;border-left:4px solid #3a6fa0;padding:16px;font-family:Arial,sans-serif;font-size:14px;color:#1a2a4a;margin:20px 0;"><strong style="display:block;color:#1a2a4a;margin-bottom:12px;">[question]</strong> then 4 mailto links: <a href="mailto:hello@thefloridaflow.com?subject=Poll: [option]" style="display:block;background:#fff;border:1px solid #c0d0e8;border-radius:6px;padding:10px 14px;margin-bottom:8px;color:#1a2a4a;text-decoration:none;">👉 [option]</a></div>
+
+11. Disclaimer: <p style="font-size:11px;color:#888;font-family:Arial,sans-serif;line-height:1.6;margin-top:24px;border-top:1px solid #e0e0e0;padding-top:16px;">The Florida Flow aggregates NOAA forecasts and buoy data. All offshore sea heights are from buoys 20–60 nm offshore. Nearshore conditions vary. Always confirm with your captain or operator. Use at your own risk.</p>
+
+Output only the HTML. No markdown, no commentary. Generate every section completely.`
 
     // Run all three Claude calls in parallel
     const [message, socialMessage, ghostMessage] = await Promise.all([
@@ -484,7 +495,7 @@ Output only the HTML. No markdown, no commentary.`
       }),
       anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 4096,
+        max_tokens: 8096,
         messages: [{ role: 'user', content: ghostPrompt }],
       }),
     ])
