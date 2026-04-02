@@ -27,7 +27,7 @@ export default function EmailCapture({ variant = 'inline' }: { variant?: 'inline
     return (
       <div className="flex flex-col items-center gap-3">
         {state === 'done' ? (
-          <p className="text-emerald-400 font-medium">Check your email to confirm! 🤙</p>
+          <p className="text-emerald-400 font-medium">You&apos;re in. First issue hits before 6 AM.</p>
         ) : (
           <>
             <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-sm">
@@ -64,7 +64,7 @@ export default function EmailCapture({ variant = 'inline' }: { variant?: 'inline
       </div>
 
       {state === 'done' && (
-        <p className="text-emerald-400 text-sm font-medium shrink-0">Check your email to confirm! 🤙</p>
+        <p className="text-emerald-400 text-sm font-medium shrink-0">You&apos;re in. First issue hits before 6 AM.</p>
       )}
       {state === 'error' && (
         <p className="text-red-400 text-xs shrink-0">Something went wrong — try again.</p>
