@@ -429,85 +429,48 @@ POST 5 — Reddit (r/scubadiving, r/Florida, or r/spearfishing). 80-120 words.
 - Casual tone, no jargon, no em dashes, no hashtags. Write like a local who dives or fishes, not a marketer.
 - End with: "full data at thefloridaflow.com if useful"`
 
-    const ghostPrompt = `You are generating the email body for Issue #${issueNumber} of The Florida Flow newsletter for ${etLong}.
+    const ghostPrompt = `Generate the Ghost email body for Issue #${issueNumber}, ${etLong}. Ghost wraps this — output inner content only. ALL styles inline. No CSS classes, no style blocks.
 
-Ghost CMS will wrap this in its own branded email template (header, footer, unsubscribe). Do NOT include: DOCTYPE, html, head, body, style tags, wrapper divs, masthead, or footer. Output ONLY the inner content with ALL styles inline on each element.
+DATA (use only this):
+BUOYS: ${buoySummary}
+OPERATORS: ${operatorSummary}
+BHB WINDOWS: ${bhbSummary}
+UV: ${uvSummary} | CURRENTS: ${currentSummary} | SUN: ${sunSummary}
+FORECAST: ${forecast.forecast?.slice(0, 600) || 'Unavailable'}
 
-SAME LIVE DATA AS NEWSLETTER — use only what is below.
+RULES: Data only. No judgment calls. Offshore buoys (20-60nm) ≠ nearshore. Cite buoy distance. Plain English (no NWS jargon).
 
-=== BUOY DATA ===
-${buoySummary}
+RATING SCALE: CALM <1ft/<10kt | GOOD 1-2ft/<15kt | MARGINAL 2-3ft | CHOPPY 3-5ft/short period | ELEVATED 3-5ft/building | BUILDING worsening | ROUGH 5ft+/>25kt | ACTIVE SCA named advisory
+Colors: green=#4ade80 (Calm/Good), orange=#fb923c (Marginal/Choppy/Elevated/Building), red=#f87171 (Rough/Active SCA)
 
-=== OPERATOR REPORTS ===
-${operatorSummary}
+VIS MODEL (PREDICTED unless operator confirms): <1ft+<10kt=40-80ft | 1-2ft+<15kt=20-50ft | 2-3ft/15-20kt=10-30ft | 3-5ft/>20kt=5-15ft | >5ft=<10ft. Onshore winds reduce one tier. BHB="Tidal 5-20ft".
+BADGES: OBSERVED=<span style="background:#064e3b;color:#6ee7b7;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;display:inline-block;margin-left:4px;">OBSERVED</span> PREDICTED=<span style="background:#78350f;color:#fcd34d;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;display:inline-block;margin-left:4px;">PREDICTED</span>
 
-=== BHB DIVE WINDOWS ===
-${bhbSummary}
+STYLES (apply inline to every element):
+- Wrapper: <div style="background:#0f172a;padding:24px 28px;border-radius:8px;max-width:680px;font-family:Arial,sans-serif;color:#e2e8f0;">
+- H2: font-size:17px;font-weight:bold;color:#ffffff;border-bottom:1px solid #334155;padding-bottom:6px;margin:28px 0 12px 0;font-family:Arial,sans-serif
+- P body: font-size:15px;line-height:1.7;color:#e2e8f0;margin-bottom:14px;font-family:Georgia,serif
+- TABLE: width:100%;border-collapse:collapse;font-size:13px;font-family:Arial,sans-serif;margin-bottom:16px
+- TH: background:#1e293b;color:#94a3b8;padding:9px;text-align:left;white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:0.5px
+- TD: padding:9px;border-bottom:1px solid #1e293b;vertical-align:top;color:#e2e8f0;background:#0f172a;font-family:Arial,sans-serif
 
-=== UV INDEX ===
-${uvSummary}
+OUTPUT all 12 sections inside the wrapper div:
+1. Advisory bar (ONLY if active NWS advisory): background:#451a03;border-left:4px solid #f97316;color:#fed7aa — else omit
+2. 3 condition paragraphs (buoy readings, forecast summary, BHB windows today)
+3. App link: <p style="font-size:13px;color:#94a3b8;font-family:Arial,sans-serif;margin-bottom:24px;"><a href="https://thefloridaflow.com" style="color:#38bdf8;font-weight:bold;">Check live conditions at thefloridaflow.com</a> — buoys, tides, dive windows, UV. Updated hourly.</p>
+4. Regional table: cols Region/Conditions/Vis/Seas/Wind/Water Temp/Buoy — 8 rows. Color-code Conditions with rating scale colors. OBSERVED/PREDICTED badges on data cells.
+   After table: sourcing note (font-size:12px;color:#64748b) naming each buoy by coastline+distance, NWS zone, BHB from iDiveFlorida, UV from Open-Meteo. End: "Offshore buoy readings ≠ nearshore. Confirm with your captain."
+   Then BHB ad: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — "First time at BHB? The Florida Flow BHB Site Guide — <a href="https://ko-fi.com/s/59604a0ac1" style="color:#4ade80;font-weight:bold;">Get the guide $12 →</a>"
+5. Activity table: cols Activity/Verdict/Notes — 5 rows (🤿Scuba 🏄Surfing 🚣Kayak/SUP ⛵Boating/Fishing 🏖️Beach). Verdict from rating scale, color-coded inline. Notes end with "verify with your operator."
+6. BHB Dive Windows: background:#0c1a2e;border-left:4px solid #0ea5e9;color:#bae6fd — tide times, window times, quality
+7. Marine Life Sightings: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — operator-confirmed only. If Rainbow Reef has no data, say so by name.
+8. Week Outlook: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — day by day from NWS. Each day: <span style="color:[green/orange/red];font-weight:bold;">Day 🟢/🟡/🔴:</span> summary. End: "Offshore heights from buoys 20-60nm. Nearshore smaller. Check with your operator."
+9. Safety Tip: background:#1c0a09;border-left:4px solid #ef4444;color:#fca5a5 — title + 2-3 sentences tied to today's data
+10. Poll: background:#0f1f3d;border-left:4px solid #3b82f6;color:#bfdbfe — question + 4 mailto options (mailto:hello@thefloridaflow.com?subject=Poll:[option]) + "Tap to reply. We read every response."
+11. Forward ask: background:#1e293b;border-left:4px solid #0ea5e9;color:#bae6fd — "Know someone on the water? Forward this to a diver, angler, or anyone Space Coast to Keys. Free every morning."
+12. Disclaimer: font-size:11px;color:#475569;border-top:1px solid #1e293b;padding-top:16px — "The Florida Flow aggregates NOAA data. Offshore heights from buoys 20-60nm. Nearshore varies. Confirm with your captain. Use at your own risk."
 
-=== CURRENTS ===
-${currentSummary}
-
-=== SUN TIMES ===
-${sunSummary}
-
-=== NWS MARINE FORECAST ===
-${forecast.forecast?.slice(0, 800) || 'Unavailable'}
-
-=== ACCURACY RULES ===
-Same rules as main newsletter: data only, no judgment calls, offshore buoy readings are NOT nearshore, cite buoy distance, no NWS jargon.
-
-=== OUTPUT FORMAT ===
-Generate clean HTML using ONLY inline styles. No CSS classes. No style blocks. Every element MUST have explicit color — never rely on inherited color. ALL body text must be white or light: use color:#e2e8f0 for body, color:#ffffff for headings. Generate ALL 10 sections completely — do not truncate.
-
-DARK THEME — the wrapper is navy #0f172a. Design everything to look good on dark background.
-
-BADGE STYLES:
-- Observed: <span style="display:inline-block;background:#064e3b;color:#6ee7b7;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;margin-left:4px;">OBSERVED</span>
-- Predicted: <span style="display:inline-block;background:#78350f;color:#fcd34d;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;margin-left:4px;">PREDICTED</span>
-
-TABLE CELL: <td style="padding:9px;border-bottom:1px solid #1e293b;vertical-align:top;color:#e2e8f0;font-family:Arial,sans-serif;background:#0f172a;">
-SECTION HEADING: <h2 style="font-size:17px;font-weight:bold;font-family:Arial,sans-serif;color:#ffffff;border-bottom:1px solid #334155;padding-bottom:6px;margin:28px 0 12px 0;">
-TABLE: <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;margin-bottom:16px;">
-TH: <th style="background:#1e293b;color:#94a3b8;padding:9px;text-align:left;white-space:nowrap;font-family:Arial,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">
-
-Wrap ALL output in this single outer div — do not omit it:
-<div style="background:#0f172a;padding:24px 28px;border-radius:8px;max-width:680px;font-family:Arial,sans-serif;color:#e2e8f0;">
-
-Structure — generate ALL inside the wrapper:
-1. Advisory bar (only if active NWS advisory): <div style="background:#451a03;border-left:4px solid #f97316;padding:12px 16px;margin-bottom:20px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;color:#fed7aa;">⚠️ [text]</div>
-
-2. Conditions: 3 paragraphs: <p style="font-size:15px;line-height:1.7;color:#e2e8f0;margin-bottom:14px;font-family:Georgia,serif;">
-
-3. App link: <p style="font-family:Arial,sans-serif;font-size:13px;color:#94a3b8;margin-bottom:24px;"><a href="https://thefloridaflow.com" style="color:#38bdf8;font-weight:bold;">Check live conditions at thefloridaflow.com</a> — buoys, tides, dive windows, UV. Updated hourly.</p>
-
-4. Regional table (8 regions, columns: Region / Conditions / Vis / Seas / Wind / Water Temp / Buoy). Seas and Water Temp from buoy data get OBSERVED badge. Estimated gets PREDICTED badge. CONDITIONS column: use RATING SCALE — Calm/Good (green #4ade80), Marginal/Choppy/Building/Elevated (orange #fb923c), Rough/Active SCA (red #f87171). SCALE: CALM under 1ft winds under 10kt; GOOD 1–2ft winds under 15kt; MARGINAL 2–3ft borderline; CHOPPY 3–5ft wind chop short period 5–7s; ELEVATED 3–5ft building swell; BUILDING actively worsening; ROUGH 5ft+ or winds over 25kt; ACTIVE SCA named NWS advisory. Example: <span style="color:#fb923c;font-weight:bold;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">CHOPPY</span>. VIS column: if an operator report explicitly states visibility for that region, use it with OBSERVED badge. Otherwise estimate with PREDICTED badge using this model — seas under 1ft + winds under 10kt: Est. 40–80 ft; seas 1–2ft + winds under 15kt: Est. 20–50 ft; seas 2–3ft or winds 15–20kt: Est. 10–30 ft; seas 3–5ft or winds over 20kt: Est. 5–15 ft; seas over 5ft: Est. under 10 ft. Onshore winds (E/SE/NE) reduce one tier vs offshore (W/NW/SW). BHB: write "Tidal — 5–20 ft" with PREDICTED unless operator reports actual viz.
-
-After the regional table, add:
-<p style="font-size:12px;color:#64748b;font-family:Arial,sans-serif;line-height:1.6;margin-top:8px;margin-bottom:20px;">[2-3 sentence sourcing note naming each buoy by what coast it covers and its distance offshore, the NWS zone and issuance time, BHB windows from iDiveFlorida, UV from Open-Meteo. End with: "Offshore buoy readings do not represent nearshore conditions. Always confirm with your captain or operator."]</p>
-
-Then add BHB product box:
-<div style="background:#052e16;border-left:4px solid #22c55e;padding:12px 16px;font-family:Arial,sans-serif;font-size:13px;color:#bbf7d0;line-height:1.6;margin-bottom:20px;">First time at BHB? <strong style="color:#4ade80;">The Florida Flow BHB Site Guide</strong> covers tide strategy, marine life by season, best entry points, and what to expect underwater. <a href="https://ko-fi.com/s/59604a0ac1" style="color:#4ade80;font-weight:bold;text-decoration:none;">Get the guide — $12 →</a></div>
-
-5. Activity table (5 rows: 🤿 Scuba, 🏄 Surfing, 🚣 Kayak/SUP, ⛵ Boating/Fishing, 🏖️ Beach). Verdict 1-2 words max from RATING SCALE only: Calm/Good/Marginal/Choppy/Elevated/Building/Rough/Active SCA. Verdict cell — color-code inline: GOOD/CALM → color:#4ade80, MARGINAL/CHOPPY/BUILDING/ELEVATED → color:#fb923c, ROUGH/ACTIVE SCA → color:#f87171. Example: <td style="padding:9px;border-bottom:1px solid #1e293b;vertical-align:top;font-family:Arial,sans-serif;font-weight:bold;white-space:nowrap;background:#0f172a;"><span style="color:#fb923c;font-weight:bold;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">BUILDING</span></td>. Verdict cell base: <td style="padding:9px;border-bottom:1px solid #1e293b;vertical-align:top;font-family:Arial,sans-serif;font-weight:bold;white-space:nowrap;background:#0f172a;">
-
-6. BHB Dive Windows: <div style="background:#0c1a2e;border-left:4px solid #0ea5e9;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#bae6fd;line-height:1.65;margin:20px 0;"><strong style="color:#38bdf8;display:block;margin-bottom:6px;">🤿 BHB Dive Windows</strong>[tide times, window times, quality from BHB data]</div>
-
-7. Sightings: <div style="background:#052e16;border-left:4px solid #22c55e;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#bbf7d0;line-height:1.65;margin:20px 0;">
-
-8. Week Outlook: <div style="background:#1e293b;border:1px solid #334155;padding:16px;font-family:Arial,sans-serif;font-size:14px;color:#e2e8f0;line-height:1.9;margin:20px 0;"><strong style="color:#ffffff;display:block;margin-bottom:10px;">Week Outlook</strong>[day by day from NWS forecast. Format each day as: <span style="color:[#4ade80 good/calm | #fb923c marginal/building/elevated | #f87171 rough/dangerous];font-weight:bold;">[Day] [🟢/🟡/🔴]:</span> [conditions summary]. End with: "All offshore sea heights from NOAA buoys 20–60 nm from shore. Nearshore conditions smaller. Always check with your operator."]</div>
-
-9. Daily Safety Tip: <div style="background:#1c0a09;border-left:4px solid #ef4444;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#fca5a5;line-height:1.65;margin:20px 0;"><strong style="color:#f87171;display:block;margin-bottom:6px;">[title based on today's conditions]</strong><span style="color:#fca5a5;">[2-3 sentences tied to today's data]</span></div>
-
-10. Poll: <div style="background:#0f1f3d;border-left:4px solid #3b82f6;padding:16px;font-family:Arial,sans-serif;font-size:14px;color:#bfdbfe;margin:20px 0;"><strong style="display:block;color:#93c5fd;margin-bottom:12px;">[question]</strong> 4 mailto links: <a href="mailto:hello@thefloridaflow.com?subject=Poll: [option]" style="display:block;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:10px 14px;margin-bottom:8px;color:#e2e8f0;text-decoration:none;">👉 [option]</a><br><em style="font-size:12px;color:#64748b;">Tap an option to reply. We read every response.</em></div>
-
-11. Forward ask: <div style="background:#1e293b;border-left:4px solid #0ea5e9;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#bae6fd;line-height:1.65;margin:20px 0;"><strong style="color:#38bdf8;display:block;margin-bottom:6px;">Know someone on the water?</strong><span style="color:#cbd5e1;">If this email saved someone a bad trip or helped them time a dive window, pass it on. Forward it to a diver, angler, or anyone who spends time on the water from the Space Coast to the Keys. Free every morning. No spam. Just conditions.</span></div>
-
-12. Disclaimer: <p style="font-size:11px;color:#475569;font-family:Arial,sans-serif;line-height:1.6;margin-top:24px;border-top:1px solid #1e293b;padding-top:16px;">The Florida Flow aggregates NOAA forecasts and buoy data. All offshore sea heights are from buoys 20–60 nm offshore. Nearshore conditions vary. Always confirm with your captain or operator before heading out. Use at your own risk.</p>
-
-Close the outer div. Output only HTML. No markdown. Generate every section completely.`
+Close wrapper div. Output HTML only. No markdown. No truncation.`
 
     // Run all three Claude calls in parallel
     const [message, socialMessage, ghostMessage] = await Promise.all([
