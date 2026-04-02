@@ -47,7 +47,10 @@ function ReportCard({ r }: { r: OperatorReport }) {
           </a>
           <p className="text-slate-500 text-xs">{r.location}</p>
         </div>
-        {r.date && <p className="text-slate-500 text-xs shrink-0">{r.date}</p>}
+        {r.stale
+          ? <p className="text-amber-500 text-xs shrink-0">No posts in 48h</p>
+          : r.date && <p className="text-slate-500 text-xs shrink-0">{r.date}</p>
+        }
       </div>
       <div className="space-y-1 mt-2">
         <Field label="Visibility" value={r.visibility} />

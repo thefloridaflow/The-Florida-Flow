@@ -12,6 +12,24 @@ export type OperatorReport = {
   url: string
   linkOnly?: boolean
   error?: boolean
+  stale?: boolean
+}
+
+function isStale(dateStr: string): boolean {
+  if (!dateStr) return true
+  // Normalize: remove ordinal suffixes (1st, 2nd, 3rd, 4th...)
+  const normalized = dateStr.replace(/(\d+)(st|nd|rd|th)/gi, '$1')
+  // Handle "TUESDAY 3/31" → assume current year
+  const slashMatch = normalized.match(/(\d{1,2})\/(\d{1,2})/)
+  let parsed: Date | null = null
+  if (slashMatch) {
+    const year = new Date().getFullYear()
+    parsed = new Date(`${year}-${slashMatch[1].padStart(2,'0')}-${slashMatch[2].padStart(2,'0')}T00:00:00`)
+  } else {
+    parsed = new Date(normalized)
+  }
+  if (isNaN(parsed.getTime())) return true
+  return Date.now() - parsed.getTime() > 48 * 60 * 60 * 1000
 }
 
 function stripTags(html: string): string {
@@ -166,6 +184,10 @@ export async function GET() {
     url: 'https://www.islandventure.com/key-largo-weather-report/',
     linkOnly: true,
   }
+
+  narcosis.stale   = isStale(narcosis.date)
+  rainbow.stale    = isStale(rainbow.date)
+  forceE.stale     = isStale(forceE.date)
 
   return NextResponse.json([narcosis, rainbow, forceE, captainHooks, islandVenture])
 }
