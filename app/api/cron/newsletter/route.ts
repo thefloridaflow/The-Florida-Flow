@@ -492,7 +492,9 @@ Then add BHB product box:
 
 10. Poll: <div style="background:#0f1f3d;border-left:4px solid #3b82f6;padding:16px;font-family:Arial,sans-serif;font-size:14px;color:#bfdbfe;margin:20px 0;"><strong style="display:block;color:#93c5fd;margin-bottom:12px;">[question]</strong> 4 mailto links: <a href="mailto:hello@thefloridaflow.com?subject=Poll: [option]" style="display:block;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:10px 14px;margin-bottom:8px;color:#e2e8f0;text-decoration:none;">👉 [option]</a><br><em style="font-size:12px;color:#64748b;">Tap an option to reply. We read every response.</em></div>
 
-End with: <p style="font-size:11px;color:#475569;font-family:Arial,sans-serif;line-height:1.6;margin-top:24px;border-top:1px solid #1e293b;padding-top:16px;">The Florida Flow aggregates NOAA forecasts and buoy data. All offshore sea heights are from buoys 20–60 nm offshore. Nearshore conditions vary. Always confirm with your captain or operator.</p>
+11. Forward ask: <div style="background:#1e293b;border-left:4px solid #0ea5e9;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#bae6fd;line-height:1.65;margin:20px 0;"><strong style="color:#38bdf8;display:block;margin-bottom:6px;">Know someone on the water?</strong><span style="color:#cbd5e1;">If this email saved someone a bad trip or helped them time a dive window, pass it on. Forward it to a diver, angler, or anyone who spends time on the water from the Space Coast to the Keys. Free every morning. No spam. Just conditions.</span></div>
+
+12. Disclaimer: <p style="font-size:11px;color:#475569;font-family:Arial,sans-serif;line-height:1.6;margin-top:24px;border-top:1px solid #1e293b;padding-top:16px;">The Florida Flow aggregates NOAA forecasts and buoy data. All offshore sea heights are from buoys 20–60 nm offshore. Nearshore conditions vary. Always confirm with your captain or operator before heading out. Use at your own risk.</p>
 
 Close the outer div. Output only HTML. No markdown. Generate every section completely.`
 
@@ -509,8 +511,8 @@ Close the outer div. Output only HTML. No markdown. Generate every section compl
         messages: [{ role: 'user', content: socialPrompt }],
       }),
       anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 8096,
+        model: 'claude-sonnet-4-6',
+        max_tokens: 16000,
         messages: [{ role: 'user', content: ghostPrompt }],
       }),
     ])
