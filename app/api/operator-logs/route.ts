@@ -53,14 +53,21 @@ async function fetchNarcosis(): Promise<OperatorReport> {
       else if (/^Waves:/i.test(text))       waves      = text.replace(/^Waves:\s*/i, '')
     }
 
-    // Grab first substantial paragraph that isn't a conditions label
+    // Sightings/notes live in <div class="divelog">
     let notes = ''
-    const pRe = /<p[^>]*>([\s\S]*?)<\/p>/gi
-    while ((m = pRe.exec(html)) !== null) {
-      const text = stripTags(m[1])
-      if (text.length > 25 && !/^(Visibility|Current|Water|Waves|Skies|Air|Seas|Time)/i.test(text)) {
-        notes = text.substring(0, 130)
-        break
+    const divelogMatch = html.match(/<div[^>]*class="divelog"[^>]*>([\s\S]*?)<\/div>/i)
+    if (divelogMatch) {
+      notes = stripTags(divelogMatch[1]).substring(0, 200)
+    }
+    if (!notes) {
+      const pRe = /<p[^>]*>([\s\S]*?)<\/p>/gi
+      let m2: RegExpExecArray | null
+      while ((m2 = pRe.exec(html)) !== null) {
+        const text = stripTags(m2[1])
+        if (text.length > 25 && !/^(Visibility|Current|Water|Waves|Skies|Air|Seas|Time)/i.test(text)) {
+          notes = text.substring(0, 200)
+          break
+        }
       }
     }
 
