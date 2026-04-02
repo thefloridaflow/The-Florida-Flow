@@ -185,7 +185,7 @@ TONE AND ACCURACY RULES (non-negotiable):
   .headline-text { font-size: 15px; line-height: 1.7; color: #222; margin-bottom: 14px; }
   .vis-note { background: #f9f9f6; border: 1px solid #ddd; padding: 12px 16px; font-size: 13px; color: #444; font-family: Arial, sans-serif; line-height: 1.6; margin-bottom: 18px; }
   table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 10px; }
-  th { background: #1a1a1a; color: #ffffff; padding: 10px; text-align: left; font-weight: bold; }
+  th { background: #1a1a1a; color: #ffffff; padding: 10px; text-align: left; font-weight: bold; white-space: nowrap; }
   td { padding: 10px; border-bottom: 1px solid #e8e8e8; vertical-align: top; }
   tr:nth-child(even) td { background: #fafafa; }
   .region-name { font-weight: bold; color: #1a1a1a; }
@@ -204,7 +204,7 @@ TONE AND ACCURACY RULES (non-negotiable):
   .referral-box strong { display: block; font-size: 15px; margin-bottom: 8px; }
   .poll-box { background: #f0f4ff; border-left: 4px solid #3a6fa0; padding: 16px 18px; font-family: Arial, sans-serif; font-size: 14px; color: #1a2a4a; line-height: 1.65; margin-bottom: 28px; }
   .poll-box strong { display: block; font-size: 15px; margin-bottom: 12px; }
-  .poll-option { background: #ffffff; border: 1px solid #c0d0e8; border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; font-size: 14px; color: #1a2a4a; }
+  .poll-option { display: block; background: #ffffff; border: 1px solid #c0d0e8; border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; font-size: 14px; color: #1a2a4a; text-decoration: none; }
   .disclaimer-box { background: #f5f5f5; border: 1px solid #ddd; padding: 12px 16px; font-size: 12px; color: #666; font-family: Arial, sans-serif; line-height: 1.6; margin-bottom: 28px; }
   .footer { text-align: center; font-size: 12px; color: #aaa; font-family: Arial, sans-serif; border-top: 1px solid #e0e0e0; padding-top: 20px; margin-top: 10px; }
   .product-box { background: #f0fdf4; border-left: 4px solid #27ae60; padding: 12px 16px; font-family: Arial, sans-serif; font-size: 13px; color: #1a4a2a; line-height: 1.6; margin-bottom: 18px; }
@@ -271,8 +271,7 @@ TONE AND ACCURACY RULES (non-negotiable):
 
   <div class="referral-box">
     <strong>Know someone on the water from the Space Coast to the Keys?</strong>
-    Share The Florida Flow with 3 friends and get the Florida Flow Site Guide — Issue 01: Blue Heron Bridge. Tide windows, marine life, local tips. Everything you need before you splash.<br><br>
-    <em>Your personal referral link: https://newsletter.thefloridaflow.com/subscribe</em>
+    Forward this email to a diver, angler, or anyone who spends time on the water. Free every morning. No spam. Just conditions.
   </div>
 
   <div class="week-box">
@@ -311,12 +310,12 @@ TONE AND ACCURACY RULES (non-negotiable):
   <div class="section-title">Quick Poll</div>
   <div class="poll-box">
     <strong>[A question relevant to South Florida water sports — rotate topics]</strong>
-    <div class="poll-option">[Option 1]</div>
-    <div class="poll-option">[Option 2]</div>
-    <div class="poll-option">[Option 3]</div>
-    <div class="poll-option">[Option 4]</div>
+    <a class="poll-option" href="mailto:hello@thefloridaflow.com?subject=Poll: [Option 1]">👉 [Option 1]</a>
+    <a class="poll-option" href="mailto:hello@thefloridaflow.com?subject=Poll: [Option 2]">👉 [Option 2]</a>
+    <a class="poll-option" href="mailto:hello@thefloridaflow.com?subject=Poll: [Option 3]">👉 [Option 3]</a>
+    <a class="poll-option" href="mailto:hello@thefloridaflow.com?subject=Poll: [Option 4]">👉 [Option 4]</a>
     <br>
-    <em style="font-size:12px; color:#666;">Reply to this email with your answer, we read every response.</em>
+    <em style="font-size:12px; color:#666;">Tap an option to reply. We read every response.</em>
   </div>
 
   <div class="disclaimer-box">
