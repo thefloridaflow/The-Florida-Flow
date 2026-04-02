@@ -350,13 +350,18 @@ ${forecast.forecast?.slice(0, 800) || 'Unavailable'}
 - Operator reports = IGNORE COMPLETELY unless dated ${etShort} or ${new Date(Date.now() - 86400000).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric' })}. If older, pretend they don't exist. Do not mention them.
 - You have NO live visibility data. Never mention viz.
 
-=== HOOK RULES (apply to every post) ===
-A good hook makes someone stop scrolling. Use one of these techniques:
-- Contrast: "Most of South Florida is flat today. Then there's the Space Coast."
-- Specific surprising number: "77 degrees in the Keys right now."
-- Tension or stakes: "Shower moving in this afternoon with 30 kt gusts. Here's what you need to know."
-- Local insider feel: something only someone who actually watches these waters would say.
-Never start with "Water temps are..." or "Conditions are..." — that's a weather report opener, not a hook.
+=== HOOK RULES (apply to every post — this is the most important part) ===
+The hook is the only thing that determines whether someone stops scrolling. Research shows the highest-performing hooks do one of these:
+
+1. CONTRAST: Split the audience or split geography. "BHB is flat right now. The Space Coast is not."
+2. COUNTERINTUITIVE FACT: Say something that contradicts what people assume. "The roughest water in South Florida today isn't offshore — it's [location]."
+3. SPECIFIC NUMBER THAT MEANS SOMETHING: Not "water is warm" — "79°F at the Keys buoy, warmest it's been in 6 weeks."
+4. STAKES / CONSEQUENCE: What happens if they miss this info. "There's a 30 kt shower moving toward the coast right now. ETA 2 hours."
+5. INSIDER SIGNAL: Only someone who actually watches these waters would say this. "That 8-second period on buoy 41009 means the swell is groundswell, not wind chop. Different feel in the water entirely."
+6. QUESTION THAT CREATES TENSION: "Why is the Keys showing 2 ft while Fort Lauderdale shows 5? Here's the reason."
+
+NEVER start with: "Water temps are...", "Conditions are...", "Good morning...", "Today's update...", "Here's what's happening..." — these are weather report openers. Nobody stops scrolling for those.
+The hook must be complete as a sentence. No cliffhangers that require clicking to understand.
 
 === INSTRUCTIONS ===
 Write 4 posts separated by exactly "---" on its own line.
@@ -404,8 +409,69 @@ POST 5 — Reddit (r/scubadiving, r/Florida, or r/spearfishing). 80-120 words.
 - Casual tone, no jargon, no em dashes, no hashtags. Write like a local who dives or fishes, not a marketer.
 - End with: "full data at thefloridaflow.com if useful"`
 
-    // Run newsletter generation and social post generation in parallel
-    const [message, socialMessage] = await Promise.all([
+    const ghostPrompt = `You are generating the email body for Issue #${issueNumber} of The Florida Flow newsletter for ${etLong}.
+
+Ghost CMS will wrap this in its own branded email template (header, footer, unsubscribe). Do NOT include: DOCTYPE, html, head, body, style tags, wrapper divs, masthead, or footer. Output ONLY the inner content with ALL styles inline on each element.
+
+SAME LIVE DATA AS NEWSLETTER — use only what is below.
+
+=== BUOY DATA ===
+${buoySummary}
+
+=== OPERATOR REPORTS ===
+${operatorSummary}
+
+=== BHB DIVE WINDOWS ===
+${bhbSummary}
+
+=== TIDE PREDICTIONS ===
+${tidesSummary}
+
+=== UV INDEX ===
+${uvSummary}
+
+=== CURRENTS ===
+${currentSummary}
+
+=== SUN TIMES ===
+${sunSummary}
+
+=== NWS MARINE FORECAST ===
+${forecast.forecast?.slice(0, 800) || 'Unavailable'}
+
+=== ACCURACY RULES ===
+Same rules as main newsletter: data only, no judgment calls, offshore buoy readings are NOT nearshore, cite buoy distance, no NWS jargon.
+
+=== OUTPUT FORMAT ===
+Generate clean HTML using ONLY inline styles. No CSS classes. No style blocks.
+
+Structure:
+1. Advisory bar (only if active NWS advisory): <div style="background:#fef9e7;border-left:4px solid #e67e22;padding:12px 16px;margin-bottom:20px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;color:#7d4a00;">⚠️ [advisory text]</div>
+
+2. Conditions summary: 2-3 paragraphs, <p style="font-size:15px;line-height:1.7;color:#222;margin-bottom:14px;font-family:Georgia,serif;">[text]</p>
+
+3. App link: <p style="font-family:Arial,sans-serif;font-size:13px;margin-bottom:20px;"><a href="https://thefloridaflow.com" style="color:#1a6fa0;font-weight:bold;">Check live conditions at thefloridaflow.com</a> — buoys, tides, dive windows, UV. Updated hourly.</p>
+
+4. Regional table: <h2 style="font-size:17px;font-weight:bold;font-family:Arial,sans-serif;border-bottom:2px solid #e0e0e0;padding-bottom:6px;margin:28px 0 12px;">Regional Conditions</h2> then a table with style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;" — th style="background:#1a1a1a;color:#fff;padding:9px;text-align:left;white-space:nowrap;" — td style="padding:9px;border-bottom:1px solid #e8e8e8;vertical-align:top;"
+
+5. Activity table: same heading/table pattern, 5 activities
+
+6. Sightings box: <div style="background:#eafaf1;border-left:4px solid #27ae60;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#1a4a2a;line-height:1.65;margin:20px 0;">[content]</div>
+
+7. Week outlook: <div style="background:#f9f9f6;border:1px solid #ddd;padding:16px;font-family:Arial,sans-serif;font-size:14px;line-height:1.9;margin:20px 0;">[day by day]</div>
+
+8. Sun & UV: single line, <p style="font-family:Arial,sans-serif;font-size:13px;color:#444;margin:20px 0;">☀️ Sunrise [time] · Sunset [time] · UV [index] ([label]) · Golden hour [morning range]</p>
+
+9. Safety tip: <div style="background:#fdedec;border-left:4px solid #c0392b;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#7b241c;line-height:1.65;margin:20px 0;"><strong>[title]</strong><br>[2-3 sentences]</div>
+
+10. Poll: <div style="background:#f0f4ff;border-left:4px solid #3a6fa0;padding:16px;font-family:Arial,sans-serif;font-size:14px;color:#1a2a4a;margin:20px 0;"><strong style="display:block;margin-bottom:12px;">[question]</strong> then 4 links: <a href="mailto:hello@thefloridaflow.com?subject=Poll: [option]" style="display:block;background:#fff;border:1px solid #c0d0e8;border-radius:6px;padding:10px 14px;margin-bottom:8px;color:#1a2a4a;text-decoration:none;">👉 [option]</a></div>
+
+11. Disclaimer: <p style="font-size:11px;color:#999;font-family:Arial,sans-serif;line-height:1.6;margin-top:24px;border-top:1px solid #e0e0e0;padding-top:16px;">The Florida Flow aggregates NOAA forecasts and buoy data. All offshore sea heights are from buoys 20–60 nm offshore. Nearshore conditions vary. Always confirm with your captain or operator. Use at your own risk.</p>
+
+Output only the HTML. No markdown, no commentary.`
+
+    // Run all three Claude calls in parallel
+    const [message, socialMessage, ghostMessage] = await Promise.all([
       anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 8096,
@@ -416,12 +482,18 @@ POST 5 — Reddit (r/scubadiving, r/Florida, or r/spearfishing). 80-120 words.
         max_tokens: 2800,
         messages: [{ role: 'user', content: socialPrompt }],
       }),
+      anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 4096,
+        messages: [{ role: 'user', content: ghostPrompt }],
+      }),
     ])
 
     const draftContent = message.content[0].type === 'text' ? message.content[0].text : ''
     if (!draftContent) return NextResponse.json({ error: 'Claude returned empty response' }, { status: 500 })
 
     const socialContent = socialMessage.content[0].type === 'text' ? socialMessage.content[0].text : ''
+    const ghostContent  = ghostMessage.content[0].type === 'text'  ? ghostMessage.content[0].text  : draftContent
 
     // Helper: commit a file to GitHub (retries once on 409 conflict)
     async function commitToGitHub(filePath: string, content: string, commitMessage: string) {
@@ -526,7 +598,7 @@ _Generated by Florida Flow cron — Issue #${issueNumber}_
     const [,,ghostError] = await Promise.all([
       commitToGitHub(`drafts/${etDate}.html`, draftContent, `newsletter draft ${etDate} (issue #${issueNumber})`),
       socialContent ? commitToGitHub(`drafts/${etDate}-social.md`, socialMarkdown, `social posts ${etDate}`) : Promise.resolve(),
-      publishToGhost(draftContent, `The Florida Flow — Issue #${issueNumber} · ${etShort}`),
+      publishToGhost(ghostContent, `The Florida Flow — Issue #${issueNumber} · ${etShort}`),
     ])
 
     return NextResponse.json({ ok: true, draft: `drafts/${etDate}.html`, social: `drafts/${etDate}-social.md`, date: etDate, issue: issueNumber, ghostError: ghostError ?? 'ok' })
