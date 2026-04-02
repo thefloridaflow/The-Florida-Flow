@@ -17,7 +17,8 @@ const REGIONS = [
   { name: 'Deerfield / Pompano',                   buoyId: '41122' },
   { name: 'Fort Lauderdale',                       buoyId: '41122' },
   { name: 'Miami / Key Biscayne',                  buoyId: '41122' },
-  { name: 'Key Largo / Upper Keys',                buoyId: '42095' },
+  { name: 'Key Largo / Upper Keys',                buoyId: 'SMKF1' },
+  { name: 'Key West / Lower Keys',                 buoyId: '42095' },
 ]
 
 export async function GET(req: NextRequest) {

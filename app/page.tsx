@@ -1,4 +1,5 @@
 import { fetchAllBuoys, fetchTides, fetchMarineForecast, fetchUVIndex, fetchCurrents } from '@/lib/noaa'
+import { getConditionsOverview } from '@/lib/overview'
 import BuoyCard from '@/components/BuoyCard'
 import ForecastPanel from '@/components/ForecastPanel'
 import CommunitySection from '@/components/CommunitySection'
@@ -43,12 +44,13 @@ const jsonLd = {
 }
 
 export default async function HomePage() {
-  const [buoys, tides, forecast, uv, current] = await Promise.all([
+  const [buoys, tides, forecast, uv, current, overview] = await Promise.all([
     fetchAllBuoys(),
     fetchTides(),
     fetchMarineForecast(),
     fetchUVIndex(),
     fetchCurrents(),
+    getConditionsOverview(),
   ])
 
   return (
@@ -115,6 +117,14 @@ export default async function HomePage() {
       </section>
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-10">
+        {/* Conditions overview */}
+        {overview && (
+          <div className="bg-slate-800/60 rounded-xl px-5 py-4 border border-slate-700/50">
+            <p className="text-sm text-slate-200 leading-relaxed">{overview}</p>
+            <p className="text-xs text-slate-600 mt-2">AI summary from live NOAA buoy data · Refreshes when conditions shift</p>
+          </div>
+        )}
+
         {/* Buoy conditions */}
         <section id="buoys">
           <div className="flex items-center gap-2 mb-5">

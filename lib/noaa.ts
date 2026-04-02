@@ -61,8 +61,9 @@ const BUOY_STATIONS: Record<string, { name: string; region: string; lat: number;
   '41114': { name: 'Fort Pierce',    region: 'Treasure Coast',              lat: 27.551, lon: -80.225, offshoreNm: 6.5 },
   '41122': { name: 'Fort Lauderdale', region: 'Fort Lauderdale Offshore',   lat: 26.044, lon: -79.097, offshoreNm: 23 },
   'LKWF1': { name: 'Lake Worth',     region: 'Lake Worth Inshore',          lat: 26.613, lon: -80.034, offshoreNm: 0  },
-  'SMKF1': { name: 'Sombrero Key',   region: 'Florida Keys',                lat: 24.627, lon: -81.113, offshoreNm: 1  },
-  '42095': { name: 'Satan Shoal',    region: 'Florida Keys',                lat: 24.407, lon: -81.968, offshoreNm: 15 },
+  'SMKF1': { name: 'Sombrero Key',   region: 'Middle Keys / Marathon',      lat: 24.627, lon: -81.113, offshoreNm: 1  },
+  '42095': { name: 'Satan Shoal',    region: 'Key West / Lower Keys',       lat: 24.407, lon: -81.968, offshoreNm: 15 },
+  'SANF1': { name: 'Sand Key',       region: 'Key West Inshore',            lat: 24.454, lon: -81.878, offshoreNm: 0  },
 }
 
 function metersToFeet(m: string | number): string {

@@ -184,10 +184,24 @@ export async function GET() {
     url: 'https://www.islandventure.com/key-largo-weather-report/',
     linkOnly: true,
   }
+  const southpointDivers: OperatorReport = {
+    operator: 'Southpoint Divers',
+    location: 'Key West',
+    date: '',
+    url: 'https://southpointdivers.com/dive-conditions/',
+    linkOnly: true,
+  }
+  const keyWestDiveCenter: OperatorReport = {
+    operator: 'Key West Dive Center',
+    location: 'Key West',
+    date: '',
+    url: 'https://www.keywestdivecenter.com/diving-conditions/',
+    linkOnly: true,
+  }
 
   narcosis.stale   = isStale(narcosis.date)
   rainbow.stale    = isStale(rainbow.date)
   forceE.stale     = isStale(forceE.date)
 
-  return NextResponse.json([narcosis, rainbow, forceE, captainHooks, islandVenture])
+  return NextResponse.json([narcosis, rainbow, forceE, captainHooks, islandVenture, southpointDivers, keyWestDiveCenter])
 }
