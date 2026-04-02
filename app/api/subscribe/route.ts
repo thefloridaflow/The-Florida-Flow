@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createHmac } from 'crypto'
 import { getSupabase } from '@/lib/supabase'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function ghostAdminJwt(ghostKey: string): string {
+  const [id, secret] = ghostKey.split(':')
+  const header  = Buffer.from(JSON.stringify({ alg: 'HS256', kid: id, typ: 'JWT' })).toString('base64url')
+  const payload = Buffer.from(JSON.stringify({ iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 300, aud: '/admin/' })).toString('base64url')
+  const sig     = createHmac('sha256', Buffer.from(secret, 'hex')).update(`${header}.${payload}`).digest('base64url')
+  return `${header}.${payload}.${sig}`
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,7 +20,7 @@ export async function POST(req: NextRequest) {
     }
     const normalized = String(email).toLowerCase().slice(0, 254)
 
-    // Save to Supabase (best-effort — duplicate is fine)
+    // Save to Supabase (best-effort)
     try {
       const db = getSupabase()
       const { error } = await db.from('email_subscribers').insert({ email: normalized })
@@ -20,16 +29,25 @@ export async function POST(req: NextRequest) {
       console.error('Supabase error:', dbErr)
     }
 
-    // Add to Ghost via server-side call (avoids browser CORS restriction)
-    const ghostRes = await fetch('https://newsletter.thefloridaflow.com/members/api/send-magic-link/', {
+    // Add to Ghost via Admin API (server-side JWT, no CORS issues)
+    const ghostKey = process.env.GHOST_ADMIN_API_KEY
+    if (!ghostKey) {
+      console.error('GHOST_ADMIN_API_KEY not set')
+      return NextResponse.json({ error: 'Server misconfiguration' }, { status: 503 })
+    }
+    const token = ghostAdminJwt(ghostKey)
+    const ghostRes = await fetch('https://newsletter.thefloridaflow.com/ghost/api/admin/members/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: normalized, emailType: 'subscribe', labels: [] }),
+      headers: { Authorization: `Ghost ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ members: [{ email: normalized, subscribed: true }] }),
       signal: AbortSignal.timeout(10000),
     })
-    if (!ghostRes.ok && ghostRes.status !== 201) {
+
+    if (!ghostRes.ok) {
       const body = await ghostRes.text()
-      console.error('Ghost subscribe error:', ghostRes.status, body)
+      // 422 = member already exists — that's fine
+      if (ghostRes.status === 422) return NextResponse.json({ ok: true, already: true })
+      console.error('Ghost Admin API error:', ghostRes.status, body)
       return NextResponse.json({ error: 'Subscribe failed' }, { status: 502 })
     }
 
