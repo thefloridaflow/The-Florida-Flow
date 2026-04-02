@@ -5,22 +5,22 @@ import { getSupabase } from '@/lib/supabase'
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const GHOST_BASE = 'https://newsletter.thefloridaflow.com'
 
-// ip-api.com free tier is HTTP only; 45 req/min
 async function geolocateIp(ip: string): Promise<Record<string, string> | null> {
   try {
+    // HTTPS endpoint via ipapi.co — no key needed, 1000 req/day free
     const res = await fetch(
-      `http://ip-api.com/json/${ip}?fields=status,city,country,countryCode,lat,lon`,
+      `https://ipapi.co/${ip}/json/`,
       { signal: AbortSignal.timeout(3000) },
     )
     if (!res.ok) return null
     const data = await res.json()
-    if (data.status !== 'success') return null
+    if (data.error || !data.city) return null
     return {
       city:         data.city,
-      country:      data.country,
-      country_code: data.countryCode,
-      latitude:     String(data.lat),
-      longitude:    String(data.lon),
+      country:      data.country_name,
+      country_code: data.country_code,
+      latitude:     String(data.latitude),
+      longitude:    String(data.longitude),
     }
   } catch {
     return null
@@ -36,30 +36,41 @@ function ghostAdminJwt(): string {
   return `${header}.${payload}.${sig}`
 }
 
-async function setGhostGeolocation(email: string, geo: Record<string, string>): Promise<void> {
+// Create member via Admin API with geolocation pre-set, then send magic link.
+// This avoids the race condition of trying to update a member that doesn't exist yet.
+async function upsertGhostMemberWithGeo(email: string, geo: Record<string, string> | null): Promise<void> {
   const ghostKey = process.env.GHOST_ADMIN_API_KEY
-  if (!ghostKey) return
+  if (!ghostKey || !geo) return
   const token = ghostAdminJwt()
   const headers = { Authorization: `Ghost ${token}`, 'Content-Type': 'application/json' }
+  const geolocation = JSON.stringify(geo)
 
-  const search = await fetch(
-    `${GHOST_BASE}/ghost/api/admin/members/?filter=email:'${encodeURIComponent(email)}'&limit=1`,
-    { headers, signal: AbortSignal.timeout(5000) },
-  )
-  if (!search.ok) return
-  const { members } = await search.json()
-  if (!members?.length) return
-
-  await fetch(`${GHOST_BASE}/ghost/api/admin/members/${members[0].id}/`, {
-    method: 'PUT',
+  const post = await fetch(`${GHOST_BASE}/ghost/api/admin/members/`, {
+    method: 'POST',
     headers,
-    body: JSON.stringify({ members: [{ geolocation: JSON.stringify(geo) }] }),
+    body: JSON.stringify({ members: [{ email, geolocation }] }),
     signal: AbortSignal.timeout(5000),
   })
+
+  if (post.status === 422) {
+    // Already exists — find and update
+    const search = await fetch(
+      `${GHOST_BASE}/ghost/api/admin/members/?filter=email:'${encodeURIComponent(email)}'&limit=1`,
+      { headers, signal: AbortSignal.timeout(5000) },
+    )
+    if (!search.ok) return
+    const { members } = await search.json()
+    if (!members?.length) return
+    await fetch(`${GHOST_BASE}/ghost/api/admin/members/${members[0].id}/`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ members: [{ geolocation }] }),
+      signal: AbortSignal.timeout(5000),
+    })
+  }
 }
 
-async function sendGhostMagicLink(email: string, userIp?: string): Promise<void> {
-  // Ghost requires an integrity token (anti-CSRF) fetched first
+async function sendGhostMagicLink(email: string): Promise<void> {
   const tokenRes = await fetch(`${GHOST_BASE}/members/api/integrity-token/`, {
     headers: { Origin: GHOST_BASE },
     signal: AbortSignal.timeout(8000),
@@ -67,14 +78,9 @@ async function sendGhostMagicLink(email: string, userIp?: string): Promise<void>
   if (!tokenRes.ok) throw new Error(`Integrity token fetch failed: ${tokenRes.status}`)
   const integrityToken = await tokenRes.text()
 
-  // Forward the user's real IP so Ghost geolocates them correctly,
-  // not the Vercel server IP (which would always resolve to Virginia, US)
-  const forwardHeaders: Record<string, string> = { 'Content-Type': 'application/json', Origin: GHOST_BASE }
-  if (userIp) forwardHeaders['X-Forwarded-For'] = userIp
-
   const res = await fetch(`${GHOST_BASE}/members/api/send-magic-link/`, {
     method: 'POST',
-    headers: forwardHeaders,
+    headers: { 'Content-Type': 'application/json', Origin: GHOST_BASE },
     body: JSON.stringify({ email, emailType: 'subscribe', labels: [], requestSrc: 'portal', integrityToken }),
     signal: AbortSignal.timeout(8000),
   })
@@ -103,18 +109,13 @@ export async function POST(req: NextRequest) {
 
     const userIp = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? undefined
 
-    // Geolocate and send magic link in parallel — geo doesn't block the subscribe
-    const [geo] = await Promise.all([
-      userIp ? geolocateIp(userIp) : Promise.resolve(null),
-      sendGhostMagicLink(normalized, userIp),
+    // Geolocate first, then create member with geo pre-set, then send magic link.
+    // Creating before magic link ensures geolocation is set when Ghost confirms the member.
+    const geo = userIp ? await geolocateIp(userIp) : null
+    await Promise.all([
+      upsertGhostMemberWithGeo(normalized, geo).catch(e => console.error('[subscribe] geo upsert failed:', e)),
+      sendGhostMagicLink(normalized),
     ])
-
-    // Set Ghost geolocation field via Admin API (best-effort — member now exists)
-    if (geo) {
-      setGhostGeolocation(normalized, geo).catch(e =>
-        console.error('[subscribe] geo update failed:', e)
-      )
-    }
 
     return NextResponse.json({ ok: true })
   } catch (err) {
