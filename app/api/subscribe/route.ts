@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { after } from 'next/server'
 import { createHmac } from 'crypto'
 import { getSupabase } from '@/lib/supabase'
 
@@ -12,6 +13,25 @@ function ghostAdminJwt(ghostKey: string): string {
   return `${header}.${payload}.${sig}`
 }
 
+async function syncToGhost(email: string) {
+  const ghostKey = process.env.GHOST_ADMIN_API_KEY
+  if (!ghostKey) { console.error('GHOST_ADMIN_API_KEY not set'); return }
+  try {
+    const token = ghostAdminJwt(ghostKey)
+    const res = await fetch('https://newsletter.thefloridaflow.com/ghost/api/admin/members/', {
+      method: 'POST',
+      headers: { Authorization: `Ghost ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ members: [{ email, subscribed: true }] }),
+      signal: AbortSignal.timeout(10000),
+    })
+    if (!res.ok && res.status !== 422 && res.status !== 409) {
+      console.error('Ghost sync error:', res.status, await res.text())
+    }
+  } catch (err) {
+    console.error('Ghost sync threw:', err)
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json()
@@ -20,36 +40,17 @@ export async function POST(req: NextRequest) {
     }
     const normalized = String(email).toLowerCase().slice(0, 254)
 
-    // Save to Supabase (best-effort)
-    try {
-      const db = getSupabase()
-      const { error } = await db.from('email_subscribers').insert({ email: normalized })
-      if (error && error.code !== '23505') console.error('Supabase insert error:', error.message)
-    } catch (dbErr) {
-      console.error('Supabase error:', dbErr)
+    // Save to Supabase — this is the source of truth for success/failure
+    const db = getSupabase()
+    const { error } = await db.from('email_subscribers').insert({ email: normalized })
+    if (error && error.code !== '23505') {
+      // '23505' = duplicate, treat as success
+      console.error('Supabase insert error:', error.message)
+      return NextResponse.json({ error: 'Subscribe failed' }, { status: 500 })
     }
 
-    // Add to Ghost via Admin API (server-side JWT, no CORS issues)
-    const ghostKey = process.env.GHOST_ADMIN_API_KEY
-    if (!ghostKey) {
-      console.error('GHOST_ADMIN_API_KEY not set')
-      return NextResponse.json({ error: 'Server misconfiguration' }, { status: 503 })
-    }
-    const token = ghostAdminJwt(ghostKey)
-    const ghostRes = await fetch('https://newsletter.thefloridaflow.com/ghost/api/admin/members/', {
-      method: 'POST',
-      headers: { Authorization: `Ghost ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ members: [{ email: normalized, subscribed: true }] }),
-      signal: AbortSignal.timeout(10000),
-    })
-
-    if (!ghostRes.ok) {
-      const body = await ghostRes.text()
-      // 422 = member already exists — that's fine
-      if (ghostRes.status === 422) return NextResponse.json({ ok: true, already: true })
-      console.error('Ghost Admin API error:', ghostRes.status, body)
-      return NextResponse.json({ error: 'Subscribe failed' }, { status: 502 })
-    }
+    // Sync to Ghost after response — non-blocking, won't affect user-facing result
+    after(syncToGhost(normalized))
 
     return NextResponse.json({ ok: true })
   } catch (err) {
