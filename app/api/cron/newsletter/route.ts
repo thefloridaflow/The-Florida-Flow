@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     const issueNumber = Math.max(1, Math.floor((now.getTime() - LAUNCH_DATE.getTime()) / msPerDay) + 1)
 
     // Fetch all data in parallel
-    const appBase = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thefloridaflow.com'
+    const appBase = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.thefloridaflow.com').replace('https://thefloridaflow.com', 'https://www.thefloridaflow.com')
     const [buoys, tides, forecast, uv, current, operatorRes, bhbRes] = await Promise.all([
       fetchAllBuoys(),
       fetchTides(),
