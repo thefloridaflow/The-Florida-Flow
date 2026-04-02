@@ -9,6 +9,7 @@ import TidesAndDiveWindows from '@/components/TidesAndDiveWindows'
 import OperatorLogs from '@/components/OperatorLogs'
 import FeaturedOperators from '@/components/FeaturedOperators'
 import EmailCapture from '@/components/EmailCapture'
+import BHBGuideCard from '@/components/BHBGuideCard'
 import NewsletterArchive from '@/components/NewsletterArchive'
 import SunTimes from '@/components/SunTimes'
 import UVIndex from '@/components/UVIndex'
@@ -107,6 +108,7 @@ export default async function HomePage() {
             {buoys.map(b => (
               <BuoyCard key={b.stationId} buoy={b} />
             ))}
+            <BHBGuideCard />
           </div>
           <div className="mt-3 flex flex-wrap gap-4 text-xs text-slate-500">
             <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-500 inline-block" /> &lt; 2 ft — Calm</span>

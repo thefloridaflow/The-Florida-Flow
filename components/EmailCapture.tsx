@@ -4,24 +4,21 @@ import { useState } from 'react'
 
 export default function EmailCapture() {
   const [email, setEmail] = useState('')
-  const [state, setState] = useState<'idle' | 'loading' | 'done' | 'already' | 'error'>('idle')
-  const [errMsg, setErrMsg] = useState('')
+  const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setState('loading')
     try {
-      const res = await fetch('/api/subscribe', {
+      const res = await fetch('https://newsletter.thefloridaflow.com/members/api/send-magic-link/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, emailType: 'subscribe', labels: [] }),
       })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error ?? 'Failed')
-      setState(json.already ? 'already' : 'done')
+      if (!res.ok && res.status !== 201) throw new Error('Failed')
+      setState('done')
       setEmail('')
-    } catch (err) {
-      setErrMsg(err instanceof Error ? err.message : 'Something went wrong')
+    } catch {
       setState('error')
     }
   }
@@ -34,16 +31,13 @@ export default function EmailCapture() {
       </div>
 
       {state === 'done' && (
-        <p className="text-emerald-400 text-sm font-medium shrink-0">You&apos;re in! 🤙</p>
-      )}
-      {state === 'already' && (
-        <p className="text-cyan-400 text-sm shrink-0">Already subscribed!</p>
+        <p className="text-emerald-400 text-sm font-medium shrink-0">Check your email to confirm! 🤙</p>
       )}
       {state === 'error' && (
-        <p className="text-red-400 text-xs shrink-0">{errMsg}</p>
+        <p className="text-red-400 text-xs shrink-0">Something went wrong — try again.</p>
       )}
 
-      {state !== 'done' && state !== 'already' && (
+      {state !== 'done' && (
         <form onSubmit={handleSubmit} className="flex gap-2 w-full sm:w-auto shrink-0">
           <input
             type="email"
