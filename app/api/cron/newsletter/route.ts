@@ -157,7 +157,17 @@ TONE AND ACCURACY RULES (non-negotiable):
 - Never present far-offshore forecast peaks (e.g. "17 ft occasionally") as if they apply to nearshore or inshore waters. If you cite an offshore peak, note it is for waters 20-60 nm from shore.
 - Advisory/warning bars: only if there is an ACTIVE NWS advisory (SCA, Gale Warning, etc.) explicitly named in the forecast text. Use exact NWS language. No dramatic rewrites.
 - No opinion on whether conditions are "diveable," "fishable," or safe. Report the numbers. Captains decide.
-- Activity verdicts: state observed/forecast conditions per activity — no "Poor/Dangerous" labels. Use "Elevated," "Building," "Calm," "Marginal" based purely on data. CRITICAL: offshore buoy readings (20–60 nm out) are NOT nearshore conditions. A buoy reading 4–5 ft at 20 nm offshore typically means 1–3 ft nearshore. Never restrict diving to "BHB only" or declare offshore diving "not recommended" based solely on offshore buoy data — that is a captain's call, not ours. Only flag an activity as restricted if there is an active named NWS advisory (SCA, Gale Warning, etc.).
+- Activity verdicts: state observed/forecast conditions per activity — no "Poor/Dangerous" labels. Use the rating scale below based purely on data. CRITICAL: offshore buoy readings (20–60 nm out) are NOT nearshore conditions. A buoy reading 4–5 ft at 20 nm offshore typically means 1–3 ft nearshore. Never restrict diving to "BHB only" or declare offshore diving "not recommended" based solely on offshore buoy data — that is a captain's call, not ours. Only flag an activity as restricted if there is an active named NWS advisory (SCA, Gale Warning, etc.).
+
+RATING SCALE (apply to regional conditions AND activity verdicts):
+- CALM: seas under 1 ft, winds under 10 kt — flat, protected water
+- GOOD: seas 1–2 ft, winds under 15 kt — clean, manageable
+- MARGINAL: seas 2–3 ft OR any conditions that are borderline but not yet messy
+- CHOPPY: seas 3–5 ft wind chop (short period 5–7s), messy surface but not dangerous
+- ELEVATED: seas 3–5 ft with building swell or increasing energy, conditions worsening
+- BUILDING: conditions actively deteriorating regardless of current height
+- ROUGH: seas 5+ ft OR winds over 25 kt — significant offshore conditions
+- ACTIVE SCA: named NWS Small Craft Advisory in effect — use exact NWS language
 - Marine Life Sighting Alert: ONLY include species/sightings explicitly in operator reports. If none, say "No confirmed sightings today."
 - Week Outlook: derive day-by-day from NWS forecast text only. Do not extrapolate beyond what the forecast says.
 - Tag observed buoy data with <span class="tag-obs">OBSERVED</span>, estimated/predicted with <span class="tag-pred">PREDICTED</span>.
@@ -195,6 +205,7 @@ TONE AND ACCURACY RULES (non-negotiable):
   .rating-calm { color: #27ae60; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
   .rating-elevated { color: #e67e22; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
   .rating-building { color: #e67e22; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rating-choppy { color: #e67e22; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
   .tag-obs { display: inline-block; background: #d5f5e3; color: #1e8449; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 3px; margin-top: 3px; }
   .tag-pred { display: inline-block; background: #fef9e7; color: #b7770d; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 3px; margin-top: 3px; }
   .sources-line { font-size: 12px; color: #777; font-style: italic; font-family: Arial, sans-serif; line-height: 1.6; margin-top: 10px; margin-bottom: 28px; }
@@ -249,7 +260,7 @@ TONE AND ACCURACY RULES (non-negotiable):
     <tbody>
       [8 rows — one for each region. Do NOT color or highlight table rows beyond the default CSS. Use only the small tag-obs/tag-pred badges on each individual data point — no other cell or row highlighting. Format each data cell as: the value on one line, then the tag on the next line. Example: "8.2 ft<br><span class="tag-obs">OBSERVED</span>".
 
-CONDITIONS RATING column: wrap the verdict word in a span using the matching CSS class — GOOD or CALM → class="rating-good", MARGINAL or BUILDING or ELEVATED → class="rating-marginal", ROUGH or ACTIVE SCA → class="rating-rough". Example: <span class="rating-good">CALM</span>. Use only these words.
+CONDITIONS RATING column: use the RATING SCALE defined above. Wrap the verdict in a span — GOOD or CALM → class="rating-good", MARGINAL or CHOPPY or BUILDING or ELEVATED → class="rating-marginal", ROUGH or ACTIVE SCA → class="rating-rough". Example: <span class="rating-choppy">CHOPPY</span>. Use only the defined scale words.
 
 Vis: If an operator report explicitly states visibility for that region today, use it with tag-obs. Otherwise estimate using this model with tag-pred — seas under 1ft + winds under 10kt: Est. 40–80 ft; seas 1–2ft + winds under 15kt: Est. 20–50 ft; seas 2–3ft or winds 15–20kt: Est. 10–30 ft; seas 3–5ft or winds over 20kt: Est. 5–15 ft; seas over 5ft: Est. under 10 ft. Onshore winds (E/SE/NE) reduce estimate one tier vs offshore winds (W/NW/SW). BHB is protected from swell — write "Tidal — 5–20 ft" with tag-pred unless Force-E or an operator reports actual viz. Temp from buoy (tag-obs) or write "No data" (tag-pred). Seas from buoy (tag-obs) or NOAA nearshore estimate (tag-pred). Wind/Note: buoy reading with distance offshore, forecast note, or operator confirmation. BHB row: "Protected" for seas, include tide window time.]
     </tbody>
@@ -268,9 +279,9 @@ Vis: If an operator report explicitly states visibility for that region today, u
       <tr><th>Activity</th><th>Verdict</th><th>Notes</th></tr>
     </thead>
     <tbody>
-      [5 rows: 🤿 Scuba Diving, 🏄 Surfing, 🚣 Kayak / SUP, ⛵ Boating / Fishing, 🏖️ Beach / Swimming. Verdict MUST be 1-2 words max using ONLY: Good / Marginal / Elevated / Building / Calm / Rough / Active SCA. Never combine with qualifiers. Put context in Notes instead. Notes: specific, data-backed, end with "verify with your operator" or "check with your captain".
+      [5 rows: 🤿 Scuba Diving, 🏄 Surfing, 🚣 Kayak / SUP, ⛵ Boating / Fishing, 🏖️ Beach / Swimming. Verdict MUST use ONLY words from the RATING SCALE above: Calm / Good / Marginal / Choppy / Elevated / Building / Rough / Active SCA. Never combine with qualifiers. Put context in Notes instead. Notes: specific, data-backed, end with "verify with your operator" or "check with your captain".
 
-VERDICT CELL MUST use colored span — wrap verdict in: GOOD or CALM → <span class="rating-good">, MARGINAL or BUILDING or ELEVATED → <span class="rating-marginal">, ROUGH or ACTIVE SCA → <span class="rating-rough">. Example: <td><span class="rating-marginal">BUILDING</span></td>.]
+VERDICT CELL MUST use colored span — GOOD or CALM → <span class="rating-good">, MARGINAL or CHOPPY or BUILDING or ELEVATED → <span class="rating-marginal">, ROUGH or ACTIVE SCA → <span class="rating-rough">. Example: <td><span class="rating-marginal">CHOPPY</span></td>.]
     </tbody>
   </table>
 
@@ -472,7 +483,7 @@ Structure — generate ALL inside the wrapper:
 
 3. App link: <p style="font-family:Arial,sans-serif;font-size:13px;color:#94a3b8;margin-bottom:24px;"><a href="https://thefloridaflow.com" style="color:#38bdf8;font-weight:bold;">Check live conditions at thefloridaflow.com</a> — buoys, tides, dive windows, UV. Updated hourly.</p>
 
-4. Regional table (8 regions, columns: Region / Conditions / Vis / Seas / Wind / Water Temp / Buoy). Seas and Water Temp from buoy data get OBSERVED badge. Estimated gets PREDICTED badge. CONDITIONS column: color-code the verdict — GOOD/CALM → <span style="color:#4ade80;font-weight:bold;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">CALM</span>, MARGINAL/BUILDING/ELEVATED → <span style="color:#fb923c;font-weight:bold;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">MARGINAL</span>, ROUGH/ACTIVE SCA → <span style="color:#f87171;font-weight:bold;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">ROUGH</span>. VIS column: if an operator report explicitly states visibility for that region, use it with OBSERVED badge. Otherwise estimate with PREDICTED badge using this model — seas under 1ft + winds under 10kt: Est. 40–80 ft; seas 1–2ft + winds under 15kt: Est. 20–50 ft; seas 2–3ft or winds 15–20kt: Est. 10–30 ft; seas 3–5ft or winds over 20kt: Est. 5–15 ft; seas over 5ft: Est. under 10 ft. Onshore winds (E/SE/NE) reduce one tier vs offshore (W/NW/SW). BHB: write "Tidal — 5–20 ft" with PREDICTED unless operator reports actual viz.
+4. Regional table (8 regions, columns: Region / Conditions / Vis / Seas / Wind / Water Temp / Buoy). Seas and Water Temp from buoy data get OBSERVED badge. Estimated gets PREDICTED badge. CONDITIONS column: use RATING SCALE — Calm/Good (green #4ade80), Marginal/Choppy/Building/Elevated (orange #fb923c), Rough/Active SCA (red #f87171). SCALE: CALM under 1ft winds under 10kt; GOOD 1–2ft winds under 15kt; MARGINAL 2–3ft borderline; CHOPPY 3–5ft wind chop short period 5–7s; ELEVATED 3–5ft building swell; BUILDING actively worsening; ROUGH 5ft+ or winds over 25kt; ACTIVE SCA named NWS advisory. Example: <span style="color:#fb923c;font-weight:bold;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">CHOPPY</span>. VIS column: if an operator report explicitly states visibility for that region, use it with OBSERVED badge. Otherwise estimate with PREDICTED badge using this model — seas under 1ft + winds under 10kt: Est. 40–80 ft; seas 1–2ft + winds under 15kt: Est. 20–50 ft; seas 2–3ft or winds 15–20kt: Est. 10–30 ft; seas 3–5ft or winds over 20kt: Est. 5–15 ft; seas over 5ft: Est. under 10 ft. Onshore winds (E/SE/NE) reduce one tier vs offshore (W/NW/SW). BHB: write "Tidal — 5–20 ft" with PREDICTED unless operator reports actual viz.
 
 After the regional table, add:
 <p style="font-size:12px;color:#64748b;font-family:Arial,sans-serif;line-height:1.6;margin-top:8px;margin-bottom:20px;">[2-3 sentence sourcing note naming each buoy by what coast it covers and its distance offshore, the NWS zone and issuance time, BHB windows from iDiveFlorida, UV from Open-Meteo. End with: "Offshore buoy readings do not represent nearshore conditions. Always confirm with your captain or operator."]</p>
@@ -480,7 +491,7 @@ After the regional table, add:
 Then add BHB product box:
 <div style="background:#052e16;border-left:4px solid #22c55e;padding:12px 16px;font-family:Arial,sans-serif;font-size:13px;color:#bbf7d0;line-height:1.6;margin-bottom:20px;">First time at BHB? <strong style="color:#4ade80;">The Florida Flow BHB Site Guide</strong> covers tide strategy, marine life by season, best entry points, and what to expect underwater. <a href="https://ko-fi.com/s/59604a0ac1" style="color:#4ade80;font-weight:bold;text-decoration:none;">Get the guide — $12 →</a></div>
 
-5. Activity table (5 rows: 🤿 Scuba, 🏄 Surfing, 🚣 Kayak/SUP, ⛵ Boating/Fishing, 🏖️ Beach). Verdict 1-2 words max. Verdict cell — color-code the verdict text inline: GOOD/CALM → color:#4ade80, MARGINAL/BUILDING/ELEVATED → color:#fb923c, ROUGH/ACTIVE SCA → color:#f87171. Example: <td style="padding:9px;border-bottom:1px solid #1e293b;vertical-align:top;font-family:Arial,sans-serif;font-weight:bold;white-space:nowrap;background:#0f172a;"><span style="color:#fb923c;font-weight:bold;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">BUILDING</span></td>. Verdict cell base: <td style="padding:9px;border-bottom:1px solid #1e293b;vertical-align:top;font-family:Arial,sans-serif;font-weight:bold;white-space:nowrap;background:#0f172a;">
+5. Activity table (5 rows: 🤿 Scuba, 🏄 Surfing, 🚣 Kayak/SUP, ⛵ Boating/Fishing, 🏖️ Beach). Verdict 1-2 words max from RATING SCALE only: Calm/Good/Marginal/Choppy/Elevated/Building/Rough/Active SCA. Verdict cell — color-code inline: GOOD/CALM → color:#4ade80, MARGINAL/CHOPPY/BUILDING/ELEVATED → color:#fb923c, ROUGH/ACTIVE SCA → color:#f87171. Example: <td style="padding:9px;border-bottom:1px solid #1e293b;vertical-align:top;font-family:Arial,sans-serif;font-weight:bold;white-space:nowrap;background:#0f172a;"><span style="color:#fb923c;font-weight:bold;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">BUILDING</span></td>. Verdict cell base: <td style="padding:9px;border-bottom:1px solid #1e293b;vertical-align:top;font-family:Arial,sans-serif;font-weight:bold;white-space:nowrap;background:#0f172a;">
 
 6. BHB Dive Windows: <div style="background:#0c1a2e;border-left:4px solid #0ea5e9;padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#bae6fd;line-height:1.65;margin:20px 0;"><strong style="color:#38bdf8;display:block;margin-bottom:6px;">🤿 BHB Dive Windows</strong>[tide times, window times, quality from BHB data]</div>
 
