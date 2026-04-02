@@ -1,6 +1,6 @@
 import { BuoyData } from '@/lib/noaa'
 
-const REGIONS: { name: string; buoyId: string }[] = [
+const REGIONS: { name: string; buoyId: string; proxyNote?: string }[] = [
   { name: 'Space Coast',              buoyId: '41009'  },
   { name: 'Treasure Coast (Vero Beach / Ft Pierce)', buoyId: '41114' },
   { name: 'Blue Heron Bridge',        buoyId: 'LKWF1'  },
@@ -8,7 +8,8 @@ const REGIONS: { name: string; buoyId: string }[] = [
   { name: 'Deerfield / Pompano',      buoyId: '41122'  },
   { name: 'Fort Lauderdale',          buoyId: '41122'  },
   { name: 'Miami / Key Biscayne',     buoyId: '41122'  },
-  { name: 'Key Largo / Upper Keys',   buoyId: 'SMKF1'  },
+  { name: 'Key Largo / Upper Keys',   buoyId: 'SMKF1', proxyNote: 'Molasses buoy offline since 2023 — Marathon proxy' },
+  { name: 'Marathon / Middle Keys',   buoyId: 'SMKF1'  },
   { name: 'Key West / Lower Keys',    buoyId: '42095'  },
 ]
 
@@ -93,7 +94,7 @@ export default function RegionalConditionsTable({ buoys, precip24hMm = 0 }: { bu
             </tr>
           </thead>
           <tbody>
-            {REGIONS.map(({ name, buoyId }, i) => {
+            {REGIONS.map(({ name, buoyId, proxyNote }, i) => {
               const buoy = byId[buoyId]
               const { rating, windOnly } = rateConditions(buoy)
               const viz = vizEstimate(buoy, precip24hMm)
@@ -107,7 +108,10 @@ export default function RegionalConditionsTable({ buoys, precip24hMm = 0 }: { bu
                 >
                   <td className="px-5 py-3 whitespace-nowrap">
                     <span className="text-white font-medium">{name}</span>
-                    <span className="block text-xs text-slate-600">{buoyId}</span>
+                    {proxyNote
+                      ? <span className="block text-xs text-amber-500/80">{proxyNote}</span>
+                      : <span className="block text-xs text-slate-600">{buoyId}</span>
+                    }
                   </td>
                   <td className="px-5 py-3">
                     <span className={`font-semibold ${ratingColor[rating]}`}>{rating}</span>
@@ -139,7 +143,7 @@ export default function RegionalConditionsTable({ buoys, precip24hMm = 0 }: { bu
           </tbody>
         </table>
       </div>
-      <p className="text-xs text-slate-600 mt-2">Viz Est. is an offshore proxy from buoy wave data — not a measurement. Inshore and shore-dive viz varies independently.</p>
+      <p className="text-xs text-slate-600 mt-2">Viz Est. is an offshore proxy from buoy wave data — not a measurement. Turbidity and runoff can make water milky even in calm conditions; inshore viz varies independently. Use community reports below for actual observed visibility.</p>
     </section>
   )
 }
