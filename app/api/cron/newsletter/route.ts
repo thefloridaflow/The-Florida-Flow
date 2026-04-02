@@ -456,7 +456,14 @@ SECTION HEADING: <h2 style="font-size:17px;font-weight:bold;font-family:Arial,sa
 TABLE: <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;margin-bottom:16px;">
 TH: <th style="background:#1a1a1a;color:#ffffff;padding:9px;text-align:left;white-space:nowrap;font-family:Arial,sans-serif;">
 
-Structure — generate ALL of these in order:
+Wrap ALL output in this single outer div — do not omit it:
+<div style="background:#ffffff;padding:24px 28px;border-radius:8px;max-width:680px;font-family:Arial,sans-serif;color:#1a1a1a;">
+
+[ALL SECTIONS GO HERE]
+
+</div>
+
+Structure — generate ALL of these inside the wrapper, in order:
 1. Advisory bar (only if active NWS advisory): <div style="background:#fef9e7;border-left:4px solid #e67e22;padding:12px 16px;margin-bottom:20px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;color:#7d4a00;">⚠️ [text]</div>
 
 2. Conditions: 3 paragraphs using <p style="font-size:15px;line-height:1.7;color:#222;margin-bottom:14px;font-family:Georgia,serif;">
