@@ -10,12 +10,12 @@ export default function EmailCapture({ variant = 'inline' }: { variant?: 'inline
     e.preventDefault()
     setState('loading')
     try {
-      const res = await fetch('https://newsletter.thefloridaflow.com/members/api/send-magic-link/', {
+      const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, emailType: 'subscribe', labels: [] }),
+        body: JSON.stringify({ email }),
       })
-      if (!res.ok && res.status !== 201) throw new Error('Failed')
+      if (!res.ok) throw new Error('Failed')
       setState('done')
       setEmail('')
     } catch {
