@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createHmac } from 'crypto'
-import { fetchAllBuoys, fetchTides, fetchMarineForecast, fetchUVIndex, fetchCurrents } from '@/lib/noaa'
+import { fetchAllBuoys, fetchMarineForecast, fetchUVIndex, fetchCurrents } from '@/lib/noaa'
 import { getSunTimes } from '@/lib/sun'
 
 export const maxDuration = 60
@@ -42,9 +42,8 @@ export async function GET(req: NextRequest) {
 
     // Fetch all data in parallel
     const appBase = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.thefloridaflow.com').replace('https://thefloridaflow.com', 'https://www.thefloridaflow.com')
-    const [buoys, tides, forecast, uv, current, operatorRes, bhbRes] = await Promise.all([
+    const [buoys, forecast, uv, current, operatorRes, bhbRes] = await Promise.all([
       fetchAllBuoys(),
-      fetchTides(),
       fetchMarineForecast(),
       fetchUVIndex(),
       fetchCurrents(),
@@ -99,11 +98,6 @@ export async function GET(req: NextRequest) {
     const bhbSummary = bhbDays.map(d =>
       `${d.label}: ` + d.tides.map(t => `${t.time} (${t.height} ft) ${t.quality} | window ${t.windowStart}–${t.windowEnd}`).join('; ')
     ).join('\n') || 'No BHB window data.'
-
-    // Tides
-    const tidesSummary = tides.predictions.slice(0, 8).map((p: { time: string; type: string; height: string }) =>
-      `${p.time} ${p.type === 'H' ? 'High' : 'Low'} ${p.height} ft`
-    ).join('\n')
 
     // UV
     const uvSummary = `UV today: ${uv.uvIndex} (${uv.uvIndex >= 8 ? 'Very High — UV Alert' : uv.uvIndex >= 6 ? 'High' : uv.uvIndex >= 3 ? 'Moderate' : 'Low'}), tomorrow: ${uv.uvIndexTomorrow}`
@@ -438,7 +432,7 @@ BHB WINDOWS: ${bhbSummary}
 UV: ${uvSummary} | CURRENTS: ${currentSummary} | SUN: ${sunSummary}
 FORECAST: ${forecast.forecast?.slice(0, 600) || 'Unavailable'}
 
-RULES: Data only. No judgment calls. Offshore buoys (20-60nm) ≠ nearshore. Cite buoy distance. Plain English (no NWS jargon).
+RULES: Data only. No judgment calls. Offshore buoys (20-60nm) ≠ nearshore. Cite buoy distance. Plain English (no NWS jargon). NEVER use em dashes (—) anywhere. Use a comma, period, or colon instead.
 
 RATING SCALE: CALM <1ft/<10kt | GOOD 1-2ft/<15kt | MARGINAL 2-3ft | CHOPPY 3-5ft/short period | ELEVATED 3-5ft/building | BUILDING worsening | ROUGH 5ft+/>25kt | ACTIVE SCA named advisory
 Colors: green=#4ade80 (Calm/Good), orange=#fb923c (Marginal/Choppy/Elevated/Building), red=#f87171 (Rough/Active SCA)
@@ -466,7 +460,8 @@ OUTPUT all 12 sections inside the wrapper div:
 7. Marine Life Sightings: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — operator-confirmed only. If Rainbow Reef has no data, say so by name.
 8. Week Outlook: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — day by day from NWS. Each day: <span style="color:[green/orange/red];font-weight:bold;">Day 🟢/🟡/🔴:</span> summary. End: "Offshore heights from buoys 20-60nm. Nearshore smaller. Check with your operator."
 9. Safety Tip: background:#1c0a09;border-left:4px solid #ef4444;color:#fca5a5 — title + 2-3 sentences tied to today's data
-10. Poll: background:#0f1f3d;border-left:4px solid #3b82f6;color:#bfdbfe — question + 4 mailto options (mailto:hello@thefloridaflow.com?subject=Poll:[option]) + "Tap to reply. We read every response."
+10. Sun & UV: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — single row showing Sunrise, Morning Golden Hour, Evening Golden Hour, Sunset, UV Index (colored: ≥8 red, ≥6 orange, <6 green). Use sun times and UV data.
+11. Poll: background:#0f1f3d;border-left:4px solid #3b82f6;color:#bfdbfe — question + 4 mailto options (mailto:hello@thefloridaflow.com?subject=Poll:[option]) + "Tap to reply. We read every response."
 11. Forward ask: background:#1e293b;border-left:4px solid #0ea5e9;color:#bae6fd — "Know someone on the water? Forward this to a diver, angler, or anyone Space Coast to Keys. Free every morning."
 12. Disclaimer: font-size:11px;color:#475569;border-top:1px solid #1e293b;padding-top:16px — "The Florida Flow aggregates NOAA data. Offshore heights from buoys 20-60nm. Nearshore varies. Confirm with your captain. Use at your own risk."
 
