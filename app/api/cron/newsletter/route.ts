@@ -522,7 +522,7 @@ Output only the HTML. No markdown, no commentary.`
         put = await tryPut(sha)
       }
 
-      if (!put.ok) throw new Error(await put.text())
+      if (!put.ok && put.status !== 409) throw new Error(await put.text())
     }
 
     // Parse social posts
