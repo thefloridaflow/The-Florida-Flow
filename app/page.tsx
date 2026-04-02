@@ -117,7 +117,7 @@ export default async function HomePage() {
         </section>
 
         {/* Regional Conditions */}
-        <div id="regional"><RegionalConditionsTable buoys={buoys} /></div>
+        <div id="regional"><RegionalConditionsTable buoys={buoys} precip24hMm={uv.precip24hMm ?? 0} /></div>
 
         {/* By Activity */}
         <div id="activity"><ActivityVerdicts buoys={buoys} /></div>

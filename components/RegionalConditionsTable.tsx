@@ -31,22 +31,33 @@ function rateConditions(buoy: BuoyData | undefined): { rating: Rating; windOnly:
 
 
 // Offshore viz proxy — only meaningful for buoys 6+ nm out.
-// Based on wave height + period; longer period = groundswell = clearer water.
-function vizEstimate(buoy: BuoyData | undefined): { range: string; color: string } | null {
+// Factors: wave height (primary), wave period (swell vs chop), 24h rainfall (runoff penalty).
+function vizEstimate(buoy: BuoyData | undefined, precip24hMm: number): { range: string; color: string } | null {
   if (!buoy || buoy.error || buoy.offshoreNm < 6 || !buoy.waveHeight) return null
   const wh = parseFloat(buoy.waveHeight)
   const wp = buoy.wavePeriod ? parseFloat(buoy.wavePeriod) : 0
+
+  // Base from wave height — South FL Gulf Stream keeps water clear; be optimistic
   let lo: number, hi: number
-  if      (wh < 1)   { lo = 50; hi = 100 }
-  else if (wh < 2)   { lo = 30; hi = 60  }
-  else if (wh < 3)   { lo = 20; hi = 40  }
-  else if (wh < 4)   { lo = 10; hi = 30  }
-  else if (wh < 6)   { lo = 5;  hi = 20  }
-  else               { lo = 0;  hi = 10  }
-  // Long-period swell = better viz; short choppy = worse
-  if (wp >= 10)           { lo = Math.min(lo + 10, 100); hi = Math.min(hi + 15, 120) }
-  else if (wp > 0 && wp < 5) { lo = Math.max(lo - 5, 0); hi = Math.max(hi - 10, 5) }
-  const color = hi >= 40 ? 'text-emerald-400' : hi >= 20 ? 'text-cyan-400' : hi >= 10 ? 'text-yellow-400' : 'text-red-400'
+  if      (wh < 1)   { lo = 60; hi = 100 }
+  else if (wh < 2)   { lo = 40; hi = 80  }
+  else if (wh < 3)   { lo = 25; hi = 55  }
+  else if (wh < 4)   { lo = 15; hi = 40  }
+  else if (wh < 6)   { lo = 8;  hi = 25  }
+  else               { lo = 3;  hi = 15  }
+
+  // Swell bonus: long period = energy goes deep, less surface chop = less sediment stirring
+  if (wp >= 12)             { lo = Math.min(lo + 15, 100); hi = Math.min(hi + 20, 120) }
+  else if (wp >= 8)         { lo = Math.min(lo + 5,  100); hi = Math.min(hi + 8,  120) }
+  else if (wp > 0 && wp < 5) { lo = Math.max(lo - 8,  0);  hi = Math.max(hi - 12,  5) }
+
+  // Rainfall penalty: runoff carries sediment into coastal water
+  if      (precip24hMm > 25) { lo = Math.round(lo * 0.5); hi = Math.round(hi * 0.55) }  // heavy rain
+  else if (precip24hMm > 10) { lo = Math.round(lo * 0.7); hi = Math.round(hi * 0.75) }  // moderate rain
+  else if (precip24hMm > 3)  { lo = Math.round(lo * 0.85); hi = Math.round(hi * 0.85) } // light rain
+
+  lo = Math.max(lo, 2); hi = Math.max(hi, 5)
+  const color = hi >= 50 ? 'text-emerald-400' : hi >= 30 ? 'text-cyan-400' : hi >= 15 ? 'text-yellow-400' : 'text-red-400'
   return { range: `${lo}–${hi} ft`, color }
 }
 
@@ -57,7 +68,7 @@ const ratingColor: Record<Rating, string> = {
   'N/A':    'text-slate-500',
 }
 
-export default function RegionalConditionsTable({ buoys }: { buoys: BuoyData[] }) {
+export default function RegionalConditionsTable({ buoys, precip24hMm = 0 }: { buoys: BuoyData[]; precip24hMm?: number }) {
   const byId = Object.fromEntries(buoys.map(b => [b.stationId, b]))
 
   return (
@@ -84,7 +95,7 @@ export default function RegionalConditionsTable({ buoys }: { buoys: BuoyData[] }
             {REGIONS.map(({ name, buoyId }, i) => {
               const buoy = byId[buoyId]
               const { rating, windOnly } = rateConditions(buoy)
-              const viz = vizEstimate(buoy)
+              const viz = vizEstimate(buoy, precip24hMm)
               const offshoreLabel = buoy
                 ? buoy.offshoreNm === 0 ? 'Inshore' : `~${buoy.offshoreNm} nm`
                 : '—'

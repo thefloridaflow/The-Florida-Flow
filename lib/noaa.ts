@@ -42,6 +42,7 @@ export type UVData = {
   uvAlert: boolean
   date: string
   hourly: UVHourly[]
+  precip24hMm: number    // total precipitation in last 24h (mm)
   error?: string
 }
 
@@ -196,17 +197,18 @@ export async function fetchUVIndex(): Promise<UVData> {
     'https://api.open-meteo.com/v1/forecast' +
     '?latitude=26.713&longitude=-80.057' +
     '&daily=uv_index_max' +
-    '&hourly=uv_index' +
+    '&hourly=uv_index,precipitation' +
     '&timezone=America%2FNew_York' +
+    '&past_days=1' +
     '&forecast_days=2'
   try {
     const res = await fetch(url, { next: { revalidate: 3600 }, signal: AbortSignal.timeout(15000) })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const json = await res.json()
 
-    const todayPeak    = Math.round(json.daily.uv_index_max[0] ?? 0)
-    const tomorrowPeak = Math.round(json.daily.uv_index_max[1] ?? 0)
-    const todayDate    = json.daily.time[0] as string  // "2026-03-30"
+    const todayPeak    = Math.round(json.daily.uv_index_max[1] ?? 0)  // index 1 = today (past_days=1 shifts array)
+    const tomorrowPeak = Math.round(json.daily.uv_index_max[2] ?? 0)
+    const todayDate    = json.daily.time[1] as string  // "2026-04-02"
 
     // Hourly for today only, non-zero hours
     const hourly: UVHourly[] = (json.hourly.time as string[])
@@ -219,12 +221,22 @@ export async function fetchUVIndex(): Promise<UVData> {
         return { hour: `${disp}${ampm}`, value }
       })
 
+    // Sum precipitation over the last 24 hours (yesterday + today so far)
+    const nowHour = new Date().toISOString().slice(0, 13)
+    const cutoff  = new Date(Date.now() - 86400000).toISOString().slice(0, 13)
+    const precip24hMm = (json.hourly.time as string[])
+      .reduce((sum: number, t: string, i: number) => {
+        const h = t.slice(0, 13)
+        return (h >= cutoff && h <= nowHour) ? sum + (json.hourly.precipitation[i] ?? 0) : sum
+      }, 0)
+
     return {
       uvIndex: todayPeak,
       uvIndexTomorrow: tomorrowPeak,
       uvAlert: todayPeak >= 8,
       date: todayDate,
       hourly,
+      precip24hMm,
     }
   } catch (err) {
     return {
@@ -233,6 +245,7 @@ export async function fetchUVIndex(): Promise<UVData> {
       uvAlert: false,
       date: '',
       hourly: [],
+      precip24hMm: 0,
       error: err instanceof Error ? err.message : 'Unknown error',
     }
   }
