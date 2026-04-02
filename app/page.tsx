@@ -102,7 +102,7 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto px-4 py-12 text-center space-y-3">
           <h2 className="text-3xl font-bold text-white tracking-tight">South Florida, live.</h2>
           <p className="text-slate-400 max-w-sm mx-auto text-sm leading-relaxed">
-            Weekly ocean conditions, dive reports, and what&apos;s worth getting in the water for — delivered every Thursday.
+            Daily ocean conditions, dive reports, and what&apos;s worth getting in the water for — delivered before 6 AM.
           </p>
           <div className="pt-1">
             <EmailCapture variant="hero" />
