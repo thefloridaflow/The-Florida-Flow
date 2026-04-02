@@ -291,7 +291,7 @@ VERDICT CELL MUST use colored span — wrap verdict in: GOOD or CALM → <span c
   <div class="section-title">Marine Life Sighting Alert</div>
   <div class="sighting-box">
     <div class="sighting-label">[🟢 CONFIRMED — or ⚪ NO REPORTS TODAY depending on operator data]</div>
-    [Only include species and sightings that appear in the operator reports above. If Narcosis or Rainbow Reef mentioned specific animals, sites, viz, or conditions — include them here with operator name and date. If no operator sightings available, say: "No confirmed sightings today. Check back tomorrow — operator logs update daily."]
+    [Only include species and sightings that appear in the operator reports above. If Narcosis or Rainbow Reef mentioned specific animals, sites, viz, or conditions — include them here with operator name and date. If no operator data at all, say: "No confirmed sightings today. Check back tomorrow — operator logs update daily." If Rainbow Reef specifically has no data or is showing as linkOnly/error, say: "Rainbow Reef has not posted a trip report in the last 48 hours. No confirmed sightings from them today." Name any operator that is missing or silent — do not silently omit them.]
   </div>
 
   <div class="section-title">Sun & UV</div>
