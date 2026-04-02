@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { after } from 'next/server'
 import { createHmac } from 'crypto'
 import { getSupabase } from '@/lib/supabase'
 
@@ -13,22 +12,29 @@ function ghostAdminJwt(ghostKey: string): string {
   return `${header}.${payload}.${sig}`
 }
 
-async function syncToGhost(email: string) {
+async function syncToGhost(email: string): Promise<void> {
   const ghostKey = process.env.GHOST_ADMIN_API_KEY
-  if (!ghostKey) { console.error('GHOST_ADMIN_API_KEY not set'); return }
+  if (!ghostKey) { console.error('[subscribe] GHOST_ADMIN_API_KEY not set — skipping Ghost sync'); return }
   try {
     const token = ghostAdminJwt(ghostKey)
+    const body = JSON.stringify({ members: [{ email, name: '' }] })
+    console.log('[subscribe] POSTing to Ghost Admin members API for:', email)
     const res = await fetch('https://newsletter.thefloridaflow.com/ghost/api/admin/members/', {
       method: 'POST',
       headers: { Authorization: `Ghost ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ members: [{ email, subscribed: true }] }),
+      body,
       signal: AbortSignal.timeout(10000),
     })
-    if (!res.ok && res.status !== 422 && res.status !== 409) {
-      console.error('Ghost sync error:', res.status, await res.text())
+    const text = await res.text()
+    if (res.status === 422 || res.status === 409) {
+      console.log('[subscribe] Ghost: member already exists, ok')
+    } else if (!res.ok) {
+      console.error('[subscribe] Ghost Admin API error:', res.status, text)
+    } else {
+      console.log('[subscribe] Ghost: member created ok, status', res.status)
     }
   } catch (err) {
-    console.error('Ghost sync threw:', err)
+    console.error('[subscribe] Ghost sync threw:', err)
   }
 }
 
@@ -44,17 +50,17 @@ export async function POST(req: NextRequest) {
     const db = getSupabase()
     const { error } = await db.from('email_subscribers').insert({ email: normalized })
     if (error && error.code !== '23505') {
-      // '23505' = duplicate, treat as success
-      console.error('Supabase insert error:', error.message)
+      console.error('[subscribe] Supabase insert error:', error.message)
       return NextResponse.json({ error: 'Subscribe failed' }, { status: 500 })
     }
 
-    // Sync to Ghost after response — non-blocking, won't affect user-facing result
-    after(syncToGhost(normalized))
+    // Sync to Ghost synchronously (awaited so it runs before function exits)
+    // Ghost failure is non-fatal — user already captured in Supabase
+    await syncToGhost(normalized)
 
     return NextResponse.json({ ok: true })
   } catch (err) {
-    console.error('Subscribe route error:', err)
+    console.error('[subscribe] route error:', err)
     return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
   }
 }
