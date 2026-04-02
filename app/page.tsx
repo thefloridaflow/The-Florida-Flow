@@ -93,7 +93,7 @@ export default async function HomePage() {
           <span className="text-slate-700">·</span>
           <a href="#operators" className="hover:text-slate-200 transition-colors">Operators</a>
           <span className="text-slate-700">·</span>
-          <a href="#newsletter" className="hover:text-slate-200 transition-colors">Newsletter</a>
+          <a href="/newsletter" className="hover:text-slate-200 transition-colors">Newsletter</a>
           <span className="text-slate-700">·</span>
           <a href="#community" className="hover:text-slate-200 transition-colors">Community Reports</a>
         </div>
