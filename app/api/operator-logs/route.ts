@@ -171,8 +171,8 @@ export async function GET() {
 
   // JS-rendered sites — linked only, no server-side scraping possible
   const captainHooks: OperatorReport = {
-    operator: "Captain Hook's",
-    location: 'Key West / Marathon / Looe Key',
+    operator: "Captain Hook's Diving",
+    location: 'Big Pine Key / Lower Keys',
     date: '',
     url: 'https://captainhooks.com/current-dive-conditions/',
     linkOnly: true,
@@ -198,6 +198,14 @@ export async function GET() {
     url: 'https://www.keywestdivecenter.com/diving-conditions/',
     linkOnly: true,
   }
+  // TODO: verify Looe Key Resort URL before enabling
+  // const looeKeyResort: OperatorReport = {
+  //   operator: 'Looe Key Reef Resort & Dive Center',
+  //   location: 'Ramrod Key / Looe Key',
+  //   date: '',
+  //   url: 'https://TODO',
+  //   linkOnly: true,
+  // }
 
   narcosis.stale   = isStale(narcosis.date)
   rainbow.stale    = isStale(rainbow.date)

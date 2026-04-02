@@ -9,7 +9,7 @@ export const maxDuration = 60
 // Issue #1 launched March 17 2026
 const LAUNCH_DATE = new Date('2026-03-17T00:00:00-04:00')
 
-const REGIONS = [
+const REGIONS: { name: string; buoyId: string; decommissioned?: string }[] = [
   { name: 'Space Coast (Cocoa Beach / Sebastian)', buoyId: '41009' },
   { name: 'Treasure Coast (Vero / Ft Pierce)',      buoyId: '41114' },
   { name: 'Blue Heron Bridge',                     buoyId: 'LKWF1' },
@@ -17,7 +17,9 @@ const REGIONS = [
   { name: 'Deerfield / Pompano',                   buoyId: '41122' },
   { name: 'Fort Lauderdale',                       buoyId: '41122' },
   { name: 'Miami / Key Biscayne',                  buoyId: '41122' },
-  { name: 'Key Largo / Upper Keys',                buoyId: 'SMKF1' },
+  // MLRF1 (Molasses Reef) was decommissioned 2023-02-28 — no replacement buoy for Upper Keys
+  { name: 'Key Largo / Upper Keys',                buoyId: 'MLRF1', decommissioned: 'MLRF1 decommissioned Feb 2023, no replacement — Upper Keys has no buoy coverage' },
+  { name: 'Marathon / Middle Keys',                buoyId: 'SMKF1' },
   { name: 'Key West / Lower Keys',                 buoyId: '42095' },
 ]
 
@@ -55,7 +57,8 @@ export async function GET(req: NextRequest) {
     const byId = Object.fromEntries(buoys.map((b: { stationId: string }) => [b.stationId, b]))
 
     // Build buoy summary for each region
-    const buoySummary = REGIONS.map(({ name, buoyId }) => {
+    const buoySummary = REGIONS.map(({ name, buoyId, decommissioned }) => {
+      if (decommissioned) return `${name}: NO COVERAGE — ${decommissioned}`
       const b = byId[buoyId] as { waveHeight?: string; wavePeriod?: string; waterTemp?: string; windSpeed?: string; windDir?: string; error?: string; offshoreNm?: number } | undefined
       if (!b || b.error) return `${name}: no data available`
       const parts = []

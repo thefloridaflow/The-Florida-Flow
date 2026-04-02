@@ -4,7 +4,7 @@ import { getSupabase } from '@/lib/supabase'
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const GHOST_BASE = 'https://newsletter.thefloridaflow.com'
 
-async function sendGhostMagicLink(email: string): Promise<void> {
+async function sendGhostMagicLink(email: string, userIp?: string): Promise<void> {
   // Ghost requires an integrity token (anti-CSRF) fetched first
   const tokenRes = await fetch(`${GHOST_BASE}/members/api/integrity-token/`, {
     headers: { Origin: GHOST_BASE },
@@ -13,9 +13,14 @@ async function sendGhostMagicLink(email: string): Promise<void> {
   if (!tokenRes.ok) throw new Error(`Integrity token fetch failed: ${tokenRes.status}`)
   const integrityToken = await tokenRes.text()
 
+  // Forward the user's real IP so Ghost geolocates them correctly,
+  // not the Vercel server IP (which would always resolve to Virginia, US)
+  const forwardHeaders: Record<string, string> = { 'Content-Type': 'application/json', Origin: GHOST_BASE }
+  if (userIp) forwardHeaders['X-Forwarded-For'] = userIp
+
   const res = await fetch(`${GHOST_BASE}/members/api/send-magic-link/`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Origin: GHOST_BASE },
+    headers: forwardHeaders,
     body: JSON.stringify({ email, emailType: 'subscribe', labels: [], requestSrc: 'portal', integrityToken }),
     signal: AbortSignal.timeout(8000),
   })
@@ -42,8 +47,11 @@ export async function POST(req: NextRequest) {
       console.error('[subscribe] Supabase threw:', e)
     }
 
+    // Forward user's real IP for Ghost geolocation (Vercel sets x-forwarded-for)
+    const userIp = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? undefined
+
     // Send Ghost magic link — fetches integrity token first, then triggers confirmation email
-    await sendGhostMagicLink(normalized)
+    await sendGhostMagicLink(normalized, userIp)
 
     return NextResponse.json({ ok: true })
   } catch (err) {
