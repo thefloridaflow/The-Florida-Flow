@@ -1,4 +1,5 @@
 import { BuoyData } from '@/lib/noaa'
+import BHBGuideCard from '@/components/BHBGuideCard'
 
 type Rating = 'Good' | 'Marginal' | 'Rough' | 'Poor' | 'Small' | 'N/A'
 
@@ -27,9 +28,7 @@ interface Verdict {
 function computeVerdicts(buoys: BuoyData[]): Verdict[] {
   const byId = (id: string) => buoys.find(b => b.stationId === id)
 
-  // Best offshore buoy near SE FL for open-ocean wave/wind readings
   const offshore = byId('41122') ?? byId('41009')
-  // Inshore wind reference
   const inshore  = byId('LKWF1') ?? offshore
   const keys     = byId('SMKF1')
 
@@ -47,44 +46,50 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     return 'Rough'
   })()
   const divingDetail = (() => {
-    if (waveHt === null && windKt === null) return 'No buoy data — check local conditions before diving.'
-    const wh = waveHt ?? 0; const ws = windKt ?? 0
+    if (waveHt === null && windKt === null) return 'No buoy data available. Check with your local dive operator before entering the water.'
+    const wh = waveHt ?? 0
+    const ws = windKt ?? 0
     const seas = waveHt !== null ? `${offshore!.waveHeight} ft seas` : ''
     const wind = windKt !== null ? `${ws.toFixed(1)} kt wind` : ''
     const base = [seas, wind].filter(Boolean).join(', ')
     if (wh < 1.5 && ws < 12)
-      return `${base} — calm and clear. Shore dives like BHB should be easy. Excellent visibility conditions expected.`
+      return `${base}. Shore entry sites like Blue Heron Bridge should have minimal surge and good water movement. Boat dives running smoothly at all depths. Good conditions for photography, macro work, and extended bottom time. Confirm viz locally before diving.`
     if (wh < 2.5 && ws < 20)
-      return `${base} — manageable for experienced divers. Shore entry sites may have light surge; boat dives comfortable. Check viz locally.`
-    return `${base} — rough conditions. Strong surge expected at shore entry sites. Boat dives with caution; poor nearshore visibility likely.`
+      return `${base}. Manageable for experienced divers. Expect light surge at shore entry sites; plan your entry and exit carefully. Boat dives comfortable but nearshore viz may be reduced from water movement. Beginners should dive with a guide or wait for calmer conditions. Verify with your operator.`
+    return `${base}. Strong surge expected at all shore entry sites. BHB and similar spots not recommended today. Boat dives with an experienced captain only; nearshore viz likely poor from stirred-up sediment. If you must dive, go deeper and farther offshore. Confirm with your operator.`
   })()
 
   // ── Surfing ───────────────────────────────────────────────────
-  // Higher waves = better; period matters too
+  // Period is the primary quality indicator — height alone is not enough
   const surfRating: Rating = (() => {
     if (waveHt === null) return 'N/A'
     if (waveHt < 1.5) return 'Small'
     if (waveHt < 2.5) return 'Poor'
-    if (waveHt <= 8)  return 'Good'
-    return 'Rough'
+    if (waveHt > 8)   return 'Rough'
+    // 2.5–8 ft: period determines quality
+    if (wavePd !== null) {
+      if (wavePd >= 12) return 'Good'     // long-period groundswell, clean lines
+      if (wavePd >= 8)  return 'Marginal' // moderate period, some shape
+      return 'Poor'                       // short period wind chop, messy and steep
+    }
+    return 'Marginal' // no period data — be conservative
   })()
   const surfDetail = (() => {
-    if (waveHt === null) return 'No buoy data — check local surf reports.'
-    const pd = wavePd !== null ? ` @ ${offshore!.wavePeriod}s` : ''
-    let quality = ''
-    let advice = ''
-    if (wavePd !== null) {
-      if (wavePd >= 12)      { quality = 'long-period groundswell'; advice = 'Expect clean, punchy lines — best conditions.' }
-      else if (wavePd >= 8)  { quality = 'moderate period'; advice = 'Decent shape, some texture possible.' }
-      else                   { quality = 'short period wind chop'; advice = 'Bumpy, difficult to read — boards with volume preferred.' }
-    }
-    const windNote = windKt !== null && windKt > 20
-      ? ' Strong onshore wind adding chop to the face.'
-      : windKt !== null && windKt < 8
-      ? ' Light wind likely glassy or offshore.'
-      : ''
-    const sizeNote = waveHt < 1.5 ? 'Too small for most. Longboard or foil only.' : waveHt > 8 ? 'Dangerously large — experts only.' : ''
-    return `${offshore!.waveHeight} ft${pd}${quality ? ` · ${quality}` : ''}. ${advice}${windNote}${sizeNote ? ' ' + sizeNote : ''}`.trim()
+    if (waveHt === null) return 'No buoy data available. Check local surf reports or webcams before heading out.'
+    const ht  = offshore!.waveHeight
+    const pd  = wavePd !== null ? ` @ ${offshore!.wavePeriod}s` : ''
+    if (waveHt < 1.5)
+      return `${ht} ft${pd}. Too small for most surfers. Longboard or foil only; expect slow, crumbling sections with little push. Check Sebastian Inlet or southeast-facing beaches for any bump.`
+    if (waveHt < 2.5)
+      return `${ht} ft${pd}. Waves are present but weak and inconsistent. Longboards and high-volume boards only. Space Coast jetties and Sebastian Inlet are your best bet for any shape today.`
+    if (waveHt > 8)
+      return `${ht} ft${pd}. Dangerously large. Experts only, and only those who know the specific break. Paddle-out may be impossible at most spots.`
+    // 2.5–8 ft range
+    if (wavePd !== null && wavePd >= 12)
+      return `${ht} ft${pd} — long-period groundswell. Clean, punchy lines with good shape; this is what South Florida surfers wait for. ESE and SE swells wrap best at Space Coast jetties and Sebastian Inlet. All skill levels, most board types. Early morning before sea breeze is ideal.`
+    if (wavePd !== null && wavePd >= 8)
+      return `${ht} ft${pd} — moderate period, some texture. Rideable for intermediate surfers with work. A mid-length or step-up will feel more comfortable than a shortboard in the mushier sections. Wind direction matters today; get out early before sea breeze adds chop to the face.`
+    return `${ht} ft${pd} — short-period wind chop. Waves are steep, closing out fast, and difficult to read. Not worth paddling out unless you just want water time on a high-volume board. Space Coast generally holds shape better than Gold Coast in these conditions. Check back once wind eases.`
   })()
 
   // ── Kayak / SUP ───────────────────────────────────────────────
@@ -97,14 +102,15 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     return 'Rough'
   })()
   const kayakDetail = (() => {
-    if (waveHt === null && windKt === null) return 'No buoy data — use caution on open water.'
-    const wh = waveHt ?? 0; const ws = windKt ?? 0
+    if (waveHt === null && windKt === null) return 'No buoy data available. Use caution on open water and stay close to shore.'
+    const wh = waveHt ?? 0
+    const ws = windKt ?? 0
     const base = [waveHt !== null ? `${offshore!.waveHeight} ft seas` : '', windKt !== null ? `${ws.toFixed(1)} kt wind` : ''].filter(Boolean).join(', ')
     if (wh < 1.5 && ws < 12)
-      return `${base} — ideal paddling conditions. Ocean launches comfortable; all skill levels can head out.`
+      return `${base}. Ideal paddling conditions. Ocean launches easy from any beach access and the ICW is flat and calm. All skill levels can head out safely. Good day for open-ocean crossings or distance training. Watch for sea breeze picking up around 1–2 pm.`
     if (wh < 3 && ws < 18)
-      return `${base} — open water manageable for intermediate paddlers. ICW and inlets recommended for beginners. Watch for afternoon wind chop.`
-    return `${base} — open water unsafe for most kayaks and SUPs. Stay in the ICW, inlets, or sheltered bays only.`
+      return `${base}. Open water manageable for intermediate to advanced paddlers. Beginners and recreational SUP riders should stay in the ICW or sheltered bays today. If launching ocean-side, stay close to shore and be aware of current at inlet mouths. Plan to be off the water before afternoon wind builds.`
+    return `${base}. Open water unsafe for kayaks and SUPs. Stick to the ICW, intracoastal, or protected lagoons only. Even experienced paddlers should avoid ocean launches — strong wind and steep chop make self-rescue difficult if you capsize. Find a river or bay with land buffers on the windward side.`
   })()
 
   // ── Boating / Fishing ─────────────────────────────────────────
@@ -117,18 +123,18 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     return 'Rough'
   })()
   const boatDetail = (() => {
-    if (waveHt === null && windKt === null) return 'No buoy data — check NWS marine forecast before heading out.'
-    const wh = waveHt ?? 0; const ws = windKt ?? 0
+    if (waveHt === null && windKt === null) return 'No buoy data available. Check NWS marine forecast before heading out.'
+    const wh = waveHt ?? 0
+    const ws = windKt ?? 0
     const base = [waveHt !== null ? `${offshore!.waveHeight} ft seas` : '', windKt !== null ? `${ws.toFixed(1)} kt wind` : ''].filter(Boolean).join(', ')
     if (wh < 2 && ws < 15)
-      return `${base} — comfortable offshore run. Reefs and wrecks accessible. Good day for inshore and offshore fishing.`
+      return `${base}. Comfortable offshore run. Reefs, wrecks, and the Gulf Stream all accessible. Good day for pushing to the 100–150 ft bottom or running to the Stream. Check tide timing at your inlet — even on calm days, an ebbing tide against wind can kick up chop at the mouth.`
     if (wh < 4 && ws < 20)
-      return `${base} — manageable in vessels 20 ft+. Small craft use caution. Inshore reefs and nearshore wrecks fishable; offshore may be bumpy.`
-    return `${base} — small craft advisory conditions likely. Offshore not recommended. Inshore inlets and nearshore reefs only; secure all gear.`
+      return `${base}. Manageable for vessels 20 ft and up. Small craft use caution offshore; nearshore reefs and wrecks in the 60–80 ft range are fishable. Expect a bumpy return if afternoon wind builds. Inshore and inlet fishing fine for most boats. Secure all loose gear before heading out.`
+    return `${base}. Small craft advisory conditions likely. Offshore not recommended for most vessels. Inlets can be dangerous on an outgoing tide against this wind. Stick to inshore reefs, nearshore wrecks, and protected bays. If you go out, stay inside the reef line and run with a buddy boat. Check NWS marine forecast before departure.`
   })()
 
   // ── Beach / Swimming ──────────────────────────────────────────
-  // Use Keys buoy if available for southernmost reference, else offshore FL
   const beachBuoy = keys ?? offshore
   const beachWave = n(beachBuoy?.waveHeight) ?? waveHt
   const beachRating: Rating = (() => {
@@ -138,13 +144,13 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     return 'Rough'
   })()
   const beachDetail = (() => {
-    if (beachWave === null) return 'No buoy data — check local beach conditions.'
+    if (beachWave === null) return 'No buoy data available. Check with a local lifeguard before swimming.'
     const ws = windKt ?? 0
     if (beachWave < 2)
-      return `${beachWave.toFixed(1)} ft offshore — calm shore break, safe swimming. Low rip current risk. Great for families and snorkeling.`
+      return `${beachWave.toFixed(1)} ft offshore. Calm shore break with safe swimming conditions and low rip current risk. Great for families, young swimmers, and snorkeling off the beach. Green or yellow flag expected at most lifeguarded beaches. Check local flag status before entering the water.`
     if (beachWave < 3.5)
-      return `${beachWave.toFixed(1)} ft offshore — moderate shore break with possible rip currents. Swim near lifeguard towers; heed flag warnings.`
-    return `${beachWave.toFixed(1)} ft offshore${ws > 18 ? `, ${ws.toFixed(1)} kt wind` : ''} — rough shore break and high rip current risk. Flag conditions likely Red. Avoid swimming; wading only with extreme caution.`
+      return `${beachWave.toFixed(1)} ft offshore. Moderate shore break with possible rip currents. Manageable for strong swimmers but can catch casual beachgoers off guard. Swim near lifeguard towers and obey flag warnings. If caught in a rip, swim parallel to shore until free, then angle back in. Yellow flag expected at most beaches.`
+    return `${beachWave.toFixed(1)} ft offshore${ws > 18 ? `, ${ws.toFixed(1)} kt wind` : ''}. Rough shore break with high rip current risk. Red or purple flag conditions likely at most beaches. Avoid swimming beyond waist depth; strong undertow possible near inlets. Excellent day for a beach walk, but keep children out of the water. Check with lifeguards before entering.`
   })()
 
   return [
@@ -165,7 +171,7 @@ export default function ActivityVerdicts({ buoys }: { buoys: BuoyData[] }) {
         <h2 className="text-2xl font-bold text-white">By Activity</h2>
         <span className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-full">Today&apos;s Verdict</span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {verdicts.map(({ activity, icon, rating, detail }) => (
           <div key={activity} className="bg-slate-800 rounded-2xl p-4 shadow-lg flex flex-col gap-3">
             <div className="flex items-center gap-2">
@@ -175,9 +181,10 @@ export default function ActivityVerdicts({ buoys }: { buoys: BuoyData[] }) {
             <span className={`self-start px-2.5 py-1 rounded-full text-xs font-bold ${ratingStyle[rating]}`}>
               {rating}
             </span>
-            <p className="text-slate-500 text-xs leading-relaxed">{detail}</p>
+            <p className="text-slate-400 text-xs leading-relaxed">{detail}</p>
           </div>
         ))}
+        <BHBGuideCard />
       </div>
     </section>
   )

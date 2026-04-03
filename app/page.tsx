@@ -11,7 +11,6 @@ import TidesAndDiveWindows from '@/components/TidesAndDiveWindows'
 import OperatorLogs from '@/components/OperatorLogs'
 import FeaturedOperators from '@/components/FeaturedOperators'
 import EmailCapture from '@/components/EmailCapture'
-import BHBGuideCard from '@/components/BHBGuideCard'
 import NewsletterArchive from '@/components/NewsletterArchive'
 import SunTimes from '@/components/SunTimes'
 import UVIndex from '@/components/UVIndex'
@@ -48,6 +47,10 @@ async function BuoysAndConditions() {
   const [buoys, uv] = await Promise.all([fetchAllBuoys(), fetchUVIndex()])
   return (
     <>
+      <div id="activity"><ActivityVerdicts buoys={buoys} /></div>
+
+      <div id="regional"><RegionalConditionsTable buoys={buoys} precip24hMm={uv.precip24hMm ?? 0} /></div>
+
       <section id="buoys">
         <div className="flex items-center gap-2 mb-5">
           <h2 className="text-2xl font-bold text-white">Buoy Conditions</h2>
@@ -55,7 +58,6 @@ async function BuoysAndConditions() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {buoys.map(b => <BuoyCard key={b.stationId} buoy={b} />)}
-          <BHBGuideCard />
         </div>
         <div className="mt-3 flex flex-wrap gap-4 text-xs text-slate-500">
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-500 inline-block" /> &lt; 2 ft — Calm</span>
@@ -64,9 +66,6 @@ async function BuoysAndConditions() {
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500 inline-block" /> &gt; 6 ft — Dangerous</span>
         </div>
       </section>
-
-      <div id="regional"><RegionalConditionsTable buoys={buoys} precip24hMm={uv.precip24hMm ?? 0} /></div>
-      <div id="activity"><ActivityVerdicts buoys={buoys} /></div>
 
       <section id="uv-sun" className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <UVIndex uv={uv} />
