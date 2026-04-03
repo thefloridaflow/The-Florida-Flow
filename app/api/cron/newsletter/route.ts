@@ -213,11 +213,12 @@ POST 4 — Facebook (Fishing groups). 80-120 words.
 - End with: "Tides, currents, and full conditions at thefloridaflow.com — free daily newsletter."
 - No hashtags. No em dashes. Two short paragraphs max.
 
-POST 5 — Reddit. 80-120 words.
+POST 5 — Reddit. 100-140 words.
 - Audience: r/scubadiving, r/Florida, r/spearfishing, or r/FishingFlorida — pick the most relevant for today's data.
 - Purpose: genuine useful community post that happens to mention the app. Must not read like an ad.
 - Framing: you track this data daily and here's what you're seeing today. Lead with the most interesting or actionable data point. Make it useful even if they never click.
 - Hook: use formula C, D, F, or G. Redditors reward specificity and penalize marketing speak.
+- After the data, include one sentence naturally explaining what The Florida Flow is and why it was built. Example: "I built The Florida Flow because there was no single place that pulled buoy data, tides, and dive windows together for South Florida — so I made it." Keep it human, not a pitch.
 - One natural mention of the app near the end. No hard sell.
 - Suggest the subreddit in brackets at the top: [r/subreddit]
 - Tone: local who actually dives or fishes, not a content creator.
