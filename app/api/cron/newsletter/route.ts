@@ -4,7 +4,7 @@ import { createHmac } from 'crypto'
 import { fetchAllBuoys, fetchMarineForecast, fetchUVIndex, fetchCurrents } from '@/lib/noaa'
 import { getSunTimes } from '@/lib/sun'
 
-export const maxDuration = 60
+export const maxDuration = 300
 
 // Issue #1 launched March 17 2026
 const LAUNCH_DATE = new Date('2026-03-17T00:00:00-04:00')
@@ -244,9 +244,10 @@ Close wrapper div. Output HTML only. No markdown. No truncation.`
         max_tokens: 2800,
         messages: [{ role: 'user', content: socialPrompt }],
       }),
-      anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 8192,
+      anthropic.beta.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 16000,
+        betas: ['output-128k-2025-02-19'],
         messages: [{ role: 'user', content: ghostPrompt }],
       }),
     ])
