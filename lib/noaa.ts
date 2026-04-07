@@ -252,6 +252,88 @@ export async function fetchUVIndex(): Promise<UVData> {
   }
 }
 
+export type DayOutlook = {
+  date: string       // "2026-04-07"
+  label: string      // "Tue Apr 8"
+  summary: string    // WMO description
+  windMaxKt: number
+  windGustMaxKt: number
+  precipMm: number
+  precipProbMax: number
+}
+
+export type WeatherOutlook = {
+  daily: DayOutlook[]
+  tonightHourly: Array<{ time: string; windKt: number; windGustKt: number; precipProb: number }>
+  error?: string
+}
+
+function wmoDescription(code: number): string {
+  if (code === 0)           return 'Clear'
+  if (code <= 3)            return 'Partly cloudy'
+  if (code <= 49)           return 'Fog/mist'
+  if (code <= 59)           return 'Drizzle'
+  if (code <= 67)           return 'Rain'
+  if (code <= 77)           return 'Snow/sleet'
+  if (code <= 82)           return 'Rain showers'
+  if (code <= 84)           return 'Heavy showers'
+  if (code <= 99)           return 'Thunderstorms'
+  return 'Unknown'
+}
+
+export async function fetchWeatherOutlook(): Promise<WeatherOutlook> {
+  const url =
+    'https://api.open-meteo.com/v1/forecast' +
+    '?latitude=26.713&longitude=-80.057' +
+    '&daily=weather_code,wind_speed_10m_max,wind_gusts_10m_max,precipitation_sum,precipitation_probability_max' +
+    '&hourly=wind_speed_10m,wind_gusts_10m,precipitation_probability,weather_code' +
+    '&wind_speed_unit=kn' +
+    '&timezone=America%2FNew_York' +
+    '&forecast_days=7'
+  try {
+    const res = await fetch(url, { next: { revalidate: 3600 }, signal: AbortSignal.timeout(15000) })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const json = await res.json()
+
+    const daily: DayOutlook[] = (json.daily.time as string[]).map((date: string, i: number) => {
+      const d = new Date(date + 'T12:00:00-04:00')
+      const label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/New_York' })
+      return {
+        date,
+        label,
+        summary: wmoDescription(json.daily.weather_code[i]),
+        windMaxKt:     Math.round(json.daily.wind_speed_10m_max[i]   ?? 0),
+        windGustMaxKt: Math.round(json.daily.wind_gusts_10m_max[i]   ?? 0),
+        precipMm:      parseFloat((json.daily.precipitation_sum[i]    ?? 0).toFixed(1)),
+        precipProbMax: json.daily.precipitation_probability_max[i]   ?? 0,
+      }
+    })
+
+    // Tonight = today's hours 18-23 ET
+    const todayDate = json.daily.time[0] as string
+    const tonightHourly = (json.hourly.time as string[])
+      .map((t: string, i: number) => ({ t, i }))
+      .filter(({ t }) => {
+        const h = parseInt(t.split('T')[1].split(':')[0], 10)
+        return t.startsWith(todayDate) && h >= 18
+      })
+      .map(({ t, i }) => ({
+        time: t.split('T')[1].slice(0, 5),
+        windKt:      Math.round(json.hourly.wind_speed_10m[i]     ?? 0),
+        windGustKt:  Math.round(json.hourly.wind_gusts_10m[i]     ?? 0),
+        precipProb:  json.hourly.precipitation_probability[i]     ?? 0,
+      }))
+
+    return { daily, tonightHourly }
+  } catch (err) {
+    return {
+      daily: [],
+      tonightHourly: [],
+      error: err instanceof Error ? err.message : 'Unknown error',
+    }
+  }
+}
+
 export async function fetchCurrents(): Promise<CurrentData> {
   // NOAA CO-OPS PORTS station pe0101 — Port Everglades, Fort Lauderdale
   try {

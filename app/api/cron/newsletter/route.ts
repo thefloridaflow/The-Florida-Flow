@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createHmac } from 'crypto'
-import { fetchAllBuoys, fetchMarineForecast, fetchUVIndex, fetchCurrents } from '@/lib/noaa'
+import { fetchAllBuoys, fetchMarineForecast, fetchUVIndex, fetchCurrents, fetchWeatherOutlook } from '@/lib/noaa'
 import { getSunTimes } from '@/lib/sun'
 
 export const maxDuration = 300
@@ -45,11 +45,12 @@ export async function GET(req: NextRequest) {
 
     // Fetch all data in parallel
     const appBase = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.thefloridaflow.com').replace('https://thefloridaflow.com', 'https://www.thefloridaflow.com')
-    const [buoys, forecast, uv, current, operatorRes, bhbRes] = await Promise.all([
+    const [buoys, forecast, uv, current, outlook, operatorRes, bhbRes] = await Promise.all([
       fetchAllBuoys(),
       fetchMarineForecast(),
       fetchUVIndex(),
       fetchCurrents(),
+      fetchWeatherOutlook(),
       fetch(`${appBase}/api/operator-logs`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => []),
       fetch(`${appBase}/api/bhb-tides`,     { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => []),
     ])
@@ -118,6 +119,23 @@ export async function GET(req: NextRequest) {
 
     const anthropic = new Anthropic({ apiKey: anthropicKey })
 
+    // Build weather outlook summary from real Open-Meteo data
+    const tonightStr = outlook.tonightHourly.length
+      ? outlook.tonightHourly.map(h => `  ${h.time}: wind ${h.windKt}kt, gusts ${h.windGustKt}kt, ${h.precipProb}% precip`).join('\n')
+      : '  (no hourly data)'
+    const dailyStr = outlook.daily.slice(0, 6).map(d =>
+      `  ${d.label}: ${d.summary}, wind max ${d.windMaxKt}kt, gusts ${d.windGustMaxKt}kt, ${d.precipProbMax}% precip chance, ${d.precipMm}mm rain`
+    ).join('\n')
+
+    const specialContext = `=== 7-DAY WEATHER OUTLOOK (Open-Meteo, Palm Beach — knots) ===
+Tonight (${etLong.split(',')[0]}):
+${tonightStr}
+
+Days ahead:
+${dailyStr}
+
+INSTRUCTION: Read this data alongside the NWS marine forecast below and lead with whatever is most significant and actionable. If conditions are building or a front is approaching, make that the central story. If it is a calm week, reflect that instead. Do not invent weather events — only describe what the numbers actually show.`
+
     const socialPrompt = `You are writing social media posts for The Florida Flow, a free South Florida ocean conditions app and daily newsletter. Voice: knowledgeable local, short sentences, real talk. NEVER use em dashes anywhere. Use a comma or period instead.
 
 TODAY IS ${etLong}.
@@ -126,7 +144,7 @@ TODAY IS ${etLong}.
 ${buoySummary}
 
 === NWS MARINE FORECAST ===
-${forecast.forecast?.slice(0, 800) || 'Unavailable'}
+${forecast.forecast?.slice(0, 1800) || 'Unavailable'}
 
 === DATA RULES ===
 - Buoy data (seas, water temp, wind) = live. Use freely.
@@ -175,6 +193,8 @@ HOOK RULES:
 - Use the most surprising or actionable number from today's data. Not the most average one.
 - Specificity builds trust. "79°F" beats "warm." "4 ft at 7 seconds" beats "choppy."
 - If today's data is genuinely unremarkable, use the forecast to find the tension (incoming weather, building swell, wind shift).
+
+${specialContext}
 
 === INSTRUCTIONS ===
 Write 5 posts separated by exactly "---" on its own line.
@@ -226,12 +246,14 @@ POST 5 — Reddit. 100-140 words.
 
     const ghostPrompt = `Generate the Ghost email body for Issue #${issueNumber}, ${etLong}. Ghost wraps this — output inner content only. ALL styles inline. No CSS classes, no style blocks.
 
+${specialContext}
+
 DATA (use only this):
 BUOYS: ${buoySummary}
 OPERATORS: ${operatorSummary}
 BHB WINDOWS: ${bhbSummary}
 UV: ${uvSummary} | CURRENTS: ${currentSummary} | SUN: ${sunSummary}
-FORECAST: ${forecast.forecast?.slice(0, 600) || 'Unavailable'}
+FORECAST: ${forecast.forecast?.slice(0, 1400) || 'Unavailable'}
 
 RULES: Data only. No judgment calls. Offshore buoys (20-60nm) ≠ nearshore. Cite buoy distance. Plain English (no NWS jargon). NEVER use em dashes (—) anywhere. Use a comma, period, or colon instead.
 
@@ -239,6 +261,7 @@ RATING SCALE: CALM <1ft/<10kt | GOOD 1-2ft/<15kt | MARGINAL 2-3ft | CHOPPY 3-5ft
 Colors: green=#4ade80 (Calm/Good), orange=#fb923c (Marginal/Choppy/Elevated/Building), red=#f87171 (Rough/Active SCA)
 
 VIS MODEL (PREDICTED unless operator confirms): <1ft+<10kt=40-80ft | 1-2ft+<15kt=20-50ft | 2-3ft/15-20kt=10-30ft | 3-5ft/>20kt=5-15ft | >5ft=<10ft. Onshore winds reduce one tier. BHB="Tidal 5-20ft".
+PERIOD CORRECTION: Long-period swell reaches the ocean floor and stirs bottom sediment far more than short-period chop. If wave period >=9s: reduce vis prediction by one tier (e.g. 20-50ft becomes 10-30ft) even if height is moderate. If period <=5s and height <2ft: note "surface chop, bottom less affected." Short steep chop stays near-surface; long rollers penetrate to the bottom. This matters most for spearfishing and scuba vis predictions.
 BADGES: OBSERVED=<span style="background:#064e3b;color:#6ee7b7;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;display:inline-block;margin-left:4px;">OBSERVED</span> PREDICTED=<span style="background:#78350f;color:#fcd34d;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;display:inline-block;margin-left:4px;">PREDICTED</span>
 
 STYLES (apply inline to every element):
