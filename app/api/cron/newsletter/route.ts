@@ -207,13 +207,13 @@ POST 1 — X (Twitter) thread. 3 tweets separated by [TWEET].
 - No hashtags. Zero em dashes. "Glassy" only if winds <5 kt. No other condition adjectives unless buoy numbers directly support them.
 
 POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
-- Audience: divers in groups like "South Florida Scuba Divers," "Florida Underwater," "Spearfishing Florida."
-- Purpose: give them one piece of data they can act on today, then drive them to the app.
-- Hook: use formula A, B, C, or E (scuba version). The opening line must make a diver feel like they got useful intel just by reading it.
-- Body: water temp by region, sea state, BHB conditions if relevant. Buoy data only. No viz claims. No operator reports.
-- Naturally reference that the app shows tides, dive windows, and Port Everglades current, without being pushy.
-- End with: "Full conditions + tides + dive windows at thefloridaflow.com — free newsletter every morning."
-- No hashtags. No em dashes. Tone: experienced local diver sharing what they know.
+- Audience: divers in South Florida Facebook groups. They dive BHB, local reefs, offshore wrecks. They know tides matter.
+- Purpose: one piece of immediately useful intel, then the app link.
+- Hook (MANDATORY): use Formula E — open with the BHB window time and close time from the BHB data. Example strong hook: "BHB morning window opens at 8:46 AM and runs until 9:46 AM — 20 kt ENE wind and 76°F water at the inshore buoy." If no BHB window today, use Formula A (two regions with meaningfully different sea state or temp, named explicitly).
+- Body: BHB window quality from BHB data (good/fair/poor and why — tide height and wind). Water temp for 2-3 regions. Sea state in ft. One sentence on Port Everglades current direction if available. Buoy data only — no viz predictions, no operator reports.
+- NEVER make judgment calls. Forbidden: "morning dives are your play," "good day to dive," "avoid," "recommend," or any opinion on whether to go. State the numbers. Let the diver decide.
+- End with: "Verify with your operator or divemaster. Full conditions + dive windows at thefloridaflow.com — free newsletter every morning."
+- No hashtags. No em dashes. Tone: local diver who checks the data every morning, sharing what they see.
 
 POST 3 — Facebook (General Florida / beach groups). 80-120 words.
 - Audience: families, tourists, casual swimmers and beachgoers, not enthusiasts.
