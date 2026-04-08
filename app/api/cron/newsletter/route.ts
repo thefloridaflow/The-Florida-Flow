@@ -285,7 +285,7 @@ OUTPUT all 12 sections inside the wrapper div:
 8. Week Outlook: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — day by day from NWS. Each day: <span style="color:[green/orange/red];font-weight:bold;">Day 🟢/🟡/🔴:</span> summary. End: "Offshore heights from buoys 20-60nm. Nearshore smaller. Check with your operator."
 9. Safety Tip: background:#1c0a09;border-left:4px solid #ef4444;color:#fca5a5 — title + 2-3 sentences tied to today's data
 10. Sun & UV: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — single row showing Sunrise, Morning Golden Hour, Evening Golden Hour, Sunset, UV Index (colored: ≥8 red, ≥6 orange, <6 green). Use sun times and UV data.
-11. Poll: background:#0f1f3d;border-left:4px solid #3b82f6;color:#bfdbfe — question + 4 mailto options (mailto:hello@thefloridaflow.com?subject=Poll:[option]) + "Tap to reply. We read every response."
+11. Poll: background:#0f1f3d;border-left:4px solid #3b82f6;color:#bfdbfe — question + 4 mailto options (mailto:fronczakantoni2@gmail.com?subject=Poll:[option]) + "Tap to reply. We read every response."
 11. Forward ask: background:#1e293b;border-left:4px solid #0ea5e9;color:#bae6fd — "Know someone on the water? Forward this to a diver, angler, or anyone Space Coast to Keys. Free every morning."
 12. Disclaimer: font-size:11px;color:#475569;border-top:1px solid #1e293b;padding-top:16px — "The Florida Flow aggregates NOAA data. Offshore heights from buoys 20-60nm. Nearshore varies. Confirm with your captain. Use at your own risk."
 
