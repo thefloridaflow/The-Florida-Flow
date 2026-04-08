@@ -273,7 +273,11 @@ STYLES (apply inline to every element):
 - TD: padding:9px;border-bottom:1px solid #1e293b;vertical-align:top;color:#e2e8f0;background:#0f172a;font-family:Arial,sans-serif
 
 OUTPUT all 12 sections inside the wrapper div:
-1. Advisory bar (ONLY if active NWS advisory): background:#451a03;border-left:4px solid #f97316;color:#fed7aa — else omit
+1. Top highlight bar (ALWAYS include — never omit): pick ONE of these styles based on conditions:
+   - Active NWS advisory or dangerous conditions (rough seas, waterspouts, SCA): background:#451a03;border-left:4px solid #f97316;color:#fed7aa — lead with ⚠️ and state the advisory or hazard in 1-2 bold sentences.
+   - Marginal/building/choppy conditions: background:#1c1407;border-left:4px solid #f59e0b;color:#fde68a — lead with 🌊 and state the standout condition (e.g. "Seas building to X ft on the Treasure Coast — watch for deteriorating conditions through the afternoon.").
+   - Calm/good conditions: background:#0c1a2e;border-left:4px solid #38bdf8;color:#bae6fd — lead with ✅ and state the best opportunity of the day (e.g. "Calm seas and 80ft vis at BHB this morning — ideal dive window 8-10 AM.").
+   Style for the bar: padding:14px 18px;border-radius:6px;margin-bottom:20px;font-size:15px;font-family:Arial,sans-serif;font-weight:bold;line-height:1.5
 2. 3 condition paragraphs (buoy readings, forecast summary, BHB windows today)
 3. App link: <p style="font-size:13px;color:#94a3b8;font-family:Arial,sans-serif;margin-bottom:24px;"><a href="https://thefloridaflow.com" style="color:#38bdf8;font-weight:bold;">Check live conditions at thefloridaflow.com</a> — buoys, tides, dive windows, UV. Updated hourly.</p>
 4. Regional table: cols Region/Conditions/Vis/Seas/Wind/Water Temp/Buoy — 8 rows. Color-code Conditions with rating scale colors. OBSERVED/PREDICTED badges on data cells.

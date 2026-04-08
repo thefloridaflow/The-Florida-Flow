@@ -6,14 +6,14 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const BASE_URL = 'https://www.thefloridaflow.com'
+const BASE_URL = 'https://thefloridaflow.com'
 
 export const metadata: Metadata = {
   title: {
-    default: 'The Florida Flow — South Florida Ocean Conditions',
+    default: 'The Florida Flow',
     template: '%s — The Florida Flow',
   },
-  description: 'Live ocean conditions for South Florida — Space Coast to the Keys. Real-time NOAA buoy data, tides, marine forecasts, dive reports, and operator logs. Free daily newsletter.',
+  description: 'Live ocean conditions for South Florida. Real-time NOAA buoy data for divers, surfers, boaters, and fishermen from the Space Coast to Key Largo.',
   metadataBase: new URL(BASE_URL),
   alternates: { canonical: '/' },
   keywords: [
@@ -23,19 +23,17 @@ export const metadata: Metadata = {
     'Fort Lauderdale ocean conditions', 'Palm Beach diving', 'Florida fishing conditions',
   ],
   openGraph: {
-    title: 'The Florida Flow — South Florida Ocean Conditions',
-    description: 'Live NOAA buoy data, tides, dive reports, and marine forecasts for South Florida — Space Coast to the Keys.',
+    title: 'The Florida Flow',
+    description: 'Live ocean conditions for South Florida. Real-time NOAA buoy data for divers, surfers, boaters, and fishermen from the Space Coast to Key Largo.',
     url: BASE_URL,
     siteName: 'The Florida Flow',
     locale: 'en_US',
     type: 'website',
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'The Florida Flow — South Florida Ocean Conditions' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'The Florida Flow — South Florida Ocean Conditions',
-    description: 'Live NOAA buoy data, tides, dive reports, and marine forecasts — Space Coast to the Keys.',
-    images: ['/og.png'],
+    title: 'The Florida Flow',
+    description: 'Live ocean conditions for South Florida. Real-time NOAA buoy data for divers, surfers, boaters, and fishermen from the Space Coast to Key Largo.',
   },
   robots: { index: true, follow: true },
 };
