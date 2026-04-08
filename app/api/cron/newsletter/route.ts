@@ -143,11 +143,15 @@ TODAY IS ${etLong}.
 === LIVE BUOY DATA ===
 ${buoySummary}
 
+=== BHB DIVE WINDOWS ===
+${bhbSummary}
+
 === NWS MARINE FORECAST ===
 ${forecast.forecast?.slice(0, 1800) || 'Unavailable'}
 
 === DATA RULES ===
 - Buoy data (seas, water temp, wind) = live. Use freely.
+- BHB dive windows = live. Use exact times and quality ratings from the data above.
 - NWS forecast = current. Use it.
 - Operator reports = IGNORE unless dated ${etShort} or ${new Date(Date.now() - 86400000).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric' })}. If older, pretend they don't exist.
 - You have NO live visibility data. NEVER mention viz or water clarity.
@@ -284,6 +288,7 @@ OUTPUT all 12 sections inside the wrapper div:
    After table: sourcing note (font-size:12px;color:#64748b) naming each buoy by coastline+distance, NWS zone, BHB from iDiveFlorida, UV from Open-Meteo. End: "Offshore buoy readings ≠ nearshore. Confirm with your captain."
    Then BHB ad: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — "First time at BHB? The Florida Flow BHB Site Guide — <a href="https://ko-fi.com/s/59604a0ac1" style="color:#4ade80;font-weight:bold;">Get the guide $12 →</a>"
 5. Activity table: cols Activity/Verdict/Notes — 5 rows (🤿Scuba 🏄Surfing 🚣Kayak/SUP ⛵Boating/Fishing 🏖️Beach). Verdict from rating scale, color-coded inline. Notes end with "verify with your operator."
+   SURF OVERRIDE (apply before rating): onshore wind >=20kt = Poor/Dangerous regardless of wave height (blown out, unsurfable — do not use Good or Marginal). Offshore/side-offshore wind <15kt + clean swell period >=8s = upgrade one tier. Side-onshore 15-20kt = cap at Marginal. Never call surf "Good" when wind is onshore >=15kt.
 6. BHB Dive Windows: background:#0c1a2e;border-left:4px solid #0ea5e9;color:#bae6fd — tide times, window times, quality
 7. Marine Life Sightings: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — operator-confirmed only. If Rainbow Reef has no data, say so by name.
 8. Week Outlook: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — day by day from NWS. Each day: <span style="color:[green/orange/red];font-weight:bold;">Day 🟢/🟡/🔴:</span> summary. End: "Offshore heights from buoys 20-60nm. Nearshore smaller. Check with your operator."
