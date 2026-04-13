@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -36,6 +37,9 @@ export const metadata: Metadata = {
     description: 'Live ocean conditions for South Florida. Real-time NOAA buoy data for divers, surfers, boaters, and fishermen from the Space Coast to Key Largo.',
   },
   robots: { index: true, follow: true },
+  icons: {
+    apple: '/icon.svg',
+  },
 };
 
 export default function RootLayout({
@@ -45,7 +49,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="antialiased">
-      <body className={`${inter.className} bg-slate-900 min-h-screen`}>{children}<Analytics /><SpeedInsights /></body>
+      <body className={`${inter.className} bg-slate-900 min-h-screen`}>
+        {children}
+        <ServiceWorkerRegistration />
+        <Analytics />
+        <SpeedInsights />
+      </body>
     </html>
   );
 }

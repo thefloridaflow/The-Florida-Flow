@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Dark ocean background -->
+  <rect width="512" height="512" rx="96" fill="#0f172a"/>
+
+  <!-- Back wave -->
+  <path d="M32 280 Q80 220 128 280 Q176 340 224 280 Q272 220 320 280 Q368 340 416 280 Q464 220 512 280"
+    stroke="#0ea5e9" stroke-width="18" stroke-linecap="round" fill="none" opacity="0.45"/>
+  <!-- Middle wave -->
+  <path d="M16 316 Q72 248 128 316 Q184 384 240 316 Q296 248 352 316 Q408 384 464 316 Q488 282 512 300"
+    stroke="#38bdf8" stroke-width="18" stroke-linecap="round" fill="none" opacity="0.7"/>
+  <!-- Front wave -->
+  <path d="M0 356 Q64 280 128 356 Q192 432 256 356 Q320 280 384 356 Q448 432 512 356"
+    stroke="#7dd3fc" stroke-width="22" stroke-linecap="round" fill="none"/>
+</svg>
