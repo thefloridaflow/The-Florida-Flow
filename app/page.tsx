@@ -180,8 +180,15 @@ export default function HomePage() {
           </p>
           <div className="pt-1"><EmailCapture variant="hero" /></div>
           <p className="text-slate-600 text-xs">168 divers and ocean lovers. No spam, ever.</p>
-          <a href="#buoys" className="inline-block mt-4 text-slate-500 hover:text-slate-300 transition-colors text-xs">
-            Live dashboard below ↓
+
+          <div className="pt-3">
+            <a href="/beach" className="inline-flex items-center gap-2 bg-sky-600 hover:bg-sky-500 transition-colors text-white font-semibold text-sm px-5 py-2.5 rounded-xl">
+              🏖️ Beach conditions &amp; swim safety →
+            </a>
+          </div>
+
+          <a href="#buoys" className="inline-block mt-2 text-slate-500 hover:text-slate-300 transition-colors text-xs">
+            Full dashboard below ↓
           </a>
         </div>
       </section>
