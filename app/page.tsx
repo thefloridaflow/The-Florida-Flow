@@ -6,6 +6,7 @@ import ForecastPanel from '@/components/ForecastPanel'
 import CommunitySection from '@/components/CommunitySection'
 import RegionalConditionsTable from '@/components/RegionalConditionsTable'
 import ActivityVerdicts from '@/components/ActivityVerdicts'
+import BeachReport from '@/components/BeachReport'
 import BHBBanner from '@/components/BHBBanner'
 import TidesAndDiveWindows from '@/components/TidesAndDiveWindows'
 import OperatorLogs from '@/components/OperatorLogs'
@@ -47,6 +48,8 @@ async function BuoysAndConditions() {
   const [buoys, uv] = await Promise.all([fetchAllBuoys(), fetchUVIndex()])
   return (
     <>
+      <BeachReport buoys={buoys} />
+
       <div id="activity"><ActivityVerdicts buoys={buoys} /></div>
 
       <div id="regional"><RegionalConditionsTable buoys={buoys} precip24hMm={uv.precip24hMm ?? 0} /></div>
@@ -140,11 +143,13 @@ export default function HomePage() {
 
       <nav className="bg-slate-900 border-b border-slate-800">
         <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
+          <a href="#beach" className="hover:text-slate-200 transition-colors">Beach</a>
+          <span className="text-slate-700">·</span>
+          <a href="#activity" className="hover:text-slate-200 transition-colors">By Activity</a>
+          <span className="text-slate-700">·</span>
           <a href="#buoys" className="hover:text-slate-200 transition-colors">Buoys</a>
           <span className="text-slate-700">·</span>
           <a href="#regional" className="hover:text-slate-200 transition-colors">Regional</a>
-          <span className="text-slate-700">·</span>
-          <a href="#activity" className="hover:text-slate-200 transition-colors">By Activity</a>
           <span className="text-slate-700">·</span>
           <a href="#bhb" className="hover:text-slate-200 transition-colors">BHB Guide</a>
           <span className="text-slate-700">·</span>
@@ -164,10 +169,10 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 py-12 text-center space-y-3">
           <h2 className="text-3xl font-bold text-white tracking-tight">South Florida, live.</h2>
           <p className="text-slate-400 max-w-sm mx-auto text-sm leading-relaxed">
-            Daily ocean conditions, dive reports, and what&apos;s worth getting in the water for — delivered before 6 AM.
+            Daily ocean conditions, dive reports, and what&apos;s worth getting in the water for.
           </p>
           <div className="pt-1"><EmailCapture variant="hero" /></div>
-          <p className="text-slate-600 text-xs">~100 divers and ocean lovers. No spam, ever.</p>
+          <p className="text-slate-600 text-xs">168 divers and ocean lovers. No spam, ever.</p>
           <a href="#buoys" className="inline-block mt-4 text-slate-500 hover:text-slate-300 transition-colors text-xs">
             Live dashboard below ↓
           </a>

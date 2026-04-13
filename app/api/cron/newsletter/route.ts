@@ -219,13 +219,17 @@ POST 2 — Facebook (Scuba/Diving groups). 100-150 words.
 - End with: "Verify with your operator or divemaster. Full conditions + dive windows at thefloridaflow.com — free newsletter every morning."
 - No hashtags. No em dashes. Tone: local diver who checks the data every morning, sharing what they see.
 
-POST 3 — Facebook (General Florida / beach groups). 80-120 words.
-- Audience: families, tourists, casual swimmers and beachgoers, not enthusiasts.
-- Purpose: help them decide if today is a good beach day and get them to bookmark the app.
-- Hook: use formula A, B, or E (beach version). Speak to whether it's worth going, not just what the numbers are.
-- Body: water temp (relatable, like "bathtub warm" only if >82°F, otherwise give the number), sea state in plain English (calm/rough/choppy), weather to watch for.
-- No wave periods. No buoy IDs. No jargon of any kind.
-- End with: "Daily ocean conditions at thefloridaflow.com — free."
+POST 3 — Facebook (General Florida / beach groups). 100-140 words.
+- Audience: families, tourists, casual swimmers and beachgoers. They check the weather app, see sun, and drive to the beach. They do not know what a swell period is.
+- Purpose: tell them what they need to know before they load up the car — and get them to bookmark the app.
+- Hook: use formula A, B, or E (beach version). Speak to the experience, not the numbers.
+- Body (plain English only — no buoy IDs, no wave periods, no jargon):
+  * Water temp as a feeling (give the number; add "comfortable" if >78°F, "cool" if <74°F)
+  * Sea state in one word (calm / mild chop / rough)
+  * Rip current risk: derive from wave height + period. Short period (<8s) + 2ft+ = elevated risk. Say "rip current risk is elevated today" or "low rip current risk" based on the data. If elevated, add "swim near a lifeguard stand."
+  * Flag color estimate (unofficial): <2ft + <10kt = likely green; 2-3ft or 10-20kt = likely yellow; 3ft+ or >20kt = likely red. Say "expect [color] flags" and note it is an estimate.
+  * One sentence on best time of day if wind/tide makes morning or afternoon meaningfully better.
+- End with: "Daily beach and ocean conditions at thefloridaflow.com — free."
 - No hashtags. No em dashes. Two short paragraphs max.
 
 POST 4 — Facebook (Fishing groups). 80-120 words.
@@ -276,7 +280,7 @@ STYLES (apply inline to every element):
 - TH: background:#1e293b;color:#94a3b8;padding:9px;text-align:left;white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:0.5px
 - TD: padding:9px;border-bottom:1px solid #1e293b;vertical-align:top;color:#e2e8f0;background:#0f172a;font-family:Arial,sans-serif
 
-OUTPUT all 12 sections inside the wrapper div:
+OUTPUT all 14 sections inside the wrapper div:
 1. Top highlight bar (ALWAYS include — never omit): pick ONE of these styles based on conditions:
    - Active NWS advisory or dangerous conditions (rough seas, waterspouts, SCA): background:#451a03;border-left:4px solid #f97316;color:#fed7aa — lead with ⚠️ and state the advisory or hazard in 1-2 bold sentences.
    - Marginal/building/choppy conditions: background:#1c1407;border-left:4px solid #f59e0b;color:#fde68a — lead with 🌊 and state the standout condition (e.g. "Seas building to X ft on the Treasure Coast — watch for deteriorating conditions through the afternoon.").
@@ -289,14 +293,30 @@ OUTPUT all 12 sections inside the wrapper div:
    Then BHB ad: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — "First time at BHB? The Florida Flow BHB Site Guide — <a href="https://ko-fi.com/s/59604a0ac1" style="color:#4ade80;font-weight:bold;">Get the guide $12 →</a>"
 5. Activity table: cols Activity/Verdict/Notes — 5 rows (🤿Scuba 🏄Surfing 🚣Kayak/SUP ⛵Boating/Fishing 🏖️Beach). Verdict from rating scale, color-coded inline. Notes end with "verify with your operator."
    SURF OVERRIDE (apply before rating): onshore wind >=20kt = Poor/Dangerous regardless of wave height (blown out, unsurfable — do not use Good or Marginal). Offshore/side-offshore wind <15kt + clean swell period >=8s = upgrade one tier. Side-onshore 15-20kt = cap at Marginal. Never call surf "Good" when wind is onshore >=15kt.
-6. BHB Dive Windows: background:#0c1a2e;border-left:4px solid #0ea5e9;color:#bae6fd — tide times, window times, quality
-7. Marine Life Sightings: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — operator-confirmed only. If Rainbow Reef has no data, say so by name.
-8. Week Outlook: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — day by day from NWS. Each day: <span style="color:[green/orange/red];font-weight:bold;">Day 🟢/🟡/🔴:</span> summary. End: "Offshore heights from buoys 20-60nm. Nearshore smaller. Check with your operator."
-9. Safety Tip: background:#1c0a09;border-left:4px solid #ef4444;color:#fca5a5 — title + 2-3 sentences tied to today's data
-10. Sun & UV: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — single row showing Sunrise, Morning Golden Hour, Evening Golden Hour, Sunset, UV Index (colored: ≥8 red, ≥6 orange, <6 green). Use sun times and UV data.
-11. Poll: background:#0f1f3d;border-left:4px solid #3b82f6;color:#bfdbfe — question + 4 mailto options (mailto:fronczakantoni2@gmail.com?subject=Poll:[option]) + "Tap to reply. We read every response."
-11. Forward ask: background:#1e293b;border-left:4px solid #0ea5e9;color:#bae6fd — "Know someone on the water? Forward this to a diver, angler, or anyone Space Coast to Keys. Free every morning."
-12. Disclaimer: font-size:11px;color:#475569;border-top:1px solid #1e293b;padding-top:16px — "The Florida Flow aggregates NOAA data. Offshore heights from buoys 20-60nm. Nearshore varies. Confirm with your captain. Use at your own risk."
+6. Weekend Beach Report (new section — for casual beach goers): background:#0c1a2e;border-left:4px solid #38bdf8;color:#bae6fd — H2: "🏖️ Weekend Beach Report"
+   Content (plain English only, no buoy IDs, no wave periods, no jargon):
+   - Water temp with a feel word (e.g. "80°F, comfortable" / "74°F, cool but refreshing")
+   - Sea state in one word (calm / mild chop / rough / dangerous)
+   - Rip current risk assessment derived from buoy data:
+     * LOW: wave height <2ft AND period >9s AND wind <10kt
+     * ELEVATED: wave height 2-3ft OR period <8s with height >1.5ft OR wind >15kt onshore
+     * HIGH: wave height >3ft OR period <6s with any height OR strong onshore wind >20kt
+     If ELEVATED or HIGH: include "Swim near a lifeguard stand." in bold.
+   - Flag color estimate (note: unofficial, based on NOAA data):
+     * Green: <2ft + <10kt
+     * Yellow: 2-3ft OR 10-20kt wind
+     * Red: 3ft+ OR >20kt wind
+     Say: "Expect [color] flags (estimate based on NOAA data — check posted flags on arrival)."
+   - Best time window: if morning is better than afternoon (or vice versa) based on wind/tide, say so in one sentence. If no meaningful difference, omit.
+   - One sentence disclaimer: "Conditions change — always check posted flags and swim near a lifeguard."
+7. BHB Dive Windows: background:#0c1a2e;border-left:4px solid #0ea5e9;color:#bae6fd — tide times, window times, quality
+8. Marine Life Sightings: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — operator-confirmed only. If Rainbow Reef has no data, say so by name.
+9. Week Outlook: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — day by day from NWS. Each day: <span style="color:[green/orange/red];font-weight:bold;">Day 🟢/🟡/🔴:</span> summary. End: "Offshore heights from buoys 20-60nm. Nearshore smaller. Check with your operator."
+10. Safety Tip: background:#1c0a09;border-left:4px solid #ef4444;color:#fca5a5 — title + 2-3 sentences tied to today's data
+11. Sun & UV: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — single row showing Sunrise, Morning Golden Hour, Evening Golden Hour, Sunset, UV Index (colored: ≥8 red, ≥6 orange, <6 green). Use sun times and UV data.
+12. Poll: background:#0f1f3d;border-left:4px solid #3b82f6;color:#bfdbfe — question + 4 mailto options (mailto:fronczakantoni2@gmail.com?subject=Poll:[option]) + "Tap to reply. We read every response."
+13. Forward ask: background:#1e293b;border-left:4px solid #0ea5e9;color:#bae6fd — "Know someone on the water? Forward this to a diver, angler, or anyone Space Coast to Keys. Free every morning."
+14. Disclaimer: font-size:11px;color:#475569;border-top:1px solid #1e293b;padding-top:16px — "The Florida Flow aggregates NOAA data. Offshore heights from buoys 20-60nm. Nearshore varies. Confirm with your captain. Use at your own risk."
 
 Close wrapper div.
 
