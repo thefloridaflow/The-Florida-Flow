@@ -29,9 +29,12 @@ function estimate(buoys: BuoyData[]): Estimate {
   else if (wh < 4.5) { lo = 3;  hi = 15 }
   else               { lo = 0;  hi = 5  }
 
-  // Wave period modifier: long groundswell stirs less than short chop
-  if (wp > 12) { lo = Math.min(lo + 10, 80); hi = Math.min(hi + 15, 100) }
-  else if (wp > 0 && wp < 6) { lo = Math.max(lo - 8, 0); hi = Math.max(hi - 8, 2) }
+  // Wave period modifier: long-period swell penetrates to the seafloor and stirs sediment more
+  // than short-period chop which stays near the surface — so long period = worse viz for diving
+  if (wp >= 9) { lo = Math.max(lo - 10, 0); hi = Math.max(hi - 10, 2) }
+  else if (wp > 0 && wp <= 5 && wh < 2) {
+    // short steep chop stays near surface — bottom less affected, don't penalize
+  }
 
   const label = hi >= 50 ? 'Excellent' : hi >= 30 ? 'Good' : hi >= 15 ? 'Fair' : 'Poor'
   const color =

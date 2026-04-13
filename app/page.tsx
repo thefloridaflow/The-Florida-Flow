@@ -48,7 +48,14 @@ async function BuoysAndConditions() {
   const [buoys, uv] = await Promise.all([fetchAllBuoys(), fetchUVIndex()])
   return (
     <>
-      <BeachReport buoys={buoys} />
+      <div id="beach">
+        <BeachReport buoys={buoys} />
+        <div className="mt-3">
+          <a href="/beach" className="text-xs text-sky-400 hover:text-sky-300 transition-colors">
+            Full regional beach report — Space Coast · Treasure Coast · Gold Coast · Keys →
+          </a>
+        </div>
+      </div>
 
       <div id="activity"><ActivityVerdicts buoys={buoys} /></div>
 
@@ -143,7 +150,7 @@ export default function HomePage() {
 
       <nav className="bg-slate-900 border-b border-slate-800">
         <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
-          <a href="#beach" className="hover:text-slate-200 transition-colors">Beach</a>
+          <a href="/beach" className="hover:text-slate-200 transition-colors font-medium text-slate-300">Beach</a>
           <span className="text-slate-700">·</span>
           <a href="#activity" className="hover:text-slate-200 transition-colors">By Activity</a>
           <span className="text-slate-700">·</span>
