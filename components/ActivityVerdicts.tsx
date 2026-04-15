@@ -28,30 +28,51 @@ interface Verdict {
 function computeVerdicts(buoys: BuoyData[]): Verdict[] {
   const byId = (id: string) => buoys.find(b => b.stationId === id)
 
-  const offshore = byId('41122') ?? byId('41009')
-  const inshore  = byId('LKWF1') ?? offshore
-  const keys     = byId('SMKF1')
+  // Region-specific buoys — each activity picks the most relevant source
+  const spaceCoast = byId('41009')   // 20 nm offshore Space Coast — best swell data for surf
+  const goldCoast  = byId('41122')   // 23 nm offshore Fort Lauderdale — Gold Coast reefs / boating
+  const inshore    = byId('LKWF1')   // Lake Worth inshore sensor — best wind, BHB
+  const keys       = byId('SMKF1')   // 1 nm Sombrero Key — Keys beach/swim reference
 
-  const waveHt = n(offshore?.waveHeight)
-  const wavePd = n(offshore?.wavePeriod)
-  const windKt = n(inshore?.windSpeed) ?? n(offshore?.windSpeed)
+  // Per-activity buoy selection
+  const surfBuoy  = spaceCoast ?? goldCoast            // Space Coast has the real surf
+  const scubaBuoy = goldCoast  ?? spaceCoast           // Gold Coast reefs are the primary dive market
+  const kayakBuoy = goldCoast  ?? spaceCoast           // offshore reference for open water risk
+  const boatBuoy  = goldCoast  ?? spaceCoast           // Gold Coast offshore run
+  const windBuoy  = inshore    ?? goldCoast ?? spaceCoast
+
+  // Aliases kept for backward compat with beach section
+  const offshore = goldCoast ?? spaceCoast
+
+  // Surf uses Space Coast readings
+  const waveHt = n(surfBuoy?.waveHeight)
+  const wavePd = n(surfBuoy?.wavePeriod)
+  const windKt = n(windBuoy?.windSpeed) ?? n(offshore?.windSpeed)
+
+  // Scuba/kayak/boat use Gold Coast readings
+  const scubaWave = n(scubaBuoy?.waveHeight)
+  const scubaPd   = n(scubaBuoy?.wavePeriod)
+  const kayakWave = n(kayakBuoy?.waveHeight)
+  const boatWave  = n(boatBuoy?.waveHeight)
 
   // ── Scuba Diving ─────────────────────────────────────────────
   const divingRating: Rating = (() => {
-    if (waveHt === null && windKt === null) return 'N/A'
-    const wh = waveHt ?? 0
+    if (scubaWave === null && windKt === null) return 'N/A'
+    const wh = scubaWave ?? 0
     const ws = windKt ?? 0
     if (wh < 1.5 && ws < 12) return 'Good'
     if (wh < 2.5 && ws < 20) return 'Marginal'
     return 'Rough'
   })()
   const divingDetail = (() => {
-    if (waveHt === null && windKt === null) return 'No buoy data available. Check with your local dive operator before entering the water.'
-    const wh = waveHt ?? 0
+    if (scubaWave === null && windKt === null) return 'No buoy data available. Check with your local dive operator before entering the water.'
+    const wh = scubaWave ?? 0
     const ws = windKt ?? 0
-    const seas = waveHt !== null ? `${offshore!.waveHeight} ft seas` : ''
+    const seas = scubaWave !== null ? `${scubaBuoy!.waveHeight} ft seas` : ''
+    const pd   = scubaPd !== null ? ` at ${scubaBuoy!.wavePeriod}s` : ''
     const wind = windKt !== null ? `${ws.toFixed(1)} kt wind` : ''
-    const base = [seas, wind].filter(Boolean).join(', ')
+    const src  = scubaBuoy ? ` (buoy ${scubaBuoy.stationId}, ${scubaBuoy.offshoreNm} nm offshore)` : ''
+    const base = [seas + pd + src, wind].filter(Boolean).join(', ')
     if (wh < 1.5 && ws < 12)
       return `${base}. Shore entry sites like Blue Heron Bridge should have minimal surge and good water movement. Boat dives running smoothly at all depths. Good conditions for photography, macro work, and extended bottom time. Confirm viz locally before diving.`
     if (wh < 2.5 && ws < 20)
@@ -60,7 +81,8 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
   })()
 
   // ── Surfing ───────────────────────────────────────────────────
-  // Period is the primary quality indicator — height alone is not enough
+  // Uses Space Coast buoy (41009) — South Florida's primary surf benchmark.
+  // Period is the primary quality indicator — height alone is not enough.
   const surfRating: Rating = (() => {
     if (waveHt === null) return 'N/A'
     if (waveHt < 1.5) return 'Small'
@@ -75,37 +97,38 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     return 'Marginal' // no period data — be conservative
   })()
   const surfDetail = (() => {
-    if (waveHt === null) return 'No buoy data available. Check local surf reports or webcams before heading out.'
-    const ht  = offshore!.waveHeight
-    const pd  = wavePd !== null ? ` @ ${offshore!.wavePeriod}s` : ''
+    if (waveHt === null) return 'No Space Coast buoy data. Check local surf reports or webcams before heading out.'
+    const ht  = surfBuoy!.waveHeight
+    const pd  = wavePd !== null ? ` @ ${surfBuoy!.wavePeriod}s` : ''
+    const src = `Space Coast buoy 41009 (${surfBuoy!.offshoreNm} nm offshore)`
     if (waveHt < 1.5)
-      return `${ht} ft${pd}. Too small for most surfers. Longboard or foil only; expect slow, crumbling sections with little push. Check Sebastian Inlet or southeast-facing beaches for any bump.`
+      return `${ht} ft${pd} — ${src}. Too small for most surfers. Longboard or foil only; expect slow, crumbling sections with little push. Check Sebastian Inlet or southeast-facing beaches for any bump.`
     if (waveHt < 2.5)
-      return `${ht} ft${pd}. Waves are present but weak and inconsistent. Longboards and high-volume boards only. Space Coast jetties and Sebastian Inlet are your best bet for any shape today.`
+      return `${ht} ft${pd} — ${src}. Waves are present but weak and inconsistent. Longboards and high-volume boards only. Space Coast jetties and Sebastian Inlet are your best bet for any shape today.`
     if (waveHt > 8)
-      return `${ht} ft${pd}. Dangerously large. Experts only, and only those who know the specific break. Paddle-out may be impossible at most spots.`
+      return `${ht} ft${pd} — ${src}. Dangerously large. Experts only, and only those who know the specific break. Paddle-out may be impossible at most spots.`
     // 2.5–8 ft range
     if (wavePd !== null && wavePd >= 12)
-      return `${ht} ft${pd} — long-period groundswell. Clean, punchy lines with good shape; this is what South Florida surfers wait for. ESE and SE swells wrap best at Space Coast jetties and Sebastian Inlet. All skill levels, most board types. Early morning before sea breeze is ideal.`
+      return `${ht} ft${pd} — ${src}. Long-period groundswell. Clean, punchy lines with good shape; this is what South Florida surfers wait for. ESE and SE swells wrap best at Space Coast jetties and Sebastian Inlet. All skill levels, most board types. Early morning before sea breeze is ideal.`
     if (wavePd !== null && wavePd >= 8)
-      return `${ht} ft${pd} — moderate period, some texture. Rideable for intermediate surfers with work. A mid-length or step-up will feel more comfortable than a shortboard in the mushier sections. Wind direction matters today; get out early before sea breeze adds chop to the face.`
-    return `${ht} ft${pd} — short-period wind chop. Waves are steep, closing out fast, and difficult to read. Not worth paddling out unless you just want water time on a high-volume board. Space Coast generally holds shape better than Gold Coast in these conditions. Check back once wind eases.`
+      return `${ht} ft${pd} — ${src}. Moderate period, some texture. Rideable for intermediate surfers with work. A mid-length or step-up will feel more comfortable than a shortboard in the mushier sections. Get out early before sea breeze adds chop to the face.`
+    return `${ht} ft${pd} — ${src}. Short-period wind chop. Waves are steep, closing out fast, and difficult to read. Not worth paddling out unless you just want water time on a high-volume board. Check back once wind eases.`
   })()
 
   // ── Kayak / SUP ───────────────────────────────────────────────
   const kayakRating: Rating = (() => {
-    if (waveHt === null && windKt === null) return 'N/A'
-    const wh = waveHt ?? 0
+    if (kayakWave === null && windKt === null) return 'N/A'
+    const wh = kayakWave ?? 0
     const ws = windKt ?? 0
     if (wh < 1.5 && ws < 12) return 'Good'
     if (wh < 3   && ws < 18) return 'Marginal'
     return 'Rough'
   })()
   const kayakDetail = (() => {
-    if (waveHt === null && windKt === null) return 'No buoy data available. Use caution on open water and stay close to shore.'
-    const wh = waveHt ?? 0
+    if (kayakWave === null && windKt === null) return 'No buoy data available. Use caution on open water and stay close to shore.'
+    const wh = kayakWave ?? 0
     const ws = windKt ?? 0
-    const base = [waveHt !== null ? `${offshore!.waveHeight} ft seas` : '', windKt !== null ? `${ws.toFixed(1)} kt wind` : ''].filter(Boolean).join(', ')
+    const base = [kayakWave !== null ? `${kayakBuoy!.waveHeight} ft seas` : '', windKt !== null ? `${ws.toFixed(1)} kt wind` : ''].filter(Boolean).join(', ')
     if (wh < 1.5 && ws < 12)
       return `${base}. Ideal paddling conditions. Ocean launches easy from any beach access and the ICW is flat and calm. All skill levels can head out safely. Good day for open-ocean crossings or distance training. Watch for sea breeze picking up around 1–2 pm.`
     if (wh < 3 && ws < 18)
@@ -115,18 +138,18 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
 
   // ── Boating / Fishing ─────────────────────────────────────────
   const boatRating: Rating = (() => {
-    if (waveHt === null && windKt === null) return 'N/A'
-    const wh = waveHt ?? 0
+    if (boatWave === null && windKt === null) return 'N/A'
+    const wh = boatWave ?? 0
     const ws = windKt ?? 0
     if (wh < 2 && ws < 15) return 'Good'
     if (wh < 4 && ws < 20) return 'Marginal'
     return 'Rough'
   })()
   const boatDetail = (() => {
-    if (waveHt === null && windKt === null) return 'No buoy data available. Check NWS marine forecast before heading out.'
-    const wh = waveHt ?? 0
+    if (boatWave === null && windKt === null) return 'No buoy data available. Check NWS marine forecast before heading out.'
+    const wh = boatWave ?? 0
     const ws = windKt ?? 0
-    const base = [waveHt !== null ? `${offshore!.waveHeight} ft seas` : '', windKt !== null ? `${ws.toFixed(1)} kt wind` : ''].filter(Boolean).join(', ')
+    const base = [boatWave !== null ? `${boatBuoy!.waveHeight} ft seas` : '', windKt !== null ? `${ws.toFixed(1)} kt wind` : ''].filter(Boolean).join(', ')
     if (wh < 2 && ws < 15)
       return `${base}. Comfortable offshore run. Reefs, wrecks, and the Gulf Stream all accessible. Good day for pushing to the 100–150 ft bottom or running to the Stream. Check tide timing at your inlet — even on calm days, an ebbing tide against wind can kick up chop at the mouth.`
     if (wh < 4 && ws < 20)

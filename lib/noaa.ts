@@ -364,23 +364,35 @@ export async function fetchCurrents(): Promise<CurrentData> {
 }
 
 export async function fetchMarineForecast(): Promise<MarineForecast> {
-  // NWS Marine Zone AMZ630 = Waters from Jupiter Inlet to Deerfield Beach FL out 20 to 60 NM
-  // We try the NWS API for the Miami marine zone
+  // CWF = Coastal Waters Forecast (issued daily by NWS Miami)
+  // SMW = Special Marine Warning (issued as needed — fetched separately from alerts API)
   try {
-    const zoneUrl = 'https://api.weather.gov/zones/forecast/AMZ630'
-    const zoneRes = await fetch(zoneUrl, {
-      headers: { 'User-Agent': 'FloridaFlowApp/1.0' },
-      next: { revalidate: 3600 },
-      signal: AbortSignal.timeout(15000),
-    })
-    if (!zoneRes.ok) throw new Error(`Zone HTTP ${zoneRes.status}`)
-    const zoneJson = await zoneRes.json()
-    const forecastUrl = zoneJson.properties?.forecastOffice
-      ? `${zoneJson.properties.forecastOffice}/forecasts/marine`
-      : null
+    // 1. Check for active Special Marine Warnings
+    let warningText = ''
+    try {
+      const alertsRes = await fetch(
+        'https://api.weather.gov/alerts/active?area=FL&event=Special%20Marine%20Warning',
+        {
+          headers: { 'User-Agent': 'FloridaFlowApp/1.0' },
+          next: { revalidate: 300 },
+          signal: AbortSignal.timeout(10000),
+        }
+      )
+      if (alertsRes.ok) {
+        const alertsJson = await alertsRes.json()
+        const features: Array<{ properties: { event: string; expires: string; description: string; headline?: string } }> = alertsJson.features ?? []
+        if (features.length > 0) {
+          warningText = features.map(f =>
+            `⚠️ ACTIVE ${f.properties.event} — Expires: ${f.properties.expires}\n${f.properties.headline ?? ''}\n${f.properties.description}`
+          ).join('\n\n') + '\n\n'
+        }
+      }
+    } catch {
+      // non-fatal — proceed without warning text
+    }
 
-    // Use the NWS text product for South Florida waters
-    const productUrl = 'https://api.weather.gov/products/types/MWS/locations/MFL'
+    // 2. Fetch latest Coastal Waters Forecast (CWF) — issued multiple times daily
+    const productUrl = 'https://api.weather.gov/products/types/CWF/locations/MFL'
     const prodRes = await fetch(productUrl, {
       headers: { 'User-Agent': 'FloridaFlowApp/1.0' },
       next: { revalidate: 3600 },
@@ -389,7 +401,7 @@ export async function fetchMarineForecast(): Promise<MarineForecast> {
     if (!prodRes.ok) throw new Error(`Product HTTP ${prodRes.status}`)
     const prodJson = await prodRes.json()
     const latestId = prodJson['@graph']?.[0]?.['@id']
-    if (!latestId) throw new Error('No forecast product found')
+    if (!latestId) throw new Error('No CWF product found')
 
     const textRes = await fetch(latestId, {
       headers: { 'User-Agent': 'FloridaFlowApp/1.0' },
@@ -399,22 +411,23 @@ export async function fetchMarineForecast(): Promise<MarineForecast> {
     if (!textRes.ok) throw new Error(`Text HTTP ${textRes.status}`)
     const textJson = await textRes.json()
     const rawText: string = textJson.productText ?? ''
-    // Strip NWS product headers; start from the first weather statement (lines beginning with '...')
+    // Strip NWS product headers; find first weather section.
+    // CWF uses single-dot headers like ".Synopsis", MWS uses "...HAZARD..." style.
     const paras = rawText.replace(/\r/g, '').split('\n\n')
-    const contentIdx = paras.findIndex(p => /^\s*\.{3}/.test(p))
+    const contentIdx = paras.findIndex(p => /^\s*\.[A-Z.]/.test(p) && p.trim().length > 5)
     const trimmed = contentIdx >= 0
       ? paras
           .slice(contentIdx)
           .filter(p => !/^\s*\$\$/.test(p) && p.trim().length > 0)
-          .slice(0, 6)
+          .slice(0, 8)
           .join('\n\n')
           .trim()
-      : paras.filter(p => p.trim().length > 3).slice(2, 6).join('\n\n').trim()
+      : paras.filter(p => p.trim().length > 3).slice(2, 8).join('\n\n').trim()
 
     return {
       zone: 'AMZ630',
       name: 'South Florida Waters',
-      forecast: trimmed || rawText.slice(0, 800),
+      forecast: warningText + (trimmed || rawText.slice(0, 800)),
       updated: textJson.issuanceTime ?? new Date().toISOString(),
     }
   } catch (err) {
