@@ -102,24 +102,50 @@ async function fetchRainbowReef(): Promise<OperatorReport> {
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const html = await res.text()
 
-    // Date comes from the first <h3> which holds "Vessel: Location Date, Time"
-    const h3Match = html.match(/<h3[^>]*>([\s\S]*?)<\/h3>/i)
-    const h3Text  = h3Match ? stripTags(h3Match[1]) : ''
-    const dateMatch = h3Text.match(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d+\w*\s+\d{4}(?:,\s*\d+:\d+\s*[APap][Mm])?/)
-    const date = dateMatch ? dateMatch[0] : h3Text.substring(0, 60)
+    // Isolate first report entry from <ul class="reefreports">
+    const listMatch = html.match(/<ul[^>]*reefreports[^>]*>([\s\S]*?)<\/ul>/i)
+    if (!listMatch) throw new Error('reefreports not found')
+    const li = listMatch[1].match(/<li>([\s\S]*?)<\/li>/i)?.[1] ?? listMatch[1]
 
-    const rawViz = extractBeforeH4(html, 'Visibility')
-    const visibility = rawViz.length < 60 ? rawViz : rawViz.replace(/[^\d\s\-–ftFT]/g, '').trim().substring(0, 30)
-    const rawCurrent = extractBeforeH4(html, 'Current')
-    const current = rawCurrent.length < 80 ? rawCurrent : rawCurrent.substring(0, 60)
-    const rawWaves = extractBeforeH4(html, 'Wave Height')
-    const waves = rawWaves.length < 40 ? rawWaves : rawWaves.replace(/[^\d\s\-–ftFT]/g, '').trim().substring(0, 20)
+    // Date: <small class="alignR">Friday April 17th 2026, 09:43 AM</small>
+    const dateMatch = li.match(/<small[^>]*alignR[^>]*>([^<]+)<\/small>/i)
+    const date = dateMatch ? dateMatch[1].trim() : ''
 
-    // Captain's note comes after <em>From Captain...</em>
-    const emMatch = html.match(/<em>From[^<]*<\/em>\s*([\s\S]*?)(?:<em>|<h[1-6]|<\/li>)/i)
-    const notes = emMatch ? stripTags(emMatch[1]).substring(0, 130) : ''
+    // Dive site: <span class="sh4 orange nofloat">Spiegel Grove</span>
+    const siteMatch = li.match(/<span[^>]*sh4 orange[^>]*>([^<]+)<\/span>/i)
+    const site = siteMatch ? siteMatch[1].trim() : ''
 
-    return { operator: 'Rainbow Reef', location: 'Key Largo', date, visibility, current, waves, notes, url }
+    // Visibility — div title="Diving visibility at ..."
+    const vizMatch = li.match(/title="Diving visibility[^"]*"[\s\S]*?<span[^>]*>\s*(\d+)/i)
+    const visibility = vizMatch ? `${vizMatch[1]} ft` : ''
+
+    // Wave height — div title="Wave Height at ..."
+    const waveMatch = li.match(/title="Wave Height[^"]*"[\s\S]*?<span[^>]*>\s*([\d][^<]*?)<small>/i)
+    const waves = waveMatch ? `${waveMatch[1].trim()} ft` : ''
+
+    // Wind direction + speed
+    const windDirMatch = li.match(/title="Wind Direction[^"]*"[\s\S]*?<span[^>]*>([^<]+)<\/span>/i)
+    const windSpdMatch = li.match(/title="Wind Speed[^"]*"[\s\S]*?<span[^>]*>([^<]+)<\/span>/i)
+    const windDir = windDirMatch ? windDirMatch[1].trim() : ''
+    const windSpd = windSpdMatch ? windSpdMatch[1].trim() : ''
+
+    // Current direction + strength
+    const currDirMatch = li.match(/title="Current Direction[^"]*"[\s\S]*?<span[^>]*>([^<]+)<\/span>/i)
+    const currStrMatch = li.match(/title="Current Strength[^"]*"[\s\S]*?<span[^>]*>([^<]+)<\/span>/i)
+    const currDir = currDirMatch ? currDirMatch[1].trim() : ''
+    const currStr = currStrMatch ? currStrMatch[1].trim() : ''
+    const current = [currDir, currStr].filter(Boolean).join(' ')
+
+    // Captain's note: <span class="script2 blue">Beautiful</span>
+    const noteMatch = li.match(/<span[^>]*script2[^>]*>([\s\S]*?)<\/span>/i)
+    const notes = noteMatch ? stripTags(noteMatch[1]).trim().substring(0, 130) : ''
+
+    // Wind info goes in notes if no captain note, otherwise prefix it
+    const windNote = [windDir, windSpd].filter(Boolean).join(' ')
+    const fullNotes = notes || windNote || ''
+
+    const location = site ? `${site}, Key Largo` : 'Key Largo'
+    return { operator: 'Rainbow Reef', location, date, visibility, current, waves, notes: fullNotes, url }
   } catch {
     return { operator: 'Rainbow Reef', location: 'Key Largo', date: '', url, error: true }
   }
