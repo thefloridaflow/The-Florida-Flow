@@ -32,25 +32,28 @@ function computeReport(wave: BuoyData | undefined, wind: BuoyData | undefined) {
   const ws = windKt ?? 0
   const isOnshore = /^(N|NE|E|ENE|NNE)/.test(windDir)
 
+  // Buoys are 6–23 nm offshore — nearshore waves are ~40-60% of reading.
+  // Long period swell (>=9s) generates rips; short period chop (<6s) stays near surface.
   let ripRisk: RipRisk
-  if (wh > 3 || (wavePd !== null && wavePd < 6 && wh > 1) || (ws > 20 && isOnshore)) {
+  if (wh > 5 || (wh > 3 && wavePd !== null && wavePd >= 9) || (ws > 25 && isOnshore)) {
     ripRisk = 'High'
-  } else if (wh >= 2 || (wavePd !== null && wavePd < 8 && wh >= 1.5) || (ws > 15 && isOnshore)) {
+  } else if (wh >= 2.5 || (wh >= 2 && wavePd !== null && wavePd >= 9) || (ws > 18 && isOnshore)) {
     ripRisk = 'Elevated'
   } else {
     ripRisk = 'Low'
   }
 
+  // Flag thresholds adjusted for offshore readings (buoys 6–23 nm out)
   let flagColor: FlagColor
-  if (wh > 6 || (wh > 4 && ws > 25)) flagColor = 'Double Red'
-  else if (wh >= 3 || ws > 20)        flagColor = 'Red'
-  else if (wh >= 2 || ws > 10)        flagColor = 'Yellow'
-  else                                 flagColor = 'Green'
+  if (wh > 8 || (wh > 6 && ws > 25))  flagColor = 'Double Red'
+  else if (wh >= 5 || ws > 25)         flagColor = 'Red'
+  else if (wh >= 2.5 || ws > 12)       flagColor = 'Yellow'
+  else                                  flagColor = 'Green'
 
   let safety: SwimSafety
-  if (flagColor === 'Double Red' || flagColor === 'Red' || ripRisk === 'High') safety = 'Dangerous'
-  else if (flagColor === 'Yellow' || ripRisk === 'Elevated')                   safety = 'Use Caution'
-  else                                                                          safety = 'Good'
+  if (flagColor === 'Double Red' || flagColor === 'Red') safety = 'Dangerous'
+  else if (ripRisk === 'High' || flagColor === 'Yellow' || ripRisk === 'Elevated') safety = 'Use Caution'
+  else                                                                              safety = 'Good'
 
   let seaState: string
   if (wh < 1)       seaState = 'Calm'
