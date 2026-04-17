@@ -45,23 +45,23 @@ function computeBeachData(buoys: BuoyData[]): BeachData {
   const ws = windKt ?? 0
   const isOnshore = /^(N|NE|E|ENE|NNE)/.test(windDir)
 
-  // Rip current risk
+  // Rip current risk — buoys are 6–23 nm offshore; long period swell builds rips, short chop does not
   let ripRisk: RipRisk
-  if (wh > 3 || (wavePd !== null && wavePd < 6 && wh > 1) || (ws > 20 && isOnshore)) {
+  if (wh > 5 || (wh > 3 && wavePd !== null && wavePd >= 9) || (ws > 25 && isOnshore)) {
     ripRisk = 'High'
-  } else if (wh >= 2 || (wavePd !== null && wavePd < 8 && wh >= 1.5) || (ws > 15 && isOnshore)) {
+  } else if (wh >= 2.5 || (wh >= 2 && wavePd !== null && wavePd >= 9) || (ws > 18 && isOnshore)) {
     ripRisk = 'Elevated'
   } else {
     ripRisk = 'Low'
   }
 
-  // Flag color estimate
+  // Flag color estimate — thresholds account for offshore buoy distance
   let flagColor: FlagColor
-  if (wh > 6 || (wh > 4 && ws > 25)) {
+  if (wh > 8 || (wh > 6 && ws > 25)) {
     flagColor = 'Double Red'
-  } else if (wh >= 3 || ws > 20) {
+  } else if (wh >= 5 || ws > 25) {
     flagColor = 'Red'
-  } else if (wh >= 2 || ws > 10) {
+  } else if (wh >= 2.5 || ws > 12) {
     flagColor = 'Yellow'
   } else {
     flagColor = 'Green'
@@ -69,9 +69,9 @@ function computeBeachData(buoys: BuoyData[]): BeachData {
 
   // Overall swim safety
   let safety: SwimSafety
-  if (flagColor === 'Double Red' || flagColor === 'Red' || ripRisk === 'High') {
+  if (flagColor === 'Double Red' || flagColor === 'Red') {
     safety = 'Dangerous'
-  } else if (flagColor === 'Yellow' || ripRisk === 'Elevated') {
+  } else if (ripRisk === 'High' || flagColor === 'Yellow' || ripRisk === 'Elevated') {
     safety = 'Use Caution'
   } else {
     safety = 'Good'
