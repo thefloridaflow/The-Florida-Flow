@@ -70,6 +70,17 @@ async function upsertGhostMemberWithGeo(email: string, geo: Record<string, strin
   }
 }
 
+async function upsertResendContact(email: string): Promise<void> {
+  const resendKey = process.env.RESEND_API_KEY
+  if (!resendKey) return
+  await fetch('https://api.resend.com/audiences/ce90f469-8f63-419a-99c2-dd4208169f12/contacts', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, unsubscribed: false }),
+    signal: AbortSignal.timeout(5000),
+  })
+}
+
 async function sendGhostMagicLink(email: string): Promise<void> {
   const tokenRes = await fetch(`${GHOST_BASE}/members/api/integrity-token/`, {
     headers: { Origin: GHOST_BASE },
@@ -115,6 +126,7 @@ export async function POST(req: NextRequest) {
     await Promise.all([
       upsertGhostMemberWithGeo(normalized, geo).catch(e => console.error('[subscribe] geo upsert failed:', e)),
       sendGhostMagicLink(normalized),
+      upsertResendContact(normalized).catch(e => console.error('[subscribe] Resend upsert failed:', e)),
     ])
 
     return NextResponse.json({ ok: true })
