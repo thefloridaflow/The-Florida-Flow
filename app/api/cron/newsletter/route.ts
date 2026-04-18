@@ -285,9 +285,9 @@ STYLES (apply inline to every element):
 
 OUTPUT all 14 sections inside the wrapper div:
 1. Top highlight bar (ALWAYS include — never omit): pick ONE of these styles based on conditions:
-   - Active NWS advisory or dangerous conditions (rough seas, waterspouts, SCA): background:#451a03;border-left:4px solid #f97316;color:#fed7aa — lead with ⚠️ and state the advisory or hazard in 1-2 bold sentences.
-   - Marginal/building/choppy conditions: background:#1c1407;border-left:4px solid #f59e0b;color:#fde68a — lead with 🌊 and state the standout condition (e.g. "Seas building to X ft on the Treasure Coast — watch for deteriorating conditions through the afternoon.").
-   - Calm/good conditions: background:#0c1a2e;border-left:4px solid #38bdf8;color:#bae6fd — lead with ✅ and state the best opportunity of the day (e.g. "Calm seas and 80ft vis at BHB this morning — ideal dive window 8-10 AM.").
+   - Active NWS advisory OR seas 5 ft+ OR waterspouts OR dangerous surf: background:#451a03;border-left:4px solid #f97316;color:#fed7aa — lead with ⚠️ and state the hazard clearly.
+   - Genuinely rough conditions building: seas 4+ ft, winds 25+ kt, or a named SCA-level event approaching within 24h: background:#1c1407;border-left:4px solid #f59e0b;color:#fde68a — lead with 🌊 and state what's building and when. DO NOT use this bar for 2-3 ft seas or winds under 20 kt — those are normal South Florida conditions and do not warrant a caution bar.
+   - Normal to good conditions (anything under 4 ft / under 20 kt): background:#0c1a2e;border-left:4px solid #38bdf8;color:#bae6fd — lead with ✅ and state the best opportunity of the day (e.g. "Calm seas and 80ft vis at BHB this morning — ideal dive window 8-10 AM."). 2-3 ft seas with light wind is a GOOD day in South Florida — treat it as such.
    Style for the bar: padding:14px 18px;border-radius:6px;margin-bottom:20px;font-size:15px;font-family:Arial,sans-serif;font-weight:bold;line-height:1.5
 2. 3 condition paragraphs (buoy readings, forecast summary, BHB windows today)
 3. App link: <p style="font-size:13px;color:#94a3b8;font-family:Arial,sans-serif;margin-bottom:24px;"><a href="https://thefloridaflow.com" style="color:#38bdf8;font-weight:bold;">Check live conditions at thefloridaflow.com</a> — buoys, tides, dive windows, UV. Updated hourly.</p>
