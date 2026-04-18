@@ -268,10 +268,11 @@ FORECAST: ${forecast.forecast?.slice(0, 1400) || 'Unavailable'}
 
 RULES: Data only. No judgment calls. Offshore buoys (20-60nm) ≠ nearshore. Cite buoy distance. Plain English (no NWS jargon). NEVER use em dashes (—) anywhere. Use a comma, period, or colon instead.
 
-RATING SCALE: CALM <1ft/<10kt | GOOD 1-2ft/<15kt | MARGINAL 2-3ft | CHOPPY 3-5ft/short period | ELEVATED 3-5ft/building | BUILDING worsening | ROUGH 5ft+/>25kt | ACTIVE SCA named advisory
-Colors: green=#4ade80 (Calm/Good), orange=#fb923c (Marginal/Choppy/Elevated/Building), red=#f87171 (Rough/Active SCA)
+RATING SCALE: CALM <1ft/<10kt | GOOD 1-3ft/<15kt | CHOPPY 3-4ft/short period | ELEVATED 3-5ft/building or 15-20kt | BUILDING worsening trend | ROUGH 5ft+/>25kt | ACTIVE SCA named advisory
+Colors: green=#4ade80 (Calm/Good), orange=#fb923c (Choppy/Elevated/Building), red=#f87171 (Rough/Active SCA)
+South FL context: 2-3 ft seas are normal and comfortable for most activities here. The continental shelf is narrow — offshore buoy readings (20-60nm) are close to nearshore reality. NW/W winds (offshore) improve conditions and visibility even at the same wave height; E/NE winds (onshore) worsen them.
 
-VIS MODEL (PREDICTED unless operator confirms): <1ft+<10kt=40-80ft | 1-2ft+<15kt=20-50ft | 2-3ft/15-20kt=10-30ft | 3-5ft/>20kt=5-15ft | >5ft=<10ft. Onshore winds reduce one tier. BHB="Tidal 5-20ft".
+VIS MODEL (PREDICTED unless operator confirms): <1ft+<10kt=40-80ft | 1-2ft+<15kt=20-50ft | 2-3ft+NW/W wind=20-50ft (offshore wind keeps sediment down) | 2-3ft+E/NE wind=10-30ft | 3-5ft/>20kt=5-15ft | >5ft=<10ft. BHB="Tidal 5-20ft" (protected from offshore swell, wind-dependent only).
 PERIOD CORRECTION: Long-period swell reaches the ocean floor and stirs bottom sediment far more than short-period chop. If wave period >=9s: reduce vis prediction by one tier (e.g. 20-50ft becomes 10-30ft) even if height is moderate. If period <=5s and height <2ft: note "surface chop, bottom less affected." Short steep chop stays near-surface; long rollers penetrate to the bottom. This matters most for spearfishing and scuba vis predictions.
 BADGES: OBSERVED=<span style="background:#064e3b;color:#6ee7b7;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;display:inline-block;margin-left:4px;">OBSERVED</span> PREDICTED=<span style="background:#78350f;color:#fcd34d;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;display:inline-block;margin-left:4px;">PREDICTED</span>
 
@@ -295,26 +296,32 @@ OUTPUT all 14 sections inside the wrapper div:
    After table: sourcing note (font-size:12px;color:#64748b) naming each buoy by coastline+distance, NWS zone, BHB from iDiveFlorida, UV from Open-Meteo. End: "Offshore buoy readings ≠ nearshore. Confirm with your captain."
    Then BHB ad: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — "First time at BHB? The Florida Flow BHB Site Guide — <a href="https://ko-fi.com/s/59604a0ac1" style="color:#4ade80;font-weight:bold;">Get the guide $12 →</a>"
 5. Activity table: cols Activity/Verdict/Notes — 5 rows (🤿Scuba 🏄Surfing 🚣Kayak/SUP ⛵Boating/Fishing 🏖️Beach). Verdict from rating scale, color-coded inline. Notes end with "verify with your operator."
+   SCUBA THRESHOLDS (South FL specific): Good = <3ft + <15kt. Choppy = 3-4ft OR 15-20kt (most charter boats still run — larger vessels handle this). Rough/likely cancel = 4-5ft+ AND 15+ kt onshore, OR 20+ kt any direction. BHB is sheltered from ocean swell — for BHB, wind >12-15kt is the main cancel driver, not wave height. Never say dive boats cancel at 3 ft — that's not accurate for South Florida.
    SURF OVERRIDE (apply before rating): onshore wind >=20kt = Poor/Dangerous regardless of wave height (blown out, unsurfable — do not use Good or Marginal). Offshore/side-offshore wind <15kt + clean swell period >=8s = upgrade one tier. Side-onshore 15-20kt = cap at Marginal. Never call surf "Good" when wind is onshore >=15kt.
+   FISHING/BOATING: SCA (20+ kt or 7+ ft) = strongly advise against offshore. 3-5 ft manageable on larger vessels with experienced crew. Inshore/nearshore fishing generally fine in most conditions. Kayak/SUP: recommend only <2ft + <10kt; anything above that note risk and urge caution.
 6. Weekend Beach Report (new section — for casual beach goers): background:#0c1a2e;border-left:4px solid #38bdf8;color:#bae6fd — H2: "🏖️ Weekend Beach Report"
    Content (plain English only, no buoy IDs, no wave periods, no jargon):
    - Water temp with a feel word (e.g. "80°F, comfortable" / "74°F, cool but refreshing")
    - Sea state in one word (calm / mild chop / rough / dangerous)
-   - Rip current risk assessment derived from buoy data:
-     * LOW: wave height <2ft AND period >9s AND wind <10kt
-     * ELEVATED: wave height 2-3ft OR period <8s with height >1.5ft OR wind >15kt onshore
-     * HIGH: wave height >3ft OR period <6s with any height OR strong onshore wind >20kt
+   - Rip current risk assessment using NWS model parameters:
+     * LOW: wave height <2.3ft (<0.7m) OR period <6s OR wind direction offshore (NW/W/SW) — rips need onshore energy to form.
+     * ELEVATED: wave height >=2.3ft AND period 6-10s AND wind direction shore-normal (NE/E/ENE within ~45deg of perpendicular to beach). This is the classic rip setup: moderate swell pushing water against the beach with nowhere to go.
+     * HIGH: wave height >4ft AND period 6-10s AND onshore wind, OR wave height >5ft any period — rip channels widen and strengthen significantly.
      If ELEVATED or HIGH: include "Swim near a lifeguard stand." in bold.
+     Note: long-period swell (>10s) at moderate height can be LOW rip risk despite height — energy dissipates gradually. Short-period steep chop (6-8s) at 2-3 ft is often more dangerous for rips than taller long-period swell.
    - Flag color estimate (note: unofficial, based on NOAA data):
-     * Green: <2ft + <10kt
-     * Yellow: 2-3ft OR 10-20kt wind
-     * Red: 3ft+ OR >20kt wind
+     * Green: <2ft + <10kt + no shore-normal swell
+     * Yellow: 2-3ft OR 10-20kt onshore wind OR period 6-9s with any onshore component
+     * Red: 3+ ft + onshore wind, OR >20kt any direction, OR rip risk HIGH
+     * Purple (jellyfish/hazard): note only if operator logs mention it — otherwise omit
      Say: "Expect [color] flags (estimate based on NOAA data — check posted flags on arrival)."
    - Best time window: if morning is better than afternoon (or vice versa) based on wind/tide, say so in one sentence. If no meaningful difference, omit.
    - One sentence disclaimer: "Conditions change — always check posted flags and swim near a lifeguard."
 7. BHB Dive Windows: background:#0c1a2e;border-left:4px solid #0ea5e9;color:#bae6fd — tide times, window times, quality
 8. Marine Life Sightings: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — operator-confirmed only. If Rainbow Reef has no data, say so by name.
-9. Week Outlook: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — day by day from NWS. Each day: <span style="color:[green/orange/red];font-weight:bold;">Day 🟢/🟡/🔴:</span> summary. End: "Offshore heights from buoys 20-60nm. Nearshore smaller. Check with your operator."
+9. Week Outlook: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — day by day from NWS. Each day: <span style="color:[green/orange/red];font-weight:bold;">Day 🟢/🟡/🔴:</span> summary.
+   COLOR CODING: green=Calm or Good (seas <3ft, wind <15kt, no hazards); yellow=Choppy/Elevated (3-4ft OR 15-20kt OR building seas); red=Rough/Active advisory (4ft+ AND 15+ kt, OR SCA, OR named advisory). Do NOT color 2-3 ft days yellow — that is a normal South Florida day and should be green if wind is reasonable.
+   End: "Offshore heights from buoys 20-60nm. Nearshore varies. Check with your operator."
 10. Safety Tip: background:#1c0a09;border-left:4px solid #ef4444;color:#fca5a5 — title + 2-3 sentences tied to today's data
 11. Sun & UV: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — single row showing Sunrise, Morning Golden Hour, Evening Golden Hour, Sunset, UV Index (colored: ≥8 red, ≥6 orange, <6 green). Use sun times and UV data.
 12. Poll: background:#0f1f3d;border-left:4px solid #3b82f6;color:#bfdbfe — question + 4 mailto options (mailto:fronczakantoni2@gmail.com?subject=Poll:[option]) + "Tap to reply. We read every response."
