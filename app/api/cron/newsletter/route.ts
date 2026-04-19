@@ -46,6 +46,15 @@ export async function GET(req: NextRequest) {
     const msPerDay = 86400000
     const issueNumber = Math.max(1, Math.floor((now.getTime() - LAUNCH_DATE.getTime()) / msPerDay) + 1)
 
+    // Dedup guard: skip if today's draft already exists in GitHub (prevents double-send)
+    const draftPath = `drafts/${etDate}-ghost.html`
+    const draftCheck = await fetch(`https://api.github.com/repos/thefloridaflow/The-Florida-Flow/contents/${draftPath}`, {
+      headers: { Authorization: `Bearer ${githubToken}`, Accept: 'application/vnd.github+json' },
+    })
+    if (draftCheck.ok) {
+      return NextResponse.json({ skipped: true, reason: `Already sent for ${etDate} — draft exists at ${draftPath}` })
+    }
+
     // Fetch all data in parallel
     const appBase = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.thefloridaflow.com').replace('https://thefloridaflow.com', 'https://www.thefloridaflow.com')
     const [buoys, forecast, uv, current, outlook, operatorRes, bhbRes] = await Promise.all([
