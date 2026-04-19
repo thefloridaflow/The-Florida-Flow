@@ -1,9 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Allow server-side fetch caching for NOAA APIs
-  experimental: {
-    // ppr: true — enable when stable if desired
+  experimental: {},
+  async redirects() {
+    return [
+      {
+        source: '/guide',
+        destination: 'https://ko-fi.com/s/59604a0ac1',
+        permanent: false,
+      },
+    ]
   },
 };
 
