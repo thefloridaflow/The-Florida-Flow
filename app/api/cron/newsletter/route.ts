@@ -264,7 +264,7 @@ POST 5 — Reddit. 100-140 words.
 - Tone: local who actually dives or fishes, not a content creator.
 - End with: "full data at thefloridaflow.com if useful"`
 
-    const ghostPrompt = `Generate the Ghost email body for Issue #${issueNumber}, ${etLong}. Ghost wraps this — output inner content only. ALL styles inline. No CSS classes, no style blocks.
+    const ghostPrompt = `Generate the HTML email for Issue #${issueNumber}, ${etLong}. Output COMPLETE self-contained HTML starting with font <link> tags and ending with the closing wrapper div. ALL styles must be inline. No external CSS classes.
 
 ${specialContext}
 
@@ -278,64 +278,214 @@ FORECAST: ${forecast.forecast?.slice(0, 1400) || 'Unavailable'}
 RULES: Data only. No judgment calls. Offshore buoys (20-60nm) ≠ nearshore. Cite buoy distance. Plain English (no NWS jargon). NEVER use em dashes (—) anywhere. Use a comma, period, or colon instead.
 
 RATING SCALE: CALM <1ft/<10kt | GOOD 1-3ft/<15kt | CHOPPY 3-4ft/short period | ELEVATED 3-5ft/building or 15-20kt | BUILDING worsening trend | ROUGH 5ft+/>25kt | ACTIVE SCA named advisory
-Colors: green=#4ade80 (Calm/Good), orange=#fb923c (Choppy/Elevated/Building), red=#f87171 (Rough/Active SCA)
-South FL context: 2-3 ft seas are normal and comfortable for most activities here. The continental shelf is narrow — offshore buoy readings (20-60nm) are close to nearshore reality. NW/W winds (offshore) improve conditions and visibility even at the same wave height; E/NE winds (onshore) worsen them.
+South FL context: 2-3 ft seas are NORMAL and comfortable here. NW/W winds (offshore) improve vis; E/NE (onshore) worsen it. Narrow shelf means offshore buoys closely reflect nearshore.
 
-VIS MODEL (PREDICTED unless operator confirms): <1ft+<10kt=40-80ft | 1-2ft+<15kt=20-50ft | 2-3ft+NW/W wind=20-50ft (offshore wind keeps sediment down) | 2-3ft+E/NE wind=10-30ft | 3-5ft/>20kt=5-15ft | >5ft=<10ft. BHB="Tidal 5-20ft" (protected from offshore swell, wind-dependent only).
-PERIOD CORRECTION: Long-period swell reaches the ocean floor and stirs bottom sediment far more than short-period chop. If wave period >=9s: reduce vis prediction by one tier (e.g. 20-50ft becomes 10-30ft) even if height is moderate. If period <=5s and height <2ft: note "surface chop, bottom less affected." Short steep chop stays near-surface; long rollers penetrate to the bottom. This matters most for spearfishing and scuba vis predictions.
-BADGES: OBSERVED=<span style="background:#064e3b;color:#6ee7b7;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;display:inline-block;margin-left:4px;">OBSERVED</span> PREDICTED=<span style="background:#78350f;color:#fcd34d;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:3px;display:inline-block;margin-left:4px;">PREDICTED</span>
+VIS MODEL (PREDICTED unless operator confirms): <1ft+<10kt=40-80ft | 1-2ft+<15kt=20-50ft | 2-3ft+NW/W wind=20-50ft | 2-3ft+E/NE wind=10-30ft | 3-5ft/>20kt=5-15ft | >5ft=<10ft. BHB="Tidal 5-20ft".
+PERIOD CORRECTION: wave period >=9s: reduce vis one tier (long rollers stir sediment). period <=5s + height <2ft: note "surface chop, bottom less affected."
 
-STYLES (apply inline to every element):
-- Wrapper: <div style="background:#0f172a;padding:24px 28px;border-radius:8px;max-width:680px;font-family:Arial,sans-serif;color:#e2e8f0;">
-- H2: font-size:17px;font-weight:bold;color:#ffffff;border-bottom:1px solid #334155;padding-bottom:6px;margin:28px 0 12px 0;font-family:Arial,sans-serif
-- P body: font-size:15px;line-height:1.7;color:#e2e8f0;margin-bottom:14px;font-family:Georgia,serif
-- TABLE: width:100%;border-collapse:collapse;font-size:13px;font-family:Arial,sans-serif;margin-bottom:16px
-- TH: background:#1e293b;color:#94a3b8;padding:9px;text-align:left;white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:0.5px
-- TD: padding:9px;border-bottom:1px solid #1e293b;vertical-align:top;color:#e2e8f0;background:#0f172a;font-family:Arial,sans-serif
+DESIGN SYSTEM — "chart" theme, editorial light style. Apply ALL styles inline.
 
-OUTPUT all 14 sections inside the wrapper div:
-1. Top highlight bar (ALWAYS include — never omit): pick ONE of these styles based on conditions:
-   - Active NWS advisory OR seas 5 ft+ OR waterspouts OR dangerous surf: background:#451a03;border-left:4px solid #f97316;color:#fed7aa — lead with ⚠️ and state the hazard clearly.
-   - Genuinely rough conditions building: seas 4+ ft, winds 25+ kt, or a named SCA-level event approaching within 24h: background:#1c1407;border-left:4px solid #f59e0b;color:#fde68a — lead with 🌊 and state what's building and when. DO NOT use this bar for 2-3 ft seas or winds under 20 kt — those are normal South Florida conditions and do not warrant a caution bar.
-   - Normal to good conditions (anything under 4 ft / under 20 kt): background:#0c1a2e;border-left:4px solid #38bdf8;color:#bae6fd — lead with ✅ and state the best opportunity of the day (e.g. "Calm seas and 80ft vis at BHB this morning — ideal dive window 8-10 AM."). 2-3 ft seas with light wind is a GOOD day in South Florida — treat it as such.
-   Style for the bar: padding:14px 18px;border-radius:6px;margin-bottom:20px;font-size:15px;font-family:Arial,sans-serif;font-weight:bold;line-height:1.5
-2. 3 condition paragraphs (buoy readings, forecast summary, BHB windows today)
-3. App link: <p style="font-size:13px;color:#94a3b8;font-family:Arial,sans-serif;margin-bottom:24px;"><a href="https://thefloridaflow.com" style="color:#38bdf8;font-weight:bold;">Check live conditions at thefloridaflow.com</a> — buoys, tides, dive windows, UV. Updated hourly.</p>
-4. Regional table: cols Region/Conditions/Vis/Seas/Wind/Water Temp/Buoy — 8 rows. Color-code Conditions with rating scale colors. OBSERVED/PREDICTED badges on data cells.
-   After table: sourcing note (font-size:12px;color:#64748b) naming each buoy by coastline+distance, NWS zone, BHB from iDiveFlorida, UV from Open-Meteo. End: "Offshore buoy readings ≠ nearshore. Confirm with your captain."
-   Then BHB ad: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — "First time at BHB? The Florida Flow BHB Site Guide — <a href="https://thefloridaflow.com/guide" style="color:#4ade80;font-weight:bold;">Get the guide $12 →</a>"
-5. Activity table: cols Activity/Verdict/Notes — 5 rows (🤿Scuba 🏄Surfing 🚣Kayak/SUP ⛵Boating/Fishing 🏖️Beach). Verdict from rating scale, color-coded inline. Notes end with "verify with your operator."
-   SCUBA THRESHOLDS (South FL specific): Good = <3ft + <15kt. Choppy = 3-4ft OR 15-20kt (most charter boats still run — larger vessels handle this). Rough/likely cancel = 4-5ft+ AND 15+ kt onshore, OR 20+ kt any direction. BHB is sheltered from ocean swell — for BHB, wind >12-15kt is the main cancel driver, not wave height. Never say dive boats cancel at 3 ft — that's not accurate for South Florida.
-   SURF OVERRIDE (apply before rating): onshore wind >=20kt = Poor/Dangerous regardless of wave height (blown out, unsurfable — do not use Good or Marginal). Offshore/side-offshore wind <15kt + clean swell period >=8s = upgrade one tier. Side-onshore 15-20kt = cap at Marginal. Never call surf "Good" when wind is onshore >=15kt.
-   FISHING/BOATING: SCA (20+ kt or 7+ ft) = strongly advise against offshore. 3-5 ft manageable on larger vessels with experienced crew. Inshore/nearshore fishing generally fine in most conditions. Kayak/SUP: recommend only <2ft + <10kt; anything above that note risk and urge caution.
-6. Weekend Beach Report (new section — for casual beach goers): background:#0c1a2e;border-left:4px solid #38bdf8;color:#bae6fd — H2: "🏖️ Weekend Beach Report"
-   Content (plain English only, no buoy IDs, no wave periods, no jargon):
-   - Water temp with a feel word (e.g. "80°F, comfortable" / "74°F, cool but refreshing")
-   - Sea state in one word (calm / mild chop / rough / dangerous)
-   - Rip current risk assessment using NWS model parameters:
-     * LOW: wave height <2.3ft (<0.7m) OR period <6s OR wind direction offshore (NW/W/SW) — rips need onshore energy to form.
-     * ELEVATED: wave height >=2.3ft AND period 6-10s AND wind direction shore-normal (NE/E/ENE within ~45deg of perpendicular to beach). This is the classic rip setup: moderate swell pushing water against the beach with nowhere to go.
-     * HIGH: wave height >4ft AND period 6-10s AND onshore wind, OR wave height >5ft any period — rip channels widen and strengthen significantly.
-     If ELEVATED or HIGH: include "Swim near a lifeguard stand." in bold.
-     Note: long-period swell (>10s) at moderate height can be LOW rip risk despite height — energy dissipates gradually. Short-period steep chop (6-8s) at 2-3 ft is often more dangerous for rips than taller long-period swell.
-   - Flag color estimate (note: unofficial, based on NOAA data):
-     * Green: <2ft + <10kt + no shore-normal swell
-     * Yellow: 2-3ft OR 10-20kt onshore wind OR period 6-9s with any onshore component
-     * Red: 3+ ft + onshore wind, OR >20kt any direction, OR rip risk HIGH
-     * Purple (jellyfish/hazard): note only if operator logs mention it — otherwise omit
-     Say: "Expect [color] flags (estimate based on NOAA data — check posted flags on arrival)."
-   - Best time window: if morning is better than afternoon (or vice versa) based on wind/tide, say so in one sentence. If no meaningful difference, omit.
-   - One sentence disclaimer: "Conditions change — always check posted flags and swim near a lifeguard."
-7. BHB Dive Windows: background:#0c1a2e;border-left:4px solid #0ea5e9;color:#bae6fd — tide times, window times, quality
-8. Marine Life Sightings: background:#052e16;border-left:4px solid #22c55e;color:#bbf7d0 — operator-confirmed only. If Rainbow Reef has no data, say so by name.
-9. Week Outlook: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — day by day from NWS. Each day: <span style="color:[green/orange/red];font-weight:bold;">Day 🟢/🟡/🔴:</span> summary.
-   COLOR CODING: green=Calm or Good (seas <3ft, wind <15kt, no hazards); yellow=Choppy/Elevated (3-4ft OR 15-20kt OR building seas); red=Rough/Active advisory (4ft+ AND 15+ kt, OR SCA, OR named advisory). Do NOT color 2-3 ft days yellow — that is a normal South Florida day and should be green if wind is reasonable.
-   End: "Offshore heights from buoys 20-60nm. Nearshore varies. Check with your operator."
-10. Safety Tip: background:#1c0a09;border-left:4px solid #ef4444;color:#fca5a5 — title + 2-3 sentences tied to today's data
-11. Sun & UV: background:#1e293b;border:1px solid #334155;color:#e2e8f0 — single row showing Sunrise, Morning Golden Hour, Evening Golden Hour, Sunset, UV Index (colored: ≥8 red, ≥6 orange, <6 green). Use sun times and UV data.
-12. Poll: background:#0f1f3d;border-left:4px solid #3b82f6;color:#bfdbfe — question + 4 mailto options (mailto:fronczakantoni2@gmail.com?subject=Poll:[option]) + "Tap to reply. We read every response."
-13. Forward ask: background:#1e293b;border-left:4px solid #0ea5e9;color:#bae6fd — "Know someone on the water? Forward this to a diver, angler, or anyone Space Coast to Keys. Free every morning."
-14. Disclaimer: font-size:11px;color:#475569;border-top:1px solid #1e293b;padding-top:16px — "The Florida Flow aggregates NOAA data. Offshore heights from buoys 20-60nm. Nearshore varies. Confirm with your captain. Use at your own risk."
+START your output with these font imports (before wrapper div):
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+COLOR TOKENS (hardcoded hex — no CSS variables):
+PAPER=#eef6f6 | PAPER2=#deedee | RULE=#b8d4d4 | RULE2=#96bfbf
+INK=#1a2035 | INK2=#323855 | INK3=#5a6285 | INK4=#8890a8
+ACCENT=#2646c8 | ACCENT_SOFT=#cdd9f0
+GOOD=#2a8a58 | GOOD_SOFT=#d0f0e0
+WARN=#b87820 | WARN_SOFT=#f5e8c8
+DANGER=#b02818 | DANGER_SOFT=#f5d4cc
+
+FONT STACKS:
+SERIF="Source Serif 4",Georgia,serif
+SANS="Inter Tight",-apple-system,BlinkMacSystemFont,Arial,sans-serif
+MONO="JetBrains Mono",ui-monospace,SFMono-Regular,monospace
+
+WRAPPER (outermost div):
+<div style="max-width:720px;margin:0 auto;background:#eef6f6;border:1px solid #b8d4d4;font-family:'Inter Tight',-apple-system,BlinkMacSystemFont,Arial,sans-serif;color:#1a2035;">
+
+SECTION HEADER pattern (use for each named section):
+<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;border-bottom:1px solid #96bfbf;padding-bottom:10px;">
+  <h3 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:22px;letter-spacing:-0.01em;margin:0;color:#1a2035;">[Title] <em style="font-style:italic;">[italic part]</em></h3>
+  <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#5a6285;">[meta]</span>
+</div>
+
+SECTION WRAPPER: <section style="padding:28px;border-top:1px solid #b8d4d4;">
+
+OUTPUT all sections inside the wrapper div in this order:
+
+1. MASTHEAD (always first):
+<header style="padding:28px 28px 20px;border-bottom:2px solid #1a2035;">
+  Kicker row (flex, space-between): <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:20px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#5a6285;padding-bottom:14px;border-bottom:1px solid #b8d4d4;margin-bottom:18px;">
+    Left: <span><b style="color:#1a2035;">[Weekday]</b> · [Date full] · Issue #${issueNumber}</span>
+    Right: <span>thefloridaflow.com</span>
+  </div>
+  Wordmark: <h1 style="font-family:'Source Serif 4',Georgia,serif;font-weight:300;font-style:italic;font-size:48px;line-height:0.95;letter-spacing:-0.02em;color:#1a2035;margin:0 0 14px;">The Florida Flow.</h1>
+  Tagline: <p style="font-family:'Source Serif 4',Georgia,serif;font-size:15px;font-style:italic;color:#5a6285;margin:0;">The morning briefing for divers, anglers, and everyone on the water — Space Coast to Key West.</p>
+</header>
+
+2. VERDICT STRIP (4 key metrics in a row, always include):
+<div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;border-bottom:2px solid #1a2035;">
+  Each cell: <div style="padding:14px 20px;border-right:1px solid #b8d4d4;"> (last cell: no border-right)
+    Label: <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:#5a6285;margin-bottom:6px;">[LABEL]</div>
+    Value: <div style="font-family:'Source Serif 4',Georgia,serif;font-size:20px;font-weight:500;line-height:1.1;color:#1a2035;">[value] <small style="font-family:'Inter Tight',Arial,sans-serif;font-size:11px;font-weight:500;color:#5a6285;display:block;margin-top:3px;">[sub]</small></div>
+  Columns: "Today's Call" (one sharp verdict sentence + status pill) | "Best Window" (BHB time if viable, else best activity window) | "Seas Now" (nearest buoy height) | "Water" (temp + buoy ID)
+  STATUS PILL: <span style="display:inline-block;font-family:'Inter Tight',Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;margin-top:6px;border-radius:2px;background:[GOOD_SOFT|WARN_SOFT|DANGER_SOFT];color:[GOOD|WARN|DANGER];">[label]</span>
+
+3. ALERT BAR (always include — pick ONE based on conditions, never omit):
+  DANGER (active NWS advisory OR seas 5ft+ OR waterspouts): background:#f5d4cc;border-left:4px solid #b02818 — layout: flex with 44px badge + content
+    Badge: <div style="width:44px;flex-shrink:0;border:1.5px solid #b02818;color:#b02818;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.08em;text-align:center;padding:8px 4px;line-height:1.3;">⚠<br>[TYPE]</div>
+    Title: font-family:'Source Serif 4',Georgia,serif;font-size:22px;font-weight:500;line-height:1.2;margin:0 0 4px;color:#1a2035 (em tags for italic emphasis in danger color)
+    Sub: font-family:'Inter Tight',Arial,sans-serif;font-size:13.5px;color:#323855;margin:0
+  WARN (building 4ft+/25kt+ or SCA approaching within 24h): same structure, background:#f5e8c8;border-left:4px solid #b87820;badge in #b87820
+  CALM (anything under 4ft/<20kt — DO NOT warn for normal conditions): background:#cdd9f0;border-left:4px solid #2646c8 — no badge. Just: <div style="padding:16px 20px;font-family:'Source Serif 4',Georgia,serif;font-size:16px;font-weight:500;color:#1a2035;line-height:1.4;"> lead with best opportunity of the day
+  Alert wrapper: <div style="padding:18px 20px;border-bottom:1px solid #b8d4d4;display:flex;gap:16px;align-items:flex-start;[background+border-left];">
+  2-3 ft seas with light wind = CALM bar (blue). Never use warn bar for normal South Florida conditions.
+
+4. LEDE (editorial briefing):
+<section style="padding:32px 28px 8px;">
+  Section mark: <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#5a6285;display:flex;align-items:center;gap:10px;margin-bottom:18px;"><span style="width:24px;height:1px;background:#5a6285;display:inline-block;flex-shrink:0;"></span>The Briefing</div>
+  H2: <h2 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:30px;line-height:1.18;letter-spacing:-0.015em;margin:0 0 18px;color:#1a2035;">[Headline with <em style="font-style:italic;">italic key phrase</em>]</h2>
+  Paragraphs: <p style="font-family:'Source Serif 4',Georgia,serif;font-size:16.5px;line-height:1.6;color:#323855;margin:0 0 14px;">[body]</p> — 2-3 paragraphs covering buoy readings, forecast, BHB window, front/event context
+  BUOY STRIP (after first paragraph, always):
+  <div style="margin:22px 0 10px;border:1px solid #b8d4d4;display:grid;grid-template-columns:repeat(4,1fr);">
+    Each buoy cell (border-right except last): <div style="padding:10px 12px;border-right:1px solid #b8d4d4;">
+      ID: <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.1em;color:#5a6285;text-transform:uppercase;">[buoyId] · [short region]</div>
+      Val: <div style="font-family:'Source Serif 4',Georgia,serif;font-size:18px;font-weight:500;color:#1a2035;line-height:1.1;margin-top:3px;">[main value] <small style="font-family:'Inter Tight',Arial,sans-serif;font-weight:500;font-size:10.5px;color:#5a6285;">[unit/secondary]</small></div>
+    </div>
+  </div>
+  BHB GUIDE CARD (after final lede paragraph):
+  <a href="https://thefloridaflow.com/guide" style="display:block;margin:22px 0 8px;padding:18px 20px;background:#cdd9f0;border:1px solid #2646c8;border-left:3px solid #2646c8;text-decoration:none;color:#1a2035;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#2646c8;margin-bottom:4px;">Featured · Dive site guide</div>
+    <div style="font-family:'Source Serif 4',Georgia,serif;font-size:20px;font-weight:500;letter-spacing:-0.01em;color:#1a2035;line-height:1.15;margin-bottom:4px;">First time at <em style="font-style:italic;">Blue Heron Bridge?</em></div>
+    <div style="font-family:'Source Serif 4',Georgia,serif;font-size:13.5px;color:#323855;line-height:1.5;margin-bottom:14px;">56-page field guide — tide windows, entry points, critter map, offline tables. Everything you need for every dive.</div>
+    <div style="display:inline-block;padding:10px 16px;background:#1a2035;color:#eef6f6;font-family:'Inter Tight',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:0.02em;">$12 · Get the guide →</div>
+  </a>
+  App link: <p style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:#5a6285;margin:16px 0 0;"><a href="https://thefloridaflow.com" style="color:#2646c8;font-weight:500;">thefloridaflow.com</a> — live buoys, tides, dive windows, UV. Updated hourly.</p>
+</section>
+
+5. REGIONAL TABLE:
+<section style="padding:28px;border-top:1px solid #b8d4d4;">
+  [section header: "Regional conditions" / meta: "[N] regions · [N] observed"]
+  <table style="width:100%;border-collapse:collapse;font-family:'Inter Tight',Arial,sans-serif;font-size:13px;">
+    TH: font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#5a6285;text-align:left;padding:8px 10px 8px 0;border-bottom:2px solid #1a2035;white-space:nowrap
+    TD: padding:12px 10px 12px 0;border-bottom:1px solid #b8d4d4;vertical-align:top
+    Columns: Region / State / Vis / Seas / Wind / Water
+    REGION cell: <td><span style="font-family:'Source Serif 4',Georgia,serif;font-size:15px;font-weight:500;color:#1a2035;">[name]</span><small style="display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8890a8;letter-spacing:0.06em;margin-top:2px;text-transform:uppercase;">[location · buoyId]</small></td>
+    STATE cell: <span style="display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle;background:[#2a8a58|#b87820|#b02818|#8890a8];"></span><span style="font-weight:600;white-space:nowrap;color:[#2a8a58|#b87820|#b02818|#8890a8];">[Good|Choppy|Rough|No data]</span>
+    NUM cells: <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#1a2035;white-space:nowrap;">[value] <span style="color:#8890a8;">[unit]</span></span>
+    OBS/PRED tags: <span style="display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;padding:1px 5px;margin-left:4px;text-transform:uppercase;border:1px solid;border-radius:2px;vertical-align:middle;[border-color:#2a8a58;color:#2a8a58 for OBS | border-color:#8890a8;color:#5a6285 for PRED]">OBS|PRED</span>
+    8 regions: Space Coast (41009) | Treasure Coast (41114) | Blue Heron Bridge (LKWF1) | Palm Beach/Singer Is. (LKWF1) | Deerfield/Pompano/Miami (41122) | Upper Keys (MLRF1 decommissioned — show "No coverage") | Marathon (SMKF1) | Key West (42095)
+  After table: <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6285;letter-spacing:0.06em;margin:12px 0 16px;line-height:1.6;">Sources: [list buoys by coastline + distance]. NWS zones. BHB from iDiveFlorida. UV from Open-Meteo. Offshore buoys ≠ nearshore. Confirm with your captain.</p>
+  BHB guide inline promo: <div style="background:#d0f0e0;border-left:3px solid #2a8a58;padding:14px 18px;font-family:'Source Serif 4',Georgia,serif;font-size:14px;color:#1a2035;line-height:1.5;">First time at BHB? <a href="https://thefloridaflow.com/guide" style="color:#2a8a58;font-weight:600;">The Florida Flow BHB Site Guide — Get it for $12 →</a></div>
+
+6. ACTIVITY PLANNER (2-column card grid):
+<section style="padding:28px;border-top:1px solid #b8d4d4;">
+  [section header: "Activity planner" / meta: "[weekday] · [N] activities"]
+  <div style="display:grid;grid-template-columns:1fr 1fr;border-top:2px solid #1a2035;border-left:1px solid #b8d4d4;">
+    Each card: <div style="border-right:1px solid #b8d4d4;border-bottom:1px solid #b8d4d4;padding:16px 18px;background:#eef6f6;box-shadow:inset 3px 0 0 [#2a8a58 go|#b87820 caution|#b02818 no];">
+      Header: <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+        Name: <span style="font-family:'Source Serif 4',Georgia,serif;font-size:17px;font-weight:500;color:#1a2035;">[Activity]</span>
+        Verdict pill: <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:2px 6px;border-radius:2px;background:[GOOD_SOFT|WARN_SOFT|DANGER_SOFT];color:[GOOD|WARN|DANGER];">[verdict]</span>
+      </div>
+      Notes: <p style="margin:0;font-size:13px;color:#323855;line-height:1.5;">[notes, end with "verify with your operator"]</p>
+    </div>
+    6 activities: Scuba | Surfing | Kayak/SUP | Boating/Fishing | Beach | Gulf Stream (use "Do not go" + DANGER when seas 4ft+)
+    SCUBA: Good=<3ft+<15kt | Choppy=3-4ft or 15-20kt (most boats still run) | Rough/cancel=4-5ft+ AND onshore 15+kt or 20+kt any. BHB: wind >12-15kt is cancel driver, not wave height.
+    SURF OVERRIDE: onshore >=20kt=blown out regardless. Offshore/side-offshore <15kt + period >=8s=upgrade. Never "Good" when onshore >=15kt.
+    FISHING: SCA=advise against offshore. 3-5ft manageable large vessels. Inshore generally fine.
+    KAYAK/SUP: Good only <2ft+<10kt; above that flag risk clearly.
+
+7. BEACH REPORT:
+<section style="padding:28px;border-top:1px solid #b8d4d4;background:#deedee;">
+  [section header: "Weekend beach report" / meta: "casual beachgoers · plain English"]
+  Plain English only — no buoy IDs, no periods, no jargon.
+  - Water temp + feel word ("80°F, comfortable" / "74°F, cool but refreshing")
+  - Sea state in one plain word (calm / mild chop / rough / dangerous)
+  - Rip risk (NWS model):
+    LOW: height <2.3ft OR period <6s OR wind offshore (NW/W/SW)
+    ELEVATED: height >=2.3ft AND period 6-10s AND direction shore-normal (NE/E/ENE). If ELEVATED: <strong>Swim near a lifeguard stand.</strong>
+    HIGH: height >4ft AND period 6-10s AND onshore, OR height >5ft any period. If HIGH: <strong>Swim near a lifeguard stand.</strong>
+  - Flag estimate: Green <2ft+<10kt+no shore-normal swell | Yellow 2-3ft or 10-20kt onshore | Red 3ft++onshore or >20kt any
+    <p>"Expect [color] flags (estimate from NOAA data — check posted flags on arrival)."</p>
+  - Best time window (morning vs afternoon if meaningfully different, else omit)
+  - <p>"Conditions change — always check posted flags and swim near a lifeguard."</p>
+
+8. BHB DIVE WINDOWS:
+<section style="padding:28px;border-top:1px solid #b8d4d4;">
+  [section header: "Blue Heron Bridge dive windows" / meta: "Inshore · LKWF1 [wind]"]
+  Tide readout (4-col): <div style="border:1px solid #b8d4d4;background:#deedee;display:grid;grid-template-columns:repeat(4,1fr);margin-bottom:14px;">
+    Each cell (border-right except last): padding:10px 14px
+      Label: font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#5a6285;margin-bottom:4px
+      Value: font-family:'Source Serif 4',Georgia,serif;font-size:18px;font-weight:500;color:#1a2035;letter-spacing:-0.01em
+    Show: High Tide / Low Tide / Best Window / Quality
+  Window list (3-col): <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #b8d4d4;">
+    Each window: <div style="padding:12px 14px;border-right:1px solid #b8d4d4;background:[#cdd9f0 if optimal else #eef6f6];[box-shadow:inset 0 2px 0 #2646c8 if optimal];">
+      Time: font-family:'Source Serif 4',Georgia,serif;font-size:20px;font-weight:500;color:#1a2035
+      Meta: font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:#5a6285;margin-top:4px
+      Quality: <span style="display:inline-block;padding:1px 5px;border-radius:2px;font-size:9px;font-family:'JetBrains Mono',monospace;background:[GOOD_SOFT|WARN_SOFT];color:[GOOD|WARN];">Optimal|Fair</span>
+  Add 1-2 sentence BHB note on vis and wind status.
+
+9. MARINE LIFE SIGHTINGS:
+<section style="padding:28px;border-top:1px solid #b8d4d4;">
+  [section header: "Yesterday underwater" / meta: "[N] operator reports · [date]"]
+  <div style="display:flex;flex-direction:column;gap:0;">
+    Each sighting: <div style="display:grid;grid-template-columns:110px 1fr;gap:16px;padding-bottom:14px;border-bottom:1px solid #b8d4d4;[padding-top:14px for 2nd+]">
+      Operator: <div><span style="font-family:'Source Serif 4',Georgia,serif;font-size:15px;font-weight:500;color:#1a2035;">[name]</span><small style="display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8890a8;letter-spacing:0.08em;text-transform:uppercase;margin-top:4px;">[location]</small></div>
+      Body: <div><q style="display:block;font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-size:15.5px;color:#1a2035;padding-left:14px;border-left:2px solid #2646c8;line-height:1.45;margin-top:0;">[quote]</q>
+        Stats: <div style="display:flex;gap:18px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6285;letter-spacing:0.06em;flex-wrap:wrap;"><span><b style="color:#1a2035;">[value]</b> vis</span><span><b style="color:#1a2035;">[temp]</b> water</span>...</div>
+      </div>
+  If Rainbow Reef has no data say so by name.
+
+10. WEEK OUTLOOK:
+<section style="padding:28px;border-top:1px solid #b8d4d4;">
+  [section header: "The week ahead" / meta: "Wind kt · [date range]"]
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);border:1px solid #b8d4d4;">
+    Each day (border-right except last; today gets background:#deedee):
+    <div style="padding:14px 12px;border-right:1px solid #b8d4d4;[background:#deedee if today];">
+      DOW: <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#5a6285;margin-bottom:2px;">[MON|TUE...]</div>
+      Date: <div style="font-family:'Source Serif 4',Georgia,serif;font-size:20px;font-weight:500;color:#1a2035;letter-spacing:-0.01em;line-height:1;">[day number]</div>
+      Verdict: <div style="font-weight:600;font-size:11.5px;margin-top:10px;color:[#2a8a58|#b87820|#b02818];">[GOOD|CHOPPY|ROUGH]</div>
+      Note: <div style="font-size:11.5px;color:#5a6285;margin-top:4px;line-height:1.4;">[1-line summary]</div>
+    COLOR: <3ft+<15kt=green | 3-4ft or 15-20kt=orange | 4ft++15+kt or SCA=red. 2-3ft days with <15kt wind = GREEN.
+  <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#5a6285;letter-spacing:0.1em;text-transform:uppercase;margin:12px 0 0;">Offshore heights from buoys 20-60nm. Nearshore varies. Check with your operator.</p>
+
+11. SAFETY TIP:
+<div style="padding:24px 28px;background:#deedee;border-top:1px solid #b8d4d4;border-bottom:1px solid #b8d4d4;">
+  <h3 style="font-family:'Source Serif 4',Georgia,serif;font-weight:500;font-size:22px;letter-spacing:-0.01em;margin:0 0 10px;color:#b02818;">⚠ [tip title tied to today's conditions]</h3>
+  <p style="font-family:'Source Serif 4',Georgia,serif;font-size:15.5px;color:#1a2035;margin:0;line-height:1.55;">[2-3 sentences, data-grounded, specific to today]</p>
+
+12. SUN & UV (5-column grid):
+<section style="padding:28px;border-top:1px solid #b8d4d4;">
+  [section header: "Sun & UV" / meta: "[weekday] · Palm Beach"]
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);border:1px solid #b8d4d4;">
+    Each cell (border-right except last): <div style="padding:14px 12px;border-right:1px solid #b8d4d4;">
+      Label: font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#5a6285;margin-bottom:6px
+      Value: font-family:'Source Serif 4',Georgia,serif;font-size:18px;font-weight:500;color:#1a2035;letter-spacing:-0.005em
+      Sub if needed: <small style="font-family:'Inter Tight',Arial,sans-serif;font-size:11px;font-weight:500;color:#5a6285;display:block;margin-top:2px;">
+    Columns: Sunrise | AM Golden Hour | PM Golden Hour | Sunset | UV Index
+    UV value style: font-size:28px;font-weight:500;color:[#b02818 if>=8|#b87820 if>=6|#2a8a58 if<6]
+    UV sub: "[Low|Moderate|High|Very High] · [protection note]"
+
+13. POLL:
+<section style="padding:28px;border-top:1px solid #b8d4d4;">
+  [section header: "Weekly poll" / meta: "Reply · we read every one"]
+  <div style="border:1px solid #b8d4d4;padding:20px;">
+    <div style="font-family:'Source Serif 4',Georgia,serif;font-size:20px;font-weight:400;letter-spacing:-0.01em;color:#1a2035;margin:6px 0 14px;">[question relevant to today's conditions]</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      Each option: <a href="mailto:fronczakantoni2@gmail.com?subject=Poll:[option]" style="display:flex;align-items:center;padding:11px 14px;border:1px solid #96bfbf;font-family:'Inter Tight',Arial,sans-serif;font-size:13.5px;color:#1a2035;text-decoration:none;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:#5a6285;margin-right:14px;border:1px solid #b8d4d4;padding:2px 6px;border-radius:2px;min-width:22px;text-align:center;">[A|B|C|D]</span>[option text]</a>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#5a6285;margin-top:12px;">Tap to reply. We read every response.</div>
+  </div>
+
+14. FOOTER:
+<footer style="padding:28px;border-top:2px solid #1a2035;background:#eef6f6;">
+  Forward ask: <p style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-size:16px;color:#323855;text-align:center;padding:14px 0;border-top:1px solid #b8d4d4;border-bottom:1px solid #b8d4d4;margin:0 0 22px;">Know someone on the water? Forward this to a diver, angler, or anyone Space Coast to Keys. Free every morning.</p>
+  Sources: <p style="font-size:11px;color:#5a6285;line-height:1.6;margin:0 0 18px;font-family:'Inter Tight',Arial,sans-serif;">Sources: NDBC buoys 41009 (Space Coast, 20nm), 41114 (Treasure Coast, 6.5nm), LKWF1 (BHB inshore), 41122 (Deerfield-Miami, 23nm), SMKF1 (Marathon, 1nm), 42095 (Key West, 15nm). Upper Keys: MLRF1 decommissioned Feb 2023, no replacement. NWS zones AMZ650/670. BHB windows from iDiveFlorida. UV from Open-Meteo. Offshore buoy readings differ from nearshore — confirm with your captain.</p>
+  Disclaimer: <p style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:#8890a8;line-height:1.7;margin:0;text-transform:uppercase;">The Florida Flow aggregates NOAA, NWS, and Open-Meteo data for informational purposes. Forecasts are predictions, not guarantees. Confirm all conditions with your operator before heading out. Use at your own risk.</p>
+  Sig: <div style="display:flex;justify-content:space-between;margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#5a6285;"><span>thefloridaflow.com</span><span>Issue #${issueNumber} · ${etShort}</span></div>
+</footer>
 
 Close wrapper div.
 
