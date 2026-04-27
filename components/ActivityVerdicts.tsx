@@ -1,15 +1,22 @@
 import { BuoyData } from '@/lib/noaa'
-import BHBGuideCard from '@/components/BHBGuideCard'
 
 type Rating = 'Good' | 'Marginal' | 'Rough' | 'Poor' | 'Small' | 'N/A'
 
-const ratingStyle: Record<Rating, string> = {
-  Good:     'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
-  Marginal: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30',
-  Rough:    'bg-red-500/20 text-red-400 border border-red-500/30',
-  Poor:     'bg-orange-500/20 text-orange-400 border border-orange-500/30',
-  Small:    'bg-slate-600/40 text-slate-400 border border-slate-600',
-  'N/A':    'bg-slate-700/50 text-slate-500 border border-slate-700',
+const actClass: Record<Rating, string> = {
+  Good:     '',
+  Marginal: 'cau',
+  Poor:     'cau',
+  Small:    '',
+  Rough:    'no',
+  'N/A':    '',
+}
+
+const iconId: Record<string, string> = {
+  'Scuba Diving':      'i-mask',
+  'Surfing':           'i-surf',
+  'Kayak / SUP':       'i-paddle',
+  'Boating / Fishing': 'i-anchor',
+  'Beach / Swimming':  'i-umbrella',
 }
 
 function n(v: string | null | undefined): number | null {
@@ -60,8 +67,8 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     if (scubaWave === null && windKt === null) return 'N/A'
     const wh = scubaWave ?? 0
     const ws = windKt ?? 0
-    if (wh < 1.5 && ws < 12) return 'Good'
-    if (wh < 2.5 && ws < 20) return 'Marginal'
+    if (wh < 3 && ws < 18) return 'Good'
+    if (wh < 4 && ws < 25) return 'Marginal'
     return 'Rough'
   })()
   const divingDetail = (() => {
@@ -73,9 +80,9 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     const wind = windKt !== null ? `${ws.toFixed(1)} kt wind` : ''
     const src  = scubaBuoy ? ` (buoy ${scubaBuoy.stationId}, ${scubaBuoy.offshoreNm} nm offshore)` : ''
     const base = [seas + pd + src, wind].filter(Boolean).join(', ')
-    if (wh < 1.5 && ws < 12)
+    if (wh < 3 && ws < 18)
       return `${base}. Shore entry sites like Blue Heron Bridge should have minimal surge and good water movement. Boat dives running smoothly at all depths. Good conditions for photography, macro work, and extended bottom time. Confirm viz locally before diving.`
-    if (wh < 2.5 && ws < 20)
+    if (wh < 4 && ws < 25)
       return `${base}. Manageable for experienced divers. Expect light surge at shore entry sites; plan your entry and exit carefully. Boat dives comfortable but nearshore viz may be reduced from water movement. Beginners should dive with a guide or wait for calmer conditions. Verify with your operator.`
     return `${base}. Strong surge expected at all shore entry sites. BHB and similar spots not recommended today. Boat dives with an experienced captain only; nearshore viz likely poor from stirred-up sediment. If you must dive, go deeper and farther offshore. Confirm with your operator.`
   })()
@@ -120,8 +127,8 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     if (kayakWave === null && windKt === null) return 'N/A'
     const wh = kayakWave ?? 0
     const ws = windKt ?? 0
-    if (wh < 1.5 && ws < 12) return 'Good'
-    if (wh < 3   && ws < 18) return 'Marginal'
+    if (wh < 2 && ws < 17) return 'Good'
+    if (wh < 3 && ws < 22) return 'Marginal'
     return 'Rough'
   })()
   const kayakDetail = (() => {
@@ -129,9 +136,9 @@ function computeVerdicts(buoys: BuoyData[]): Verdict[] {
     const wh = kayakWave ?? 0
     const ws = windKt ?? 0
     const base = [kayakWave !== null ? `${kayakBuoy!.waveHeight} ft seas` : '', windKt !== null ? `${ws.toFixed(1)} kt wind` : ''].filter(Boolean).join(', ')
-    if (wh < 1.5 && ws < 12)
-      return `${base}. Ideal paddling conditions. Ocean launches easy from any beach access and the ICW is flat and calm. All skill levels can head out safely. Good day for open-ocean crossings or distance training. Watch for sea breeze picking up around 1–2 pm.`
-    if (wh < 3 && ws < 18)
+    if (wh < 2 && ws < 17)
+      return `${base}. Good paddling conditions. Ocean launches manageable and the ICW is calm. Intermediate and above can head out comfortably. Watch for sea breeze building around midday.`
+    if (wh < 3 && ws < 22)
       return `${base}. Open water manageable for intermediate to advanced paddlers. Beginners and recreational SUP riders should stay in the ICW or sheltered bays today. If launching ocean-side, stay close to shore and be aware of current at inlet mouths. Plan to be off the water before afternoon wind builds.`
     return `${base}. Open water unsafe for kayaks and SUPs. Stick to the ICW, intracoastal, or protected lagoons only. Even experienced paddlers should avoid ocean launches — strong wind and steep chop make self-rescue difficult if you capsize. Find a river or bay with land buffers on the windward side.`
   })()
@@ -189,26 +196,21 @@ export default function ActivityVerdicts({ buoys }: { buoys: BuoyData[] }) {
   const verdicts = computeVerdicts(buoys)
 
   return (
-    <section>
-      <div className="flex items-center gap-2 mb-5">
-        <h2 className="text-2xl font-bold text-white">By Activity</h2>
-        <span className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-full">Today&apos;s Verdict</span>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {verdicts.map(({ activity, icon, rating, detail }) => (
-          <div key={activity} className="bg-slate-800 rounded-2xl p-4 shadow-lg flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xl">{icon}</span>
-              <span className="text-white font-medium text-sm">{activity}</span>
+    <div className="act-grid">
+      {verdicts.map(({ activity, rating, detail }) => (
+        <div key={activity} className={`act ${actClass[rating]}`}>
+          <div className="act-head">
+            <div className="act-name">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <use href={`#${iconId[activity] ?? 'i-wave'}`} />
+              </svg>
+              {activity}
             </div>
-            <span className={`self-start px-2.5 py-1 rounded-full text-xs font-bold ${ratingStyle[rating]}`}>
-              {rating}
-            </span>
-            <p className="text-slate-400 text-xs leading-relaxed">{detail}</p>
+            <div className="act-verdict">{rating}</div>
           </div>
-        ))}
-        <BHBGuideCard />
-      </div>
-    </section>
+          <p>{detail}</p>
+        </div>
+      ))}
+    </div>
   )
 }

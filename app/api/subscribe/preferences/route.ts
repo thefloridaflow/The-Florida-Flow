@@ -1,16 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createHmac } from 'crypto'
+import { getSupabase } from '@/lib/supabase'
 
-const GHOST_BASE = 'https://newsletter.thefloridaflow.com'
-
-function ghostAdminJwt(): string {
-  const ghostKey = process.env.GHOST_ADMIN_API_KEY ?? ''
-  const [id, secret] = ghostKey.split(':')
-  const header  = Buffer.from(JSON.stringify({ alg: 'HS256', kid: id, typ: 'JWT' })).toString('base64url')
-  const payload = Buffer.from(JSON.stringify({ iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 300, aud: '/admin/' })).toString('base64url')
-  const sig     = createHmac('sha256', Buffer.from(secret, 'hex')).update(`${header}.${payload}`).digest('base64url')
-  return `${header}.${payload}.${sig}`
-}
+const AUDIENCE_ID = 'ce90f469-8f63-419a-99c2-dd4208169f12'
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,66 +9,34 @@ export async function POST(req: NextRequest) {
     if (!email || typeof email !== 'string') {
       return NextResponse.json({ error: 'email required' }, { status: 400 })
     }
+    const normalized = email.toLowerCase().slice(0, 254)
 
-    const ghostKey = process.env.GHOST_ADMIN_API_KEY
-    if (!ghostKey) return NextResponse.json({ error: 'Ghost not configured' }, { status: 503 })
+    const resendKey = process.env.RESEND_API_KEY
+    if (!resendKey) return NextResponse.json({ error: 'Resend not configured' }, { status: 503 })
 
-    const token = ghostAdminJwt()
-    const headers = { Authorization: `Ghost ${token}`, 'Content-Type': 'application/json' }
-
-    // Look up the member by email
-    const search = await fetch(
-      `${GHOST_BASE}/ghost/api/admin/members/?filter=email:'${encodeURIComponent(email)}'&limit=1`,
-      { headers, signal: AbortSignal.timeout(8000) },
-    )
-    if (!search.ok) {
-      console.error('[preferences] Ghost member search failed:', search.status)
-      return NextResponse.json({ error: 'Ghost lookup failed' }, { status: 502 })
-    }
-    const { members } = await search.json()
-
-    const labels: { name: string }[] = Array.isArray(interests)
-      ? interests.filter((i: unknown) => typeof i === 'string' && i.length < 50).map((i: string) => ({ name: i }))
-      : []
-    const note = location && typeof location === 'string' && location.length < 100
-      ? `Location: ${location}`
-      : undefined
-
-    if (members?.length > 0) {
-      // Member exists — update labels and note
-      const memberId: string = members[0].id
-      const existing: { name: string }[] = members[0].labels ?? []
-      // Merge: keep existing labels, add new ones (Ghost replaces on PUT so we need to merge)
-      const existingNames = new Set(existing.map((l: { name: string }) => l.name))
-      const merged = [...existing, ...labels.filter(l => !existingNames.has(l.name))]
-
-      const body: Record<string, unknown> = { labels: merged }
-      if (note) body.note = note
-
-      const put = await fetch(`${GHOST_BASE}/ghost/api/admin/members/${memberId}/`, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify({ members: [body] }),
-        signal: AbortSignal.timeout(8000),
-      })
-      if (!put.ok) console.error('[preferences] Ghost PUT failed:', put.status, await put.text())
-    } else {
-      // Member not yet in Ghost (magic link not clicked) — create them now with labels
-      // Ghost will merge when they confirm the magic link
-      const body: Record<string, unknown> = { email, labels }
-      if (note) body.note = note
-
-      const post = await fetch(`${GHOST_BASE}/ghost/api/admin/members/`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ members: [body] }),
-        signal: AbortSignal.timeout(8000),
-      })
-      // 422 = already exists (race), that's fine
-      if (!post.ok && post.status !== 422) {
-        console.error('[preferences] Ghost POST failed:', post.status, await post.text())
+    // Update Supabase with preferences (best-effort)
+    try {
+      const db = getSupabase()
+      const update: Record<string, unknown> = {}
+      if (location && typeof location === 'string' && location.length < 100) update.location = location
+      if (Array.isArray(interests) && interests.length > 0) {
+        update.interests = interests.filter((i: unknown) => typeof i === 'string' && i.length < 50)
       }
+      if (Object.keys(update).length > 0) {
+        const { error } = await db.from('email_subscribers').upsert({ email: normalized, ...update })
+        if (error) console.error('[preferences] Supabase update failed:', error.message)
+      }
+    } catch (e) {
+      console.error('[preferences] Supabase threw:', e)
     }
+
+    // Ensure contact is active in Resend audience
+    await fetch(`https://api.resend.com/audiences/${AUDIENCE_ID}/contacts`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: normalized, unsubscribed: false }),
+      signal: AbortSignal.timeout(5000),
+    }).catch(e => console.error('[preferences] Resend upsert failed:', e))
 
     return NextResponse.json({ ok: true })
   } catch (err) {

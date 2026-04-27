@@ -1,11 +1,31 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Source_Serif_4, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const sourceSerif4 = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
+  style: ["normal", "italic"],
+  weight: ["300", "400", "500", "600"],
+});
+
+const interTight = Inter_Tight({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+  weight: ["400", "500", "600"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+  weight: ["400", "500"],
+});
 
 const BASE_URL = 'https://thefloridaflow.com'
 
@@ -37,9 +57,7 @@ export const metadata: Metadata = {
     description: 'Live ocean conditions for South Florida. Real-time NOAA buoy data for divers, surfers, boaters, and fishermen from the Space Coast to Key Largo.',
   },
   robots: { index: true, follow: true },
-  icons: {
-    apple: '/icon.svg',
-  },
+  icons: { apple: '/icon.svg' },
 };
 
 export default function RootLayout({
@@ -48,8 +66,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="antialiased">
-      <body className={`${inter.className} bg-slate-900 min-h-screen`}>
+    <html
+      lang="en"
+      className={`${sourceSerif4.variable} ${interTight.variable} ${jetbrainsMono.variable} antialiased`}
+      data-theme="ocean"
+      data-accent="tide"
+      data-motion="full"
+    >
+      <body>
         {children}
         <ServiceWorkerRegistration />
         <Analytics />
